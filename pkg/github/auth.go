@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -66,7 +66,7 @@ func VerifyTokenPermissions(githubToken string) error {
 	// Compare token scopes to required scopes
 	missingScopes := make([]string, 0)
 	for _, ts := range requiredScopes {
-		if !pkg.FindStringInSlice(scopes, ts) {
+		if !helpers.FindStringInSlice(scopes, ts) {
 			missingScopes = append(missingScopes, ts)
 		}
 	}

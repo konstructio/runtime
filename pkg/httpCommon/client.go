@@ -17,3 +17,7 @@ func CustomHttpClient(allowInsecure bool) *http.Client {
 	}
 	return &httpClient
 }
+
+type HTTPDoer interface {
+	Do(req *http.Request) (*http.Response, error)
+}

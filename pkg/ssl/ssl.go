@@ -11,7 +11,7 @@ import (
 	//cm "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/client-go/applyconfigurations/core/v1"
@@ -91,7 +91,7 @@ func Backup(backupDir, domainName, k1Dir, kubeconfigPath string) error {
 			if err != nil {
 				return fmt.Errorf("unable to marshal yaml: %s", err)
 			}
-			pkg.CreateFile(fileName, yamlContent)
+			helpers.CreateFile(fileName, yamlContent)
 
 		} else {
 			log.Info().Msgf("skipping secret: %s", secret.Name)

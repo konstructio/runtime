@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
@@ -16,7 +16,7 @@ func AppendFile(cloudType string, reponame string, filename string) bool {
 	//TODO: make this to be loaced by Arrays of exclusion rules
 	//TODO: Make this a bit more fancier
 	// Once we have some critical mass of rules, this will be improved
-	if cloudType == pkg.CloudAws {
+	if cloudType == helpers.CloudAws {
 		if strings.Contains(reponame, "gitops") {
 			if filename == "terraform/base/kubeconfig" {
 				//https://github.com/kubefirst/runtime/issues/926
@@ -26,7 +26,7 @@ func AppendFile(cloudType string, reponame string, filename string) bool {
 		}
 
 	}
-	if cloudType == pkg.CloudK3d {
+	if cloudType == helpers.CloudK3d {
 		if strings.Contains(reponame, "gitops") {
 			if strings.HasPrefix(filename, "argo-workflows") {
 				//https://github.com/kubefirst/runtime/issues/959

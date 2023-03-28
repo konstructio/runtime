@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 	v1 "k8s.io/api/core/v1"
 
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -124,7 +124,7 @@ func WaitForNamespaceandPods(dryRun bool, kubeconfigPath, kubectlClientPath, nam
 	if !viper.GetBool("create.softserve.ready") {
 		x := 50
 		for i := 0; i < x; i++ {
-			_, _, err := pkg.ExecShellReturnStrings(kubectlClientPath, "--kubeconfig", kubeconfigPath, "-n", namespace, "get", fmt.Sprintf("namespace/%s", namespace))
+			_, _, err := helpers.ExecShellReturnStrings(kubectlClientPath, "--kubeconfig", kubeconfigPath, "-n", namespace, "get", fmt.Sprintf("namespace/%s", namespace))
 			if err != nil {
 				log.Info().Msg(fmt.Sprintf("waiting for %s namespace to create ", namespace))
 				time.Sleep(10 * time.Second)
@@ -135,7 +135,7 @@ func WaitForNamespaceandPods(dryRun bool, kubeconfigPath, kubectlClientPath, nam
 			}
 		}
 		for i := 0; i < x; i++ {
-			_, _, err := pkg.ExecShellReturnStrings(kubectlClientPath, "--kubeconfig", kubeconfigPath, "-n", namespace, "get", "pods", "-l", podLabel)
+			_, _, err := helpers.ExecShellReturnStrings(kubectlClientPath, "--kubeconfig", kubeconfigPath, "-n", namespace, "get", "pods", "-l", podLabel)
 			if err != nil {
 				log.Info().Msg(fmt.Sprintf("waiting for %s pods to create ", namespace))
 				time.Sleep(10 * time.Second)

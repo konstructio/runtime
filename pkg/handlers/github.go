@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/kubefirst/runtime/pkg/reports"
 	"github.com/kubefirst/runtime/pkg/services"
 )
@@ -53,7 +53,7 @@ func (handler GitHubHandler) AuthenticateUser() (string, error) {
 	gitHubDeviceFlowCodeURL := "https://github.com/login/device/code"
 	// todo: update scope list, we have more than we need at the moment
 	requestBody, err := json.Marshal(map[string]string{
-		"client_id": pkg.GitHubOAuthClientId,
+		"client_id": helpers.GitHubOAuthClientId,
 		"scope":     "repo public_repo admin:repo_hook admin:org admin:public_key admin:org_hook user project delete_repo write:packages admin:gpg_key workflow",
 	})
 
@@ -61,8 +61,8 @@ func (handler GitHubHandler) AuthenticateUser() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("Content-Type", pkg.JSONContentType)
-	req.Header.Add("Accept", pkg.JSONContentType)
+	req.Header.Add("Content-Type", helpers.JSONContentType)
+	req.Header.Add("Accept", helpers.JSONContentType)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -92,7 +92,7 @@ func (handler GitHubHandler) AuthenticateUser() (string, error) {
 		return "", err
 	}
 
-	if err = pkg.OpenBrowser("https://github.com/login/device"); err != nil {
+	if err = helpers.OpenBrowser("https://github.com/login/device"); err != nil {
 		log.Error().Msgf("error opening browser: %s", err)
 		return "", err
 	}
@@ -128,7 +128,7 @@ func (handler GitHubHandler) GetGitHubUser(gitHubAccessToken string) (string, er
 		log.Warn().Msg("error setting request")
 	}
 
-	req.Header.Add("Content-Type", pkg.JSONContentType)
+	req.Header.Add("Content-Type", helpers.JSONContentType)
 	req.Header.Add("Accept", "application/vnd.github+json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", gitHubAccessToken))
 
@@ -173,7 +173,7 @@ func (handler GitHubHandler) CheckGithubOrganizationPermissions(githubToken, git
 		log.Info().Msg("error setting github owner permissions request")
 	}
 
-	req.Header.Add("Content-Type", pkg.JSONContentType)
+	req.Header.Add("Content-Type", helpers.JSONContentType)
 	req.Header.Add("Accept", "application/vnd.github+json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", githubToken))
 

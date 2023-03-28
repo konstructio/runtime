@@ -7,8 +7,7 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/configs"
-	"github.com/kubefirst/runtime/pkg"
-
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/spf13/viper"
 )
 
@@ -21,7 +20,7 @@ func PrintSectionRepoGithub() []byte {
 	handOffData.WriteString(fmt.Sprintf("\n owner: %s", viper.GetString("github.owner")))
 	handOffData.WriteString("\n Repos: ")
 	handOffData.WriteString(fmt.Sprintf("\n  %s", fmt.Sprintf("https://%s/%s/gitops", viper.GetString("github.host"), viper.GetString("github.owner"))))
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		handOffData.WriteString(fmt.Sprintf("\n  %s", fmt.Sprintf("https://%s/%s/metaphor", viper.GetString("github.host"), viper.GetString("github.owner"))))
 	} else {
 		handOffData.WriteString(fmt.Sprintf("\n  %s", fmt.Sprintf("https://%s/%s/metaphor", viper.GetString("github.host"), viper.GetString("github.owner"))))
@@ -59,7 +58,7 @@ func PrintSectionOverview() []byte {
 	handOffData.WriteString("\n")
 	handOffData.WriteString("\nPress ESC to leave this screen and return to your shell.")
 
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		handOffData.WriteString("\n\nNotes:")
 		handOffData.WriteString("\n  Kubefirst generated certificates to ensure secure connections to")
 		handOffData.WriteString("\n  your local kubernetes services. However they will not")
@@ -88,8 +87,8 @@ func PrintSectionAws() []byte {
 func PrintSectionVault() []byte {
 
 	var vaultURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
-		vaultURL = pkg.VaultLocalURLTLS
+	if viper.GetString("cloud") == helpers.CloudK3d {
+		vaultURL = helpers.VaultLocalURLTLS
 	} else {
 		vaultURL = fmt.Sprintf("https://vault.%s", viper.GetString("aws.hostedzonename"))
 	}
@@ -105,8 +104,8 @@ func PrintSectionVault() []byte {
 func PrintSectionArgoCD() []byte {
 
 	var argoCdURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
-		argoCdURL = pkg.ArgoCDLocalURLTLS
+	if viper.GetString("cloud") == helpers.CloudK3d {
+		argoCdURL = helpers.ArgoCDLocalURLTLS
 	} else {
 		argoCdURL = fmt.Sprintf("https://argocd.%s", viper.GetString("aws.hostedzonename"))
 	}
@@ -124,8 +123,8 @@ func PrintSectionArgoCD() []byte {
 func PrintSectionArgoWorkflows() []byte {
 
 	var argoWorkflowsURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
-		argoWorkflowsURL = pkg.ArgoLocalURLTLS
+	if viper.GetString("cloud") == helpers.CloudK3d {
+		argoWorkflowsURL = helpers.ArgoLocalURLTLS
 	} else {
 		argoWorkflowsURL = fmt.Sprintf("https://argo.%s", viper.GetString("aws.hostedzonename"))
 	}
@@ -135,7 +134,7 @@ func PrintSectionArgoWorkflows() []byte {
 	handOffData.WriteString(strings.Repeat("-", 51))
 	handOffData.WriteString(fmt.Sprintf("\n URL: %s", argoWorkflowsURL))
 
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		return handOffData.Bytes()
 	} else {
 		handOffData.WriteString("\n sso credentials only ")
@@ -148,8 +147,8 @@ func PrintSectionArgoWorkflows() []byte {
 func PrintSectionAtlantis() []byte {
 
 	var atlantisURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
-		atlantisURL = pkg.AtlantisLocalURLTLS
+	if viper.GetString("cloud") == helpers.CloudK3d {
+		atlantisURL = helpers.AtlantisLocalURLTLS
 	} else {
 		atlantisURL = fmt.Sprintf("https://atlantis.%s", viper.GetString("aws.hostedzonename"))
 	}
@@ -165,8 +164,8 @@ func PrintSectionAtlantis() []byte {
 func PrintSectionMuseum() []byte {
 
 	var chartmuseumURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
-		chartmuseumURL = pkg.ChartmuseumLocalURLTLS
+	if viper.GetString("cloud") == helpers.CloudK3d {
+		chartmuseumURL = helpers.ChartmuseumLocalURLTLS
 	} else {
 		chartmuseumURL = fmt.Sprintf("https://chartmuseum.%s", viper.GetString("aws.hostedzonename"))
 	}
@@ -176,7 +175,7 @@ func PrintSectionMuseum() []byte {
 	handOffData.WriteString(strings.Repeat("-", 54))
 	handOffData.WriteString(fmt.Sprintf("\n URL: %s", chartmuseumURL))
 
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		return handOffData.Bytes()
 	} else {
 		handOffData.WriteString("\n see vault for credentials ")
@@ -215,10 +214,10 @@ func PrintSectionMetaphorFrontend() []byte {
 
 	var handOffData bytes.Buffer
 
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		handOffData.WriteString("\n--- Metaphor Slim ")
 		handOffData.WriteString(strings.Repeat("-", 52))
-		handOffData.WriteString(fmt.Sprintf("\n URL: %s\n", pkg.MetaphorFrontendSlimTLSDev))
+		handOffData.WriteString(fmt.Sprintf("\n URL: %s\n", helpers.MetaphorFrontendSlimTLSDev))
 		handOffData.WriteString(strings.Repeat("-", 70))
 
 		return handOffData.Bytes()
@@ -265,7 +264,7 @@ func HandoffScreen(dryRun bool, silentMode bool) {
 	} else {
 		handOffData.Write(PrintSectionRepoGitlab())
 	}
-	handOffData.Write(PrintSectionConsole(pkg.KubefirstConsoleLocalURLCloud))
+	handOffData.Write(PrintSectionConsole(helpers.KubefirstConsoleLocalURLCloud))
 	handOffData.Write(PrintSectionVault())
 	handOffData.Write(PrintSectionArgoCD())
 	handOffData.Write(PrintSectionArgoWorkflows())
@@ -295,7 +294,7 @@ func LocalHandoffScreen(dryRun bool, silentMode bool) {
 	var handOffData bytes.Buffer
 	handOffData.Write(PrintSectionOverview())
 	handOffData.Write(PrintSectionRepoGithub())
-	handOffData.Write(PrintSectionConsole(pkg.KubefirstConsoleLocalURLTLS))
+	handOffData.Write(PrintSectionConsole(helpers.KubefirstConsoleLocalURLTLS))
 	handOffData.Write(PrintSectionVault())
 	handOffData.Write(PrintSectionArgoCD())
 	handOffData.Write(PrintSectionArgoWorkflows())
@@ -350,16 +349,16 @@ func LocalConnectSummary() string {
 	localConnect.WriteString("\nKubefirst Local:\n")
 	localConnect.WriteString(strings.Repeat("-", 70))
 
-	localConnect.WriteString(fmt.Sprintf("\n\nKubefirst Console:    %s\n", pkg.KubefirstConsoleLocalURL))
-	localConnect.WriteString(fmt.Sprintf("Chart Museum:         %s\n", pkg.ChartmuseumLocalURL))
+	localConnect.WriteString(fmt.Sprintf("\n\nKubefirst Console:    %s\n", helpers.KubefirstConsoleLocalURL))
+	localConnect.WriteString(fmt.Sprintf("Chart Museum:         %s\n", helpers.ChartmuseumLocalURL))
 	localConnect.WriteString(fmt.Sprintf("Argo:                 %s/workflows\n", config.ArgoWorkflowsLocalURL))
-	localConnect.WriteString(fmt.Sprintf("ArgoCD:               %s\n", pkg.ArgoCDLocalURL))
-	localConnect.WriteString(fmt.Sprintf("Vault:                %s\n", pkg.VaultLocalURL))
-	localConnect.WriteString(fmt.Sprintf("Atlantis:             %s\n", pkg.AtlantisLocalURL))
-	localConnect.WriteString(fmt.Sprintf("Minio Console:        %s\n", "pkg.MinioConsoleURL")) // todo figure out the source of truth and fix
-	localConnect.WriteString(fmt.Sprintf("Metaphor Frontend:    %s\n", pkg.MetaphorFrontendDevelopmentLocalURL))
-	localConnect.WriteString(fmt.Sprintf("Metaphor Go:          %s/app\n", pkg.MetaphorGoDevelopmentLocalURL))
-	localConnect.WriteString(fmt.Sprintf("Metaphor:             %s/app\n", pkg.MetaphorDevelopmentLocalURL))
+	localConnect.WriteString(fmt.Sprintf("ArgoCD:               %s\n", helpers.ArgoCDLocalURL))
+	localConnect.WriteString(fmt.Sprintf("Vault:                %s\n", helpers.VaultLocalURL))
+	localConnect.WriteString(fmt.Sprintf("Atlantis:             %s\n", helpers.AtlantisLocalURL))
+	localConnect.WriteString(fmt.Sprintf("Minio Console:        %s\n", "helpers.MinioConsoleURL")) // todo figure out the source of truth and fix
+	localConnect.WriteString(fmt.Sprintf("Metaphor Frontend:    %s\n", helpers.MetaphorFrontendDevelopmentLocalURL))
+	localConnect.WriteString(fmt.Sprintf("Metaphor Go:          %s/app\n", helpers.MetaphorGoDevelopmentLocalURL))
+	localConnect.WriteString(fmt.Sprintf("Metaphor:             %s/app\n", helpers.MetaphorDevelopmentLocalURL))
 
 	return localConnect.String()
 }

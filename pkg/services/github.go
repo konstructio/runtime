@@ -8,11 +8,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/runtime/pkg/httpCommon"
 )
 
 type GitHubService struct {
-	httpClient pkg.HTTPDoer
+	httpClient httpCommon.HTTPDoer
 }
 
 // gitHubAccessCode host OAuth data
@@ -23,7 +24,7 @@ type gitHubAccessCode struct {
 }
 
 // NewGitHubService instantiate a new GitHub service
-func NewGitHubService(httpClient pkg.HTTPDoer) *GitHubService {
+func NewGitHubService(httpClient httpCommon.HTTPDoer) *GitHubService {
 	return &GitHubService{
 		httpClient: httpClient,
 	}
@@ -35,7 +36,7 @@ func (service GitHubService) CheckUserCodeConfirmation(deviceCode string) (strin
 	gitHubAccessTokenURL := "https://github.com/login/oauth/access_token"
 
 	jsonData, err := json.Marshal(map[string]string{
-		"client_id":   pkg.GitHubOAuthClientId,
+		"client_id":   helpers.GitHubOAuthClientId,
 		"device_code": deviceCode,
 		"grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
 	})
@@ -48,8 +49,8 @@ func (service GitHubService) CheckUserCodeConfirmation(deviceCode string) (strin
 		return "", nil
 	}
 
-	req.Header.Add("Content-Type", pkg.JSONContentType)
-	req.Header.Add("Accept", pkg.JSONContentType)
+	req.Header.Add("Content-Type", helpers.JSONContentType)
+	req.Header.Add("Accept", helpers.JSONContentType)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

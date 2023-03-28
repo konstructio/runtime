@@ -112,7 +112,7 @@ func Commit(repo *git.Repository, commitMsg string) error {
 		return err
 	}
 
-	for file, _ := range status {
+	for file := range status {
 		_, err = w.Add(file)
 		if err != nil {
 			log.Info().Msgf("error getting worktree status: %s", err)

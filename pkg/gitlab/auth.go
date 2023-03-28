@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -64,20 +64,20 @@ func VerifyTokenPermissions(gitlabToken string) error {
 	}
 
 	// api allows all access so we won't need to check the rest
-	if pkg.FindStringInSlice(scopesSlice, "api") {
+	if helpers.FindStringInSlice(scopesSlice, "api") {
 		return nil
 	}
 
 	// Compare token scopes to required scopes
 	missingScopes := make([]string, 0)
 	for _, ts := range requiredScopes {
-		if !pkg.FindStringInSlice(scopesSlice, ts) {
+		if !helpers.FindStringInSlice(scopesSlice, ts) {
 			missingScopes = append(missingScopes, ts)
 		}
 	}
 
 	// Report on any missing scopes
-	if !pkg.FindStringInSlice(scopesSlice, "api") && len(missingScopes) != 0 {
+	if !helpers.FindStringInSlice(scopesSlice, "api") && len(missingScopes) != 0 {
 		return fmt.Errorf("the supplied github token is missing authorization scopes - please add: %v", missingScopes)
 	}
 

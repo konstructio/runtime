@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	"github.com/rs/zerolog/log"
 
@@ -76,8 +76,8 @@ func AddK3DSecrets(
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "ci-secrets", Namespace: "argo"},
 			Data: map[string][]byte{
-				"BASIC_AUTH_USER":       []byte(pkg.MinioDefaultUsername),
-				"BASIC_AUTH_PASS":       []byte(pkg.MinioDefaultPassword),
+				"BASIC_AUTH_USER":       []byte(helpers.MinioDefaultUsername),
+				"BASIC_AUTH_PASS":       []byte(helpers.MinioDefaultPassword),
 				"USERNAME":              []byte(gitUser),
 				"PERSONAL_ACCESS_TOKEN": []byte(tokenValue),
 				"username":              []byte(gitUser),
@@ -138,10 +138,10 @@ func AddK3DSecrets(
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "chartmuseum-secrets", Namespace: "chartmuseum"},
 			Data: map[string][]byte{
-				"BASIC_AUTH_USER":       []byte(pkg.MinioDefaultUsername),
-				"BASIC_AUTH_PASS":       []byte(pkg.MinioDefaultPassword),
-				"AWS_ACCESS_KEY_ID":     []byte(pkg.MinioDefaultUsername),
-				"AWS_SECRET_ACCESS_KEY": []byte(pkg.MinioDefaultPassword),
+				"BASIC_AUTH_USER":       []byte(helpers.MinioDefaultUsername),
+				"BASIC_AUTH_PASS":       []byte(helpers.MinioDefaultPassword),
+				"AWS_ACCESS_KEY_ID":     []byte(helpers.MinioDefaultUsername),
+				"AWS_SECRET_ACCESS_KEY": []byte(helpers.MinioDefaultPassword),
 			},
 		},
 		// git runner
@@ -155,8 +155,8 @@ func AddK3DSecrets(
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "minio-creds", Namespace: "argo"},
 			Data: map[string][]byte{
-				"accesskey": []byte(pkg.MinioDefaultUsername),
-				"secretkey": []byte(pkg.MinioDefaultPassword),
+				"accesskey": []byte(helpers.MinioDefaultUsername),
+				"secretkey": []byte(helpers.MinioDefaultPassword),
 			},
 		},
 		// vault

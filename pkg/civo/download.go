@@ -5,8 +5,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/downloadManager"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,7 +15,7 @@ func DownloadTools(kubectlClientPath, kubectlClientVersion, localOs, localArchit
 	log.Info().Msg("starting downloads...")
 
 	// create folder if it doesn't exist
-	err := pkg.CreateDirIfNotExist(toolsDirPath)
+	err := helpers.CreateDirIfNotExist(toolsDirPath)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func DownloadTools(kubectlClientPath, kubectlClientVersion, localOs, localArchit
 
 		log.Info().Msgf("going to print the kubeconfig env in runtime: %s", os.Getenv("KUBECONFIG"))
 
-		kubectlStdOut, kubectlStdErr, err := pkg.ExecShellReturnStrings(kubectlClientPath, "version", "--client=true", "-oyaml")
+		kubectlStdOut, kubectlStdErr, err := helpers.ExecShellReturnStrings(kubectlClientPath, "version", "--client=true", "-oyaml")
 		log.Info().Msgf("-> kubectl version:\n\t%s\n\t%s\n", kubectlStdOut, kubectlStdErr)
 		if err != nil {
 			errorChannel <- fmt.Errorf("failed to call kubectlVersionCmd.Run(): %v", err)
