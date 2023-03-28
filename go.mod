@@ -1,6 +1,6 @@
 module github.com/kubefirst/runtime
 
-go 1.20
+go 1.18
 
 replace (
 	// https://github.com/golang/go/issues/33546#issuecomment-519656923
