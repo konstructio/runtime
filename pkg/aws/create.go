@@ -2,7 +2,7 @@ package aws
 
 import (
 	"github.com/go-git/go-git/v5"
-	"github.com/kubefirst/runtime/internal/gitClient"
+	"github.com/kubefirst/runtime/pkg/gitClient"
 	"github.com/rs/zerolog/log"
 )
 

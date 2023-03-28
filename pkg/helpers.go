@@ -16,7 +16,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/internal/progressPrinter"
+	"github.com/kubefirst/runtime/pkg/progressPrinter"
 
 	"github.com/kubefirst/runtime/configs"
 	"github.com/spf13/viper"

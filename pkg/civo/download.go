@@ -1,21 +1,21 @@
-package aws
+package civo
 
 import (
 	"fmt"
 	"os"
 	"sync"
 
-	"github.com/kubefirst/runtime/internal/downloadManager"
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/downloadManager"
 	"github.com/rs/zerolog/log"
 )
 
-func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformClientVersion string) error {
+func DownloadTools(kubectlClientPath, kubectlClientVersion, localOs, localArchitecture, terraformClientVersion, toolsDirPath string) error {
 
 	log.Info().Msg("starting downloads...")
 
 	// create folder if it doesn't exist
-	err := pkg.CreateDirIfNotExist(awsConfig.ToolsDir)
+	err := pkg.CreateDirIfNotExist(toolsDirPath)
 	if err != nil {
 		return err
 	}
@@ -32,24 +32,25 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 		kubectlDownloadURL := fmt.Sprintf(
 			"https://dl.k8s.io/release/%s/bin/%s/%s/kubectl",
 			kubectlClientVersion,
-			pkg.LocalhostOS,
-			pkg.LocalhostARCH,
+			localOs,
+			localArchitecture,
 		)
 		log.Info().Msgf("Downloading kubectl from: %s", kubectlDownloadURL)
-		err = downloadManager.DownloadFile(awsConfig.KubectlClient, kubectlDownloadURL)
+		err = downloadManager.DownloadFile(kubectlClientPath, kubectlDownloadURL)
 		if err != nil {
 			errorChannel <- err
 			return
 		}
 
-		err = os.Chmod(awsConfig.KubectlClient, 0755)
+		err = os.Chmod(kubectlClientPath, 0755)
 		if err != nil {
 			errorChannel <- err
 			return
 		}
 
 		log.Info().Msgf("going to print the kubeconfig env in runtime: %s", os.Getenv("KUBECONFIG"))
-		kubectlStdOut, kubectlStdErr, err := pkg.ExecShellReturnStrings(awsConfig.KubectlClient, "version", "--client=true", "-oyaml")
+
+		kubectlStdOut, kubectlStdErr, err := pkg.ExecShellReturnStrings(kubectlClientPath, "version", "--client=true", "-oyaml")
 		log.Info().Msgf("-> kubectl version:\n\t%s\n\t%s\n", kubectlStdOut, kubectlStdErr)
 		if err != nil {
 			errorChannel <- fmt.Errorf("failed to call kubectlVersionCmd.Run(): %v", err)
@@ -65,31 +66,31 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 			"https://releases.hashicorp.com/terraform/%s/terraform_%s_%s_%s.zip",
 			terraformClientVersion,
 			terraformClientVersion,
-			pkg.LocalhostOS,
-			pkg.LocalhostARCH,
+			localOs,
+			localArchitecture,
 		)
 		log.Info().Msgf("Downloading terraform from %s", terraformDownloadURL)
-		terraformDownloadZipPath := fmt.Sprintf("%s/terraform.zip", awsConfig.ToolsDir)
+		terraformDownloadZipPath := fmt.Sprintf("%s/terraform.zip", toolsDirPath)
 		err = downloadManager.DownloadFile(terraformDownloadZipPath, terraformDownloadURL)
 		if err != nil {
 			errorChannel <- fmt.Errorf("error downloading terraform file, %v", err)
 			return
 		}
 
-		downloadManager.Unzip(terraformDownloadZipPath, awsConfig.ToolsDir)
+		downloadManager.Unzip(terraformDownloadZipPath, toolsDirPath)
 
-		err = os.Chmod(awsConfig.ToolsDir, 0777)
+		err = os.Chmod(toolsDirPath, 0777)
 		if err != nil {
 			errorChannel <- err
 			return
 		}
 
-		err = os.Chmod(fmt.Sprintf("%s/terraform", awsConfig.ToolsDir), 0755)
+		err = os.Chmod(fmt.Sprintf("%s/terraform", toolsDirPath), 0755)
 		if err != nil {
 			errorChannel <- err
 			return
 		}
-		err = os.RemoveAll(fmt.Sprintf("%s/terraform.zip", awsConfig.ToolsDir))
+		err = os.RemoveAll(fmt.Sprintf("%s/terraform.zip", toolsDirPath))
 		if err != nil {
 			errorChannel <- err
 			return
