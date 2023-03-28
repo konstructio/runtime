@@ -5,8 +5,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/downloadManager"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,7 +15,7 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 	log.Info().Msg("starting downloads...")
 
 	// create folder if it doesn't exist
-	err := pkg.CreateDirIfNotExist(awsConfig.ToolsDir)
+	err := helpers.CreateDirIfNotExist(awsConfig.ToolsDir)
 	if err != nil {
 		return err
 	}
@@ -32,8 +32,8 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 		kubectlDownloadURL := fmt.Sprintf(
 			"https://dl.k8s.io/release/%s/bin/%s/%s/kubectl",
 			kubectlClientVersion,
-			pkg.LocalhostOS,
-			pkg.LocalhostARCH,
+			helpers.LocalhostOS,
+			helpers.LocalhostARCH,
 		)
 		log.Info().Msgf("Downloading kubectl from: %s", kubectlDownloadURL)
 		err = downloadManager.DownloadFile(awsConfig.KubectlClient, kubectlDownloadURL)
@@ -49,7 +49,7 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 		}
 
 		log.Info().Msgf("going to print the kubeconfig env in runtime: %s", os.Getenv("KUBECONFIG"))
-		kubectlStdOut, kubectlStdErr, err := pkg.ExecShellReturnStrings(awsConfig.KubectlClient, "version", "--client=true", "-oyaml")
+		kubectlStdOut, kubectlStdErr, err := helpers.ExecShellReturnStrings(awsConfig.KubectlClient, "version", "--client=true", "-oyaml")
 		log.Info().Msgf("-> kubectl version:\n\t%s\n\t%s\n", kubectlStdOut, kubectlStdErr)
 		if err != nil {
 			errorChannel <- fmt.Errorf("failed to call kubectlVersionCmd.Run(): %v", err)
@@ -65,8 +65,8 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 			"https://releases.hashicorp.com/terraform/%s/terraform_%s_%s_%s.zip",
 			terraformClientVersion,
 			terraformClientVersion,
-			pkg.LocalhostOS,
-			pkg.LocalhostARCH,
+			helpers.LocalhostOS,
+			helpers.LocalhostARCH,
 		)
 		log.Info().Msgf("Downloading terraform from %s", terraformDownloadURL)
 		terraformDownloadZipPath := fmt.Sprintf("%s/terraform.zip", awsConfig.ToolsDir)

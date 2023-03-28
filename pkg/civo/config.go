@@ -7,7 +7,7 @@ import (
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 )
 
 const (
@@ -20,8 +20,8 @@ const (
 	TerraformClientVersion = "1.3.8"
 	ArgocdHelmChartVersion = "4.10.5"
 
-	ArgocdPortForwardURL = pkg.ArgocdPortForwardURL
-	VaultPortForwardURL  = pkg.VaultPortForwardURL
+	ArgocdPortForwardURL = helpers.ArgocdPortForwardURL
+	VaultPortForwardURL  = helpers.VaultPortForwardURL
 )
 
 type CivoConfig struct {

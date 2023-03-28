@@ -12,8 +12,9 @@ import (
 	"strings"
 
 	v1alpha1ArgocdApplication "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/argocdModel"
+	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/runtime/pkg/httpCommon"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -66,7 +67,7 @@ type TLSConfig struct {
 }
 
 // Sync request ArgoCD to manual sync an application.
-func DeleteApplication(httpClient pkg.HTTPDoer, applicationName, argoCDToken, cascade string) (httpCodeResponse int, syncStatus string, Error error) {
+func DeleteApplication(httpClient httpCommon.HTTPDoer, applicationName, argoCDToken, cascade string) (httpCodeResponse int, syncStatus string, Error error) {
 
 	params := url.Values{}
 	params.Add("cascade", cascade)
@@ -117,7 +118,7 @@ func GetArgoCDApplication(token string, applicationName string) (argocdModel.V1a
 	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := http.Client{Transport: customTransport}
 
-	url := pkg.ArgoCDLocalBaseURL + "/applications/" + applicationName
+	url := helpers.ArgoCDLocalBaseURL + "/applications/" + applicationName
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Error().Err(err).Msg("")
@@ -153,7 +154,7 @@ func GetArgoEndpoint() string {
 	if viper.GetString("argocd.local.service") != "" {
 		argoCDLocalEndpoint = viper.GetString("argocd.local.service")
 	} else {
-		argoCDLocalEndpoint = pkg.ArgocdPortForwardURL
+		argoCDLocalEndpoint = helpers.ArgocdPortForwardURL
 	}
 	return argoCDLocalEndpoint
 }
@@ -166,7 +167,7 @@ func GetArgoCDToken(username string, password string) (string, error) {
 	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := http.Client{Transport: customTransport}
 
-	url := pkg.ArgoCDLocalBaseURL + "/session"
+	url := helpers.ArgoCDLocalBaseURL + "/session"
 
 	argoCDConfig := argocdModel.SessionSessionCreateRequest{
 		Username: username,

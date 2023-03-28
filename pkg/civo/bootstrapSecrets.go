@@ -10,7 +10,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	"github.com/spf13/viper"
 	v1 "k8s.io/api/core/v1"
@@ -81,8 +81,8 @@ func BootstrapCivoMgmtCluster(dryRun bool, kubeconfigPath string, gitProvider st
 			Data: map[string][]byte{
 				"accesskey":             []byte(viper.GetString("kubefirst.state-store-creds.access-key-id")),
 				"secretkey":             []byte(viper.GetString("kubefirst.state-store-creds.secret-access-key-id")),
-				"BASIC_AUTH_USER":       []byte(pkg.MinioDefaultUsername),
-				"BASIC_AUTH_PASS":       []byte(pkg.MinioDefaultPassword),
+				"BASIC_AUTH_USER":       []byte(helpers.MinioDefaultUsername),
+				"BASIC_AUTH_PASS":       []byte(helpers.MinioDefaultPassword),
 				"SSH_PRIVATE_KEY":       []byte(viper.GetString("kbot.private-key")),
 				"PERSONAL_ACCESS_TOKEN": []byte(tokenValue),
 			},
@@ -131,8 +131,8 @@ func BootstrapCivoMgmtCluster(dryRun bool, kubeconfigPath string, gitProvider st
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "chartmuseum-secrets", Namespace: "chartmuseum"},
 			Data: map[string][]byte{
-				"BASIC_AUTH_USER":       []byte(pkg.MinioDefaultUsername),
-				"BASIC_AUTH_PASS":       []byte(pkg.MinioDefaultPassword),
+				"BASIC_AUTH_USER":       []byte(helpers.MinioDefaultUsername),
+				"BASIC_AUTH_PASS":       []byte(helpers.MinioDefaultPassword),
 				"AWS_ACCESS_KEY_ID":     []byte(viper.GetString("kubefirst.state-store-creds.access-key-id")),
 				"AWS_SECRET_ACCESS_KEY": []byte(viper.GetString("kubefirst.state-store-creds.secret-access-key-id")),
 			},
@@ -155,8 +155,8 @@ func BootstrapCivoMgmtCluster(dryRun bool, kubeconfigPath string, gitProvider st
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "minio-creds", Namespace: "argo"},
 			Data: map[string][]byte{
-				"accesskey": []byte(pkg.MinioDefaultUsername),
-				"secretkey": []byte(pkg.MinioDefaultPassword),
+				"accesskey": []byte(helpers.MinioDefaultUsername),
+				"secretkey": []byte(helpers.MinioDefaultPassword),
 			},
 		},
 		// argo docker config

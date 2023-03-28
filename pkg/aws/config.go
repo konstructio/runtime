@@ -6,7 +6,7 @@ import (
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -21,8 +21,8 @@ const (
 	TerraformClientVersion = "1.3.8"
 	ArgocdHelmChartVersion = "4.10.5"
 
-	ArgocdPortForwardURL = pkg.ArgocdPortForwardURL
-	VaultPortForwardURL  = pkg.VaultPortForwardURL
+	ArgocdPortForwardURL = helpers.ArgocdPortForwardURL
+	VaultPortForwardURL  = helpers.VaultPortForwardURL
 )
 
 type AwsConfig struct {
@@ -47,7 +47,7 @@ type AwsConfig struct {
 	ToolsDir                        string
 }
 
-// todo move shared values to pkg. or break into common shared configs across git
+// todo move shared values to helpers. or break into common shared configs across git
 // GetConfig - load default values from kubefirst installer
 func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string) *AwsConfig {
 	config := AwsConfig{}

@@ -3,7 +3,7 @@ package segment
 import (
 	"fmt"
 
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/segmentio/analytics-go"
 )
 
@@ -18,12 +18,12 @@ func (c *SegmentClient) SendCountMetric(
 	metricName string,
 ) string {
 
-	strippedDomainName, err := pkg.RemoveSubdomainV2(domainName)
+	strippedDomainName, err := helpers.RemoveSubdomainV2(domainName)
 	if err != nil {
 		return "error stripping domain name from value"
 	}
 
-	if metricName == pkg.MetricInitStarted {
+	if metricName == helpers.MetricInitStarted {
 		err := c.Client.Enqueue(analytics.Identify{
 			UserId: strippedDomainName,
 			Type:   "identify",

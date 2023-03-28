@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 
 	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
@@ -28,7 +29,6 @@ import (
 	s3Types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/cip8/autoname"
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/spf13/viper"
 )
 
@@ -532,7 +532,7 @@ func DownloadBucket(bucket string, destFolder string) error {
 	for _, object := range listObjsResponse.Contents {
 		log.Info().Msgf("%s (%d bytes, class %v) ", *object.Key, object.Size, object.StorageClass)
 
-		f, err := pkg.CreateFullPath(filepath.Join(destFolder, *object.Key))
+		f, err := helpers.CreateFullPath(filepath.Join(destFolder, *object.Key))
 		if err != nil {
 			log.Warn().Msgf("Error DownloadBucket: %s", err)
 			return fmt.Errorf("failed to create file %q, %v", *object.Key, err)

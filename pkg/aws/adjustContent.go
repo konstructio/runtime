@@ -8,7 +8,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/common"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 
 	cp "github.com/otiai10/copy"
@@ -18,7 +18,7 @@ import (
 func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string) error {
 
 	//* clean up all other platforms
-	for _, platform := range pkg.SupportedPlatforms {
+	for _, platform := range common.SupportedPlatforms {
 		if platform != fmt.Sprintf("%s-%s", CloudProvider, gitProvider) {
 			os.RemoveAll(gitopsRepoDir + "/" + platform)
 		}

@@ -1,7 +1,7 @@
 package segment
 
 import (
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/segmentio/analytics-go"
 )
 
@@ -11,7 +11,7 @@ var Client SegmentClient = SegmentClient{
 
 func newSegmentClient() analytics.Client {
 
-	client := analytics.New(pkg.SegmentIOWriteKey)
+	client := analytics.New(helpers.SegmentIOWriteKey)
 
 	return client
 }

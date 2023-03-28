@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/kubefirst/runtime/configs"
-	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/spf13/viper"
 )
 
@@ -18,13 +18,13 @@ func TestArgoCDLivenessIntegration(t *testing.T) {
 	}
 
 	config := configs.ReadConfig()
-	err := pkg.SetupViper(config)
+	err := helpers.SetupViper(config)
 	if err != nil {
 		t.Error(err)
 	}
 
 	var argoURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		argoURL = "http://localhost:8080"
 	} else {
 		argoURL = fmt.Sprintf("https://argocd.%s", viper.GetString("aws.hostedzonename"))
@@ -53,13 +53,13 @@ func TestArgoWorkflowLivenessIntegration(t *testing.T) {
 	}
 
 	config := configs.ReadConfig()
-	err := pkg.SetupViper(config)
+	err := helpers.SetupViper(config)
 	if err != nil {
 		t.Error(err)
 	}
 
 	var argoURL string
-	if viper.GetString("cloud") == pkg.CloudK3d {
+	if viper.GetString("cloud") == helpers.CloudK3d {
 		argoURL = "http://localhost:2746"
 	} else {
 		argoURL = fmt.Sprintf("https://argo.%s", viper.GetString("aws.hostedzonename"))

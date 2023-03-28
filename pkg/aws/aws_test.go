@@ -16,8 +16,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	s3Types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/kubefirst/runtime/configs"
-	"github.com/kubefirst/runtime/pkg"
+
 	"github.com/kubefirst/runtime/pkg/aws"
+	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -30,7 +31,7 @@ func TestAreS3BucketsLiveIntegration(t *testing.T) {
 
 	// this is necessary to load the viper file
 	config := configs.ReadConfig()
-	err := pkg.SetupViper(config)
+	err := helpers.SetupViper(config)
 	if err != nil {
 		t.Error(err)
 	}
