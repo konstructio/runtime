@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kubefirst/runtime/internal/k8s"
-	"github.com/kubefirst/runtime/internal/vault"
+	"github.com/kubefirst/runtime/pkg/k8s"
+	"github.com/kubefirst/runtime/pkg/vault"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/kubernetes"

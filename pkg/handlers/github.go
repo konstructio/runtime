@@ -11,9 +11,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/internal/reports"
-	"github.com/kubefirst/runtime/internal/services"
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/reports"
+	"github.com/kubefirst/runtime/pkg/services"
 )
 
 // GitHubDeviceFlow handles https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps#device-flow

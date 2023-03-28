@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	awsinternal "github.com/kubefirst/runtime/internal/aws"
+	awsinternal "github.com/kubefirst/runtime/pkg/aws"
 )
 
 // AwsHandoffScreen prints the handoff screen

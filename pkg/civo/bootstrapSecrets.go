@@ -1,53 +1,56 @@
-package k3d
+package civo
 
 import (
 	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
-	"github.com/kubefirst/runtime/internal/k8s"
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/rs/zerolog/log"
 
+	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/k8s"
+	"github.com/spf13/viper"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AddK3DSecrets(
-	atlantisWebhookSecret string,
-	kbotPublicKey string,
-	destinationGitopsRepoGitURL string,
-	kbotPrivateKey string,
-	dryRun bool,
-	gitProvider string,
-	gitUser string,
-	gitOwner string,
-	kubeconfigPath string,
-	tokenValue string,
-) error {
+func BootstrapCivoMgmtCluster(dryRun bool, kubeconfigPath string, gitProvider string, gitUser string) error {
 	clientset, err := k8s.GetClientSet(dryRun, kubeconfigPath)
 	if err != nil {
 		log.Info().Msg("error getting kubernetes clientset")
 	}
 
 	// Set git provider token value
-	var containerRegistryHost string
+	var containerRegistryHost, gitRunnerSecretName, tokenValue string
 	switch gitProvider {
 	case "github":
 		containerRegistryHost = "https://ghcr.io/"
+		gitRunnerSecretName = "controller-manager"
+		tokenValue = os.Getenv("GITHUB_TOKEN")
 	case "gitlab":
 		containerRegistryHost = "registry.gitlab.io"
+		gitRunnerSecretName = "gitlab-runner"
+		tokenValue = os.Getenv("GITLAB_TOKEN")
 	}
 
+	// Create namespace
+	// Skip if it already exists
 	newNamespaces := []string{
+		"argo",
+		"argocd",
 		"atlantis",
+		"chartmuseum",
 		"external-dns",
 		"external-secrets-operator",
 		fmt.Sprintf("%s-runner", gitProvider),
+		"vault",
+		"development",
+		"staging",
+		"production",
 	}
-
 	for i, s := range newNamespaces {
 		namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: s}}
 		_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), s, metav1.GetOptions{})
@@ -76,12 +79,12 @@ func AddK3DSecrets(
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "ci-secrets", Namespace: "argo"},
 			Data: map[string][]byte{
+				"accesskey":             []byte(viper.GetString("kubefirst.state-store-creds.access-key-id")),
+				"secretkey":             []byte(viper.GetString("kubefirst.state-store-creds.secret-access-key-id")),
 				"BASIC_AUTH_USER":       []byte(pkg.MinioDefaultUsername),
 				"BASIC_AUTH_PASS":       []byte(pkg.MinioDefaultPassword),
-				"USERNAME":              []byte(gitUser),
+				"SSH_PRIVATE_KEY":       []byte(viper.GetString("kbot.private-key")),
 				"PERSONAL_ACCESS_TOKEN": []byte(tokenValue),
-				"username":              []byte(gitUser),
-				"password":              []byte(tokenValue),
 			},
 		},
 		// argocd
@@ -94,9 +97,9 @@ func AddK3DSecrets(
 			},
 			Data: map[string][]byte{
 				"type":          []byte("git"),
-				"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
-				"url":           []byte(destinationGitopsRepoGitURL),
-				"sshPrivateKey": []byte(kbotPrivateKey),
+				"name":          []byte(fmt.Sprintf("%s-gitops", viper.GetString(fmt.Sprintf("flags.%s-owner", gitProvider)))),
+				"url":           []byte(viper.GetString(fmt.Sprintf("%s.repos.gitops.git-url", gitProvider))),
+				"sshPrivateKey": []byte(viper.GetString("kbot.private-key")),
 			},
 		},
 		// atlantis
@@ -105,33 +108,23 @@ func AddK3DSecrets(
 			Data: map[string][]byte{
 				"ATLANTIS_GH_TOKEN":                   []byte(tokenValue),
 				"ATLANTIS_GH_USER":                    []byte(gitUser),
-				"ATLANTIS_GH_HOSTNAME":                []byte(fmt.Sprintf("%s.com", gitProvider)),
-				"ATLANTIS_GH_WEBHOOK_SECRET":          []byte(atlantisWebhookSecret),
+				"ATLANTIS_GH_HOSTNAME":                []byte(viper.GetString(fmt.Sprintf("%s.com", gitProvider))),
+				"ATLANTIS_GH_WEBHOOK_SECRET":          []byte(viper.GetString("secrets.atlantis-webhook")),
 				"ARGOCD_AUTH_USERNAME":                []byte("admin"),
 				"ARGOCD_INSECURE":                     []byte("true"),
 				"ARGOCD_SERVER":                       []byte("http://localhost:8080"),
 				"ARGO_SERVER_URL":                     []byte("argo.argo.svc.cluster.local:443"),
-				"GITHUB_OWNER":                        []byte(gitUser),
+				"GITHUB_OWNER":                        []byte(viper.GetString(fmt.Sprintf("flags.%s-owner", gitProvider))),
 				"GITHUB_TOKEN":                        []byte(tokenValue),
-				"TF_VAR_atlantis_repo_webhook_secret": []byte(atlantisWebhookSecret),
-				"TF_VAR_email_address":                []byte("your@email.com"),
+				"TF_VAR_atlantis_repo_webhook_secret": []byte(viper.GetString("secrets.atlantis-webhook")),
+				"TF_VAR_atlantis_repo_webhook_url":    []byte(viper.GetString(fmt.Sprintf("%s.atlantis.webhook.url", gitProvider))),
+				"TF_VAR_email_address":                []byte(viper.GetString("flags.alerts-email")),
 				"TF_VAR_github_token":                 []byte(tokenValue),
-				"TF_VAR_kbot_ssh_public_key":          []byte(kbotPublicKey),
+				"TF_VAR_kbot_ssh_public_key":          []byte(viper.GetString("kbot.public-key")),
 				"TF_VAR_vault_addr":                   []byte("http://vault.vault.svc.cluster.local:8200"),
 				"TF_VAR_vault_token":                  []byte("k1_local_vault_token"),
 				"VAULT_ADDR":                          []byte("http://vault.vault.svc.cluster.local:8200"),
 				"VAULT_TOKEN":                         []byte("k1_local_vault_token"),
-			},
-		},
-		// atlantis ngrok (k3d-ngrok)
-		{
-			ObjectMeta: metav1.ObjectMeta{Name: "k3d-ngrok", Namespace: "atlantis"},
-			Data: map[string][]byte{
-				"GIT_PROVIDER": []byte(gitProvider),
-				"GIT_OWNER":    []byte(gitOwner),
-				"GIT_TOKEN":    []byte(tokenValue),
-				// This is the only webhook we need for this step
-				"GIT_REPOSITORY": []byte("gitops"),
 			},
 		},
 		// chartmuseum
@@ -140,13 +133,20 @@ func AddK3DSecrets(
 			Data: map[string][]byte{
 				"BASIC_AUTH_USER":       []byte(pkg.MinioDefaultUsername),
 				"BASIC_AUTH_PASS":       []byte(pkg.MinioDefaultPassword),
-				"AWS_ACCESS_KEY_ID":     []byte(pkg.MinioDefaultUsername),
-				"AWS_SECRET_ACCESS_KEY": []byte(pkg.MinioDefaultPassword),
+				"AWS_ACCESS_KEY_ID":     []byte(viper.GetString("kubefirst.state-store-creds.access-key-id")),
+				"AWS_SECRET_ACCESS_KEY": []byte(viper.GetString("kubefirst.state-store-creds.secret-access-key-id")),
+			},
+		},
+		// civo
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "civo-creds", Namespace: "external-dns"},
+			Data: map[string][]byte{
+				"civo-token": []byte(os.Getenv("CIVO_TOKEN")),
 			},
 		},
 		// git runner
 		{
-			ObjectMeta: metav1.ObjectMeta{Name: "controller-manager", Namespace: fmt.Sprintf("%s-runner", gitProvider)},
+			ObjectMeta: metav1.ObjectMeta{Name: gitRunnerSecretName, Namespace: fmt.Sprintf("%s-runner", gitProvider)},
 			Data: map[string][]byte{
 				fmt.Sprintf("%s_token", gitProvider): []byte(tokenValue),
 			},
@@ -157,13 +157,6 @@ func AddK3DSecrets(
 			Data: map[string][]byte{
 				"accesskey": []byte(pkg.MinioDefaultUsername),
 				"secretkey": []byte(pkg.MinioDefaultPassword),
-			},
-		},
-		// vault
-		{
-			ObjectMeta: metav1.ObjectMeta{Name: "vault-token", Namespace: "vault"},
-			Data: map[string][]byte{
-				"token": []byte("k1_local_vault_token"),
 			},
 		},
 		// argo docker config

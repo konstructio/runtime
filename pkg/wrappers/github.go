@@ -3,7 +3,7 @@ package wrappers
 import (
 	"errors"
 
-	"github.com/kubefirst/runtime/internal/handlers"
+	"github.com/kubefirst/runtime/pkg/handlers"
 )
 
 // AuthenticateGitHubUserWrapper receives a handler that was previously instantiated, and communicate with GitHub.

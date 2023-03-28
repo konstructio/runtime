@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	v1alpha1ArgocdApplication "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
-	"github.com/kubefirst/runtime/internal/argocdModel"
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/argocdModel"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

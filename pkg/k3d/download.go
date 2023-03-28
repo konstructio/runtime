@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kubefirst/runtime/internal/downloadManager"
+	"github.com/kubefirst/runtime/pkg/downloadManager"
 	"github.com/rs/zerolog/log"
 )
 
