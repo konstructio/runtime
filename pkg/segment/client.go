@@ -7,7 +7,7 @@ See the LICENSE file for more details.
 package segment
 
 import (
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/segmentio/analytics-go"
 )
 

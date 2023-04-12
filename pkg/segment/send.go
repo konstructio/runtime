@@ -9,7 +9,7 @@ package segment
 import (
 	"fmt"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/segmentio/analytics-go"
 )
 

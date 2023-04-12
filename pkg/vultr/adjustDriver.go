@@ -14,7 +14,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 
 	cp "github.com/otiai10/copy"

@@ -9,7 +9,7 @@ package k3d
 import (
 	"os"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 )
 
 func GetGithubTerraformEnvs(envs map[string]string, githubToken string) map[string]string {

@@ -14,8 +14,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/kubefirst/configs"
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/configs"
+	"github.com/kubefirst/runtime/pkg"
 )
 
 func initActionAutoApprove(dryRun bool, tfAction, tfEntrypoint string, tfEnvs map[string]string) error {

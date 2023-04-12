@@ -16,7 +16,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 )
 
 // DeleteK3dCluster delete a k3d cluster

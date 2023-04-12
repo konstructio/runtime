@@ -14,7 +14,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 )
 

@@ -14,7 +14,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 )
 
 type GitHubService struct {

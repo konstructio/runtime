@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )

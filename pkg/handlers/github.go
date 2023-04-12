@@ -17,7 +17,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/reports"
 	"github.com/kubefirst/runtime/pkg/services"
 )

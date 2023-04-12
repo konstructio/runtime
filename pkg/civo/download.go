@@ -11,7 +11,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/downloadManager"
 	"github.com/rs/zerolog/log"
 )

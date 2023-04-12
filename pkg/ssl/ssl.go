@@ -17,7 +17,7 @@ import (
 	//cm "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/client-go/applyconfigurations/core/v1"

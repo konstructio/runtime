@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kubefirst/kubefirst/configs"
+	"github.com/kubefirst/runtime/configs"
 )
 
 // detokenizeGitGitops - Translate tokens by values on a given path

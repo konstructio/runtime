@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/atotto/clipboard"
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/kubefirst/runtime/pkg/httpCommon"
 	"github.com/kubefirst/runtime/pkg/k8s"

@@ -12,7 +12,7 @@ import (
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/rs/zerolog/log"
 )
 
