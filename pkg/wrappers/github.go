@@ -1,7 +1,13 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package wrappers
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/kubefirst/runtime/pkg/handlers"
 )
@@ -19,7 +25,7 @@ func AuthenticateGitHubUserWrapper(gitHubAccessToken string, gitHubHandler *hand
 	}
 
 	if gitHubAccessToken == "" {
-		return "", errors.New("unable to retrieve a GitHub token for the user")
+		return "", fmt.Errorf("unable to retrieve a GitHub token for the user")
 	}
 
 	return gitHubAccessToken, nil

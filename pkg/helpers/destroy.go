@@ -1,7 +1,12 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package helpers
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/rs/zerolog/log"
@@ -16,16 +21,14 @@ func EvalDestroy(expectedCloudProvider string, expectedGitProvider string) (bool
 	setupComplete := viper.GetBool("kubefirst.setup-complete")
 
 	if !setupComplete {
-		return false, errors.New(
-			fmt.Sprintf(
-				"There are no active kubefirst platforms to destroy.\n\tTo get started, run: kubefirst %s create -h\n",
-				expectedCloudProvider,
-			),
+		return false, fmt.Errorf(
+			"there are no active kubefirst platforms to destroy.\n\tTo get started, run: kubefirst %s create -h\n",
+			expectedCloudProvider,
 		)
 	}
 
 	if cloudProvider == "" || gitProvider == "" {
-		return false, errors.New("Could not parse cloud and git provider information from config.")
+		return false, fmt.Errorf("could not parse cloud and git provider information from config")
 	}
 	log.Info().Msgf("Verified %s platform using %s - continuing with destroy...", expectedCloudProvider, expectedGitProvider)
 

@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package github
 
 import (
@@ -6,7 +12,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,7 +25,6 @@ var (
 		"admin:org",
 		"admin:public_key",
 		"admin:repo_hook",
-		"admin:ssh_signing_key",
 		"delete_repo",
 		"repo",
 		"user",
@@ -66,7 +71,7 @@ func VerifyTokenPermissions(githubToken string) error {
 	// Compare token scopes to required scopes
 	missingScopes := make([]string, 0)
 	for _, ts := range requiredScopes {
-		if !helpers.FindStringInSlice(scopes, ts) {
+		if !pkg.FindStringInSlice(scopes, ts) {
 			missingScopes = append(missingScopes, ts)
 		}
 	}

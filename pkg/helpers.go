@@ -1,4 +1,10 @@
-package helpers
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
+package pkg
 
 import (
 	"errors"
@@ -12,14 +18,13 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/kubefirst/runtime/pkg/progressPrinter"
 
-	"github.com/kubefirst/runtime/configs"
+	"github.com/kubefirst/kubefirst/configs"
 	"github.com/spf13/viper"
 )
 
@@ -174,7 +179,7 @@ func RemoveSubDomain(fullURL string) (string, error) {
 func IsValidURL(rawURL string) error {
 
 	if len(rawURL) == 0 {
-		return errors.New("rawURL cannot be empty string")
+		return fmt.Errorf("rawURL cannot be empty string")
 	}
 
 	parsedURL, err := url.ParseRequestURI(rawURL)
@@ -360,25 +365,27 @@ func InformUser(message string, silentMode bool) {
 }
 
 // OpenBrowser opens the browser with the given URL
+// At this time, support is limited to darwin platforms
 func OpenBrowser(url string) error {
-	var err error
-
 	switch runtime.GOOS {
 	case "linux":
-		if err = exec.Command("xdg-open", url).Start(); err != nil {
-			return err
-		}
+		//if err = exec.Command("xdg-open", url).Start(); err != nil {
+		//	return err
+		//}
+		return nil
 	case "windows":
-		if err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start(); err != nil {
-			return err
-		}
+		//if err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start(); err != nil {
+		//	return err
+		//}
+		return nil
 	case "darwin":
-		if err = exec.Command("open", url).Start(); err != nil {
-			return err
+		if err := exec.Command("open", url).Start(); err != nil {
+			log.Warn().Msgf("unable to load the browser - continuing")
+			return nil
 		}
 	default:
-		err = fmt.Errorf("unable to load the browser, unsupported platform")
-		return err
+		log.Warn().Msgf("unable to load the browser, unsupported platform - continuing")
+		return nil
 	}
 
 	return nil
@@ -420,6 +427,7 @@ func OpenLogFile(path string) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return logFile, nil
 }
 
@@ -547,15 +555,4 @@ func ResetK1Dir(k1Dir string) error {
 
 	return nil
 
-}
-
-// GetAvailableDiskSize returns the available disk size in the user machine. In that way Kubefirst can validate
-// if the available disk size is enough to start a installation.
-func GetAvailableDiskSize() (uint64, error) {
-	fs := syscall.Statfs_t{}
-	err := syscall.Statfs("/", &fs)
-	if err != nil {
-		return 0, err
-	}
-	return fs.Bfree * uint64(fs.Bsize), nil
 }

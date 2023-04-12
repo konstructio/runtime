@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package ssl
 
 import (
@@ -11,7 +17,7 @@ import (
 	//cm "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/client-go/applyconfigurations/core/v1"
@@ -91,7 +97,7 @@ func Backup(backupDir, domainName, k1Dir, kubeconfigPath string) error {
 			if err != nil {
 				return fmt.Errorf("unable to marshal yaml: %s", err)
 			}
-			helpers.CreateFile(fileName, yamlContent)
+			pkg.CreateFile(fileName, yamlContent)
 
 		} else {
 			log.Info().Msgf("skipping secret: %s", secret.Name)

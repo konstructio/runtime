@@ -1,9 +1,15 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package segment
 
 import (
 	"fmt"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/segmentio/analytics-go"
 )
 
@@ -18,12 +24,12 @@ func (c *SegmentClient) SendCountMetric(
 	metricName string,
 ) string {
 
-	strippedDomainName, err := helpers.RemoveSubdomainV2(domainName)
+	strippedDomainName, err := pkg.RemoveSubdomainV2(domainName)
 	if err != nil {
 		return "error stripping domain name from value"
 	}
 
-	if metricName == helpers.MetricInitStarted {
+	if metricName == pkg.MetricInitStarted {
 		err := c.Client.Enqueue(analytics.Identify{
 			UserId: strippedDomainName,
 			Type:   "identify",

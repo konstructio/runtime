@@ -1,17 +1,23 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package handlers
 
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/kubefirst/runtime/pkg/reports"
 	"github.com/kubefirst/runtime/pkg/services"
 )
@@ -53,16 +59,19 @@ func (handler GitHubHandler) AuthenticateUser() (string, error) {
 	gitHubDeviceFlowCodeURL := "https://github.com/login/device/code"
 	// todo: update scope list, we have more than we need at the moment
 	requestBody, err := json.Marshal(map[string]string{
-		"client_id": helpers.GitHubOAuthClientId,
+		"client_id": pkg.GitHubOAuthClientId,
 		"scope":     "repo public_repo admin:repo_hook admin:org admin:public_key admin:org_hook user project delete_repo write:packages admin:gpg_key workflow",
 	})
+	if err != nil {
+		return "", err
+	}
 
 	req, err := http.NewRequest(http.MethodPost, gitHubDeviceFlowCodeURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("Content-Type", helpers.JSONContentType)
-	req.Header.Add("Accept", helpers.JSONContentType)
+	req.Header.Add("Content-Type", pkg.JSONContentType)
+	req.Header.Add("Accept", pkg.JSONContentType)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -84,7 +93,7 @@ func (handler GitHubHandler) AuthenticateUser() (string, error) {
 	// todo: check http code
 
 	// UI update to the user adding instructions how to proceed
-	gitHubTokenReport := reports.GitHubAuthToken(gitHubDeviceFlow.UserCode, gitHubDeviceFlow.VerificationUri)
+	gitHubTokenReport := printGitHubAuthToken(gitHubDeviceFlow.UserCode, gitHubDeviceFlow.VerificationUri)
 	fmt.Println(reports.StyleMessage(gitHubTokenReport))
 
 	// this blocks the progress until the user hits enter to open the browser
@@ -92,7 +101,7 @@ func (handler GitHubHandler) AuthenticateUser() (string, error) {
 		return "", err
 	}
 
-	if err = helpers.OpenBrowser("https://github.com/login/device"); err != nil {
+	if err = pkg.OpenBrowser("https://github.com/login/device"); err != nil {
 		log.Error().Msgf("error opening browser: %s", err)
 		return "", err
 	}
@@ -128,7 +137,7 @@ func (handler GitHubHandler) GetGitHubUser(gitHubAccessToken string) (string, er
 		log.Warn().Msg("error setting request")
 	}
 
-	req.Header.Add("Content-Type", helpers.JSONContentType)
+	req.Header.Add("Content-Type", pkg.JSONContentType)
 	req.Header.Add("Accept", "application/vnd.github+json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", gitHubAccessToken))
 
@@ -158,7 +167,7 @@ func (handler GitHubHandler) GetGitHubUser(gitHubAccessToken string) (string, er
 	}
 
 	if len(githubUser.Login) == 0 {
-		return "", errors.New("unable to retrieve username via GitHub API")
+		return "", fmt.Errorf("unable to retrieve username via GitHub API")
 	}
 
 	log.Info().Msgf("GitHub user: %s", githubUser.Login)
@@ -167,13 +176,12 @@ func (handler GitHubHandler) GetGitHubUser(gitHubAccessToken string) (string, er
 }
 
 func (handler GitHubHandler) CheckGithubOrganizationPermissions(githubToken, githubOwner, githubUsername string) error {
-
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://api.github.com/orgs/%s/memberships/%s", githubOwner, githubUsername), nil)
 	if err != nil {
 		log.Info().Msg("error setting github owner permissions request")
 	}
 
-	req.Header.Add("Content-Type", helpers.JSONContentType)
+	req.Header.Add("Content-Type", pkg.JSONContentType)
 	req.Header.Add("Accept", "application/vnd.github+json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", githubToken))
 
@@ -206,9 +214,22 @@ func (handler GitHubHandler) CheckGithubOrganizationPermissions(githubToken, git
 
 	if gitHubOrganizationRole.Role != "admin" {
 		errMsg := fmt.Sprintf("Authenticated user (via GITHUB_TOKEN) doesn't have adequate permissions.\n Make sure they are an `Owner` in %s.\n Current role: %s", githubOwner, gitHubOrganizationRole.Role)
-		return errors.New(errMsg)
+		return fmt.Errorf(errMsg)
 	}
 
 	return nil
 
+}
+
+func printGitHubAuthToken(userCode, verificationUri string) string {
+	var gitHubTokenReport bytes.Buffer
+	gitHubTokenReport.WriteString(strings.Repeat("-", 69))
+	gitHubTokenReport.WriteString("\nNo GITHUB_TOKEN env variable found!\nUse the code below to get a temporary GitHub Access Token\nThis token will be used by Kubefirst to create your environment\n")
+	gitHubTokenReport.WriteString("\n\nA GitHub Access Token is required to provision GitHub repositories and run workflows in GitHub.\n")
+	gitHubTokenReport.WriteString(strings.Repeat("-", 69) + "\n")
+	gitHubTokenReport.WriteString("1. Copy this code: 📋 " + userCode + " 📋\n\n")
+	gitHubTokenReport.WriteString(fmt.Sprintf("2. When ready, press <enter> to open the page at %s\n\n", verificationUri))
+	gitHubTokenReport.WriteString("3. Authorize the organization you'll be using Kubefirst with - this may also be your personal account")
+
+	return gitHubTokenReport.String()
 }

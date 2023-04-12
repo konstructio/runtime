@@ -1,9 +1,16 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package civo
 
 import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -22,6 +29,7 @@ var backupResolver = &net.Resolver{
 	},
 }
 
+// TestDomainLiveness checks Civo DNS for the liveness test record
 func TestDomainLiveness(dryRun bool, domainName, domainId, region string) bool {
 	if dryRun {
 		log.Info().Msg("[#99] Dry-run mode, TestDomainZoneLiveness skipped.")
@@ -97,6 +105,29 @@ func TestDomainLiveness(dryRun bool, domainName, domainId, region string) bool {
 		}
 	}
 	return true
+}
+
+// GetDomainApexContent determines whether or not a target domain features
+// a host responding at zone apex
+func GetDomainApexContent(domainName string) bool {
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+
+	exists := false
+	for _, proto := range []string{"http", "https"} {
+		fqdn := fmt.Sprintf("%s://%s", proto, domainName)
+		_, err := client.Get(fqdn)
+		if err != nil {
+			log.Warn().Msgf("domain %s has no apex content", fqdn)
+		} else {
+			log.Info().Msgf("domain %s has apex content", fqdn)
+			exists = true
+		}
+	}
+
+	return exists
 }
 
 // GetDNSInfo try to reach the provided domain

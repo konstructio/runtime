@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package k3d
 
 import (
@@ -8,15 +14,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
+
+	"github.com/kubefirst/kubefirst/pkg"
 )
 
 // DeleteK3dCluster delete a k3d cluster
 func DeleteK3dCluster(clusterName string, k1Dir string, k3dClient string) error {
 
 	log.Info().Msgf("deleting k3d cluster %s", clusterName)
-	_, _, err := helpers.ExecShellReturnStrings(k3dClient, "cluster", "delete", clusterName)
+	_, _, err := pkg.ExecShellReturnStrings(k3dClient, "cluster", "delete", clusterName)
 	if err != nil {
 		log.Info().Msg("error deleting k3d cluster")
 		return err
@@ -54,7 +61,7 @@ func resolveMinioLocal(path string) filepath.WalkFunc {
 		}
 
 		// var matched bool
-		matched, err := filepath.Match("*", fi.Name())
+		matched, _ := filepath.Match("*", fi.Name())
 		if matched {
 			read, err := ioutil.ReadFile(path)
 			if err != nil {

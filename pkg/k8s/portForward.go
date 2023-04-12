@@ -1,8 +1,13 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package k8s
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -293,11 +298,11 @@ func OpenAtlantisPortForward(kubeconfigPath, kubectlClientPath string) error {
 
 	output, err := PortForward(false, "svc/atlantis", kubeconfigPath, kubectlClientPath, "atlantis", "4141:80")
 	if err != nil {
-		return errors.New("error opening Atlantis port forward")
+		return fmt.Errorf("error opening Atlantis port forward")
 	}
 	stderr := fmt.Sprint(output.Stderr)
 	if len(stderr) > 0 {
-		return errors.New(stderr)
+		return fmt.Errorf(stderr)
 	}
 
 	return nil

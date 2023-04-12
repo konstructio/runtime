@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package k8s
 
 import (
@@ -27,7 +33,6 @@ import (
 //		wg.Done()
 //	}()
 func OpenPortForwardPodWrapper(clientset *kubernetes.Clientset, restConfig *rest.Config, podName, namespace string, podPort int, podLocalPort int, stopChannel chan struct{}) {
-
 	// readyCh communicate when the port forward is ready to get traffic
 	readyCh := make(chan struct{})
 
@@ -64,12 +69,11 @@ func OpenPortForwardPodWrapper(clientset *kubernetes.Clientset, restConfig *rest
 		log.Info().Msg("port forwarding is ready to get traffic")
 	}
 
-	log.Info().Msgf("Pod %q at namespace %q has port-forward accepting local connections at port %d\n", podName, namespace, podLocalPort)
+	log.Info().Msgf("pod %q at namespace %q has port-forward accepting local connections at port %d\n", podName, namespace, podLocalPort)
 
 }
 
 func OpenPortForwardServiceWrapper(kubeconfigPath, kubeconfigClientPath, namespace, serviceName string, servicePort int, serviceLocalPort int, stopChannel chan struct{}) {
-
 	kubeconfig, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		log.Error().Err(err).Msg("")
@@ -114,6 +118,5 @@ func OpenPortForwardServiceWrapper(kubeconfigPath, kubeconfigClientPath, namespa
 		log.Info().Msg("port forwarding is ready to get traffic")
 	}
 
-	log.Info().Msgf("Service %q at namespace %q has port-forward accepting local connections at port %d\n", serviceName, namespace, serviceLocalPort)
-	return
+	log.Info().Msgf("service %q at namespace %q has port-forward accepting local connections at port %d\n", serviceName, namespace, serviceLocalPort)
 }

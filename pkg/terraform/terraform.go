@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package terraform
 
 import (
@@ -8,8 +14,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/configs"
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/configs"
+	"github.com/kubefirst/kubefirst/pkg"
 )
 
 func initActionAutoApprove(dryRun bool, tfAction, tfEntrypoint string, tfEnvs map[string]string) error {
@@ -27,13 +33,13 @@ func initActionAutoApprove(dryRun bool, tfAction, tfEntrypoint string, tfEnvs ma
 		log.Info().Msg("error: could not change to directory " + tfEntrypoint)
 		return err
 	}
-	err = helpers.ExecShellWithVars(tfEnvs, config.TerraformClientPath, "init", "-force-copy")
+	err = pkg.ExecShellWithVars(tfEnvs, config.TerraformClientPath, "init", "-force-copy")
 	if err != nil {
 		log.Printf("error: terraform init for %s failed: %s", tfEntrypoint, err)
 		return err
 	}
 
-	err = helpers.ExecShellWithVars(tfEnvs, config.TerraformClientPath, tfAction, "-auto-approve")
+	err = pkg.ExecShellWithVars(tfEnvs, config.TerraformClientPath, tfAction, "-auto-approve")
 	if err != nil {
 		log.Printf("error: terraform %s -auto-approve for %s failed %s", tfAction, tfEntrypoint, err)
 		return err

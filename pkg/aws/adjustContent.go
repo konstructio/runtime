@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package aws
 
 import (
@@ -8,7 +14,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/kubefirst/runtime/pkg/common"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 
 	cp "github.com/otiai10/copy"
@@ -18,7 +24,7 @@ import (
 func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string) error {
 
 	//* clean up all other platforms
-	for _, platform := range common.SupportedPlatforms {
+	for _, platform := range pkg.SupportedPlatforms {
 		if platform != fmt.Sprintf("%s-%s", CloudProvider, gitProvider) {
 			os.RemoveAll(gitopsRepoDir + "/" + platform)
 		}
@@ -115,7 +121,6 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		log.Info().Msgf("Error populating metaphor content with %s. error: %s", metaphorContent, err.Error())
 		return err
 	}
-	os.RemoveAll(fmt.Sprintf("%s/metaphor", gitopsRepoDir))
 
 	//* copy $HOME/.k1/gitops/ci/.argo/* $HOME/.k1/metaphor/.argo
 	argoWorkflowsFolderContent := fmt.Sprintf("%s/gitops/ci/.argo", k1Dir)
@@ -125,6 +130,8 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		log.Info().Msgf("error populating metaphor repository with %s: %s", argoWorkflowsFolderContent, err)
 		return err
 	}
+	os.RemoveAll(fmt.Sprintf("%s/ci", gitopsRepoDir))
+	os.RemoveAll(fmt.Sprintf("%s/metaphor", gitopsRepoDir))
 
 	//  add
 	// commit
@@ -144,7 +151,7 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		return fmt.Errorf("error removing previous git ref: %s", err)
 	}
 	// create remote
-	_, err = metaphorRepo.CreateRemote(&config.RemoteConfig{
+	_, _ = metaphorRepo.CreateRemote(&config.RemoteConfig{
 		Name: "origin",
 		URLs: []string{destinationMetaphorRepoGitURL},
 	})

@@ -1,8 +1,17 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package ssl
 
 import (
 	"crypto/tls"
+	"fmt"
 	"testing"
+
+	"github.com/kubefirst/runtime/pkg/k3d"
 )
 
 // todo: use URL constants for app addresses
@@ -19,35 +28,35 @@ func TestArgoCertificateIntegration(t *testing.T) {
 	}{
 		{
 			name:    "argo",
-			address: "argo.localdev.me",
+			address: fmt.Sprintf("argo.%s", k3d.DomainName),
 		},
 		{
 			name:    "argocd",
-			address: "argocd.localdev.me",
+			address: fmt.Sprintf("argocd.%s", k3d.DomainName),
 		},
 		{
 			name:    "atlantis",
-			address: "atlantis.localdev.me",
+			address: fmt.Sprintf("atlantis.%s", k3d.DomainName),
 		},
 		{
 			name:    "chartmuseum",
-			address: "chartmuseum.localdev.me",
+			address: fmt.Sprintf("chartmuseum.%s", k3d.DomainName),
 		},
 		{
 			name:    "vault",
-			address: "vault.localdev.me",
+			address: fmt.Sprintf("vault.%s", k3d.DomainName),
 		},
 		{
 			name:    "minio",
-			address: "minio.localdev.me",
+			address: fmt.Sprintf("minio.%s", k3d.DomainName),
 		},
 		{
 			name:    "minio-console",
-			address: "minio-console.localdev.me",
+			address: fmt.Sprintf("minio-console.%s", k3d.DomainName),
 		},
 		{
 			name:    "kubefirst",
-			address: "kubefirst.localdev.me",
+			address: fmt.Sprintf("kubefirst.%s", k3d.DomainName),
 		},
 	}
 

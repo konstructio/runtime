@@ -1,13 +1,18 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package k3d
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/rs/zerolog/log"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -24,7 +29,7 @@ func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error
 		}
 	}
 
-	for i, app := range helpers.GetCertificateAppList() {
+	for i, app := range pkg.GetCertificateAppList() {
 
 		namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: app.Namespace}}
 		_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), app.Namespace, metav1.GetOptions{})
@@ -32,7 +37,7 @@ func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error
 			_, err = clientset.CoreV1().Namespaces().Create(context.TODO(), namespace, metav1.CreateOptions{})
 			if err != nil {
 				log.Error().Err(err).Msg("")
-				return errors.New("error creating namespace")
+				return fmt.Errorf("error creating namespace")
 			}
 			log.Info().Msgf("%d, %s", i, app.Namespace)
 			log.Info().Msgf("namespace created: %s", app.Namespace)
@@ -41,19 +46,19 @@ func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error
 		}
 
 		//* generate certificate
-		fullAppAddress := app.AppName + "." + DomainName                      // example: app-name.localdev.me
+		fullAppAddress := app.AppName + "." + DomainName                      // example: app-name.kubefirst.dev
 		certFileName := config.MkCertPemDir + "/" + app.AppName + "-cert.pem" // example: app-name-cert.pem
 		keyFileName := config.MkCertPemDir + "/" + app.AppName + "-key.pem"   // example: app-name-key.pem
 
 		//* generate the mkcert
 		log.Info().Msgf("generating certificate %s.%s on %s", app.AppName, DomainName, config.MkCertClient)
-		_, _, err = helpers.ExecShellReturnStrings(
+		_, _, err = pkg.ExecShellReturnStrings(
 			config.MkCertClient,
 			"-cert-file",
 			certFileName,
 			"-key-file",
 			keyFileName,
-			helpers.LocalDNS,
+			DomainName,
 			fullAppAddress,
 		)
 		if err != nil {

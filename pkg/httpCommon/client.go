@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package httpCommon
 
 import (
@@ -18,6 +24,14 @@ func CustomHttpClient(allowInsecure bool) *http.Client {
 	return &httpClient
 }
 
-type HTTPDoer interface {
-	Do(req *http.Request) (*http.Response, error)
+// ResolveAddress returns whether or not an address is resolvable
+func ResolveAddress(address string) error {
+	httpClient := &http.Client{Timeout: 10 * time.Second}
+
+	_, err := httpClient.Get(address)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

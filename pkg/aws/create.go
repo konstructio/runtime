@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package aws
 
 import (
@@ -59,7 +65,7 @@ func PrepareGitRepositories(
 		return err
 	}
 
-	metaphorRepo, err := git.PlainOpen(metaphorDir)
+	metaphorRepo, _ := git.PlainOpen(metaphorDir)
 	//* commit initial gitops-template content
 	err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
 	if err != nil {
@@ -78,29 +84,6 @@ func PrepareGitRepositories(
 	if err != nil {
 		return err
 	}
-
-	return nil
-}
-
-func CheckForIamRoles(roles []string) error {
-	awsClient := &Conf
-
-	msg := "\n\nerror: the following role(s) exist and will create a collision\nwith the current terraform configuration.\n\n\t"
-
-	// var rolesExist []string
-
-	for _, roleName := range roles {
-
-		role, err := awsClient.GetIamRole(roleName)
-		if err != nil {
-			return err
-		}
-
-		// rolesExist = append(rolesExist, *role.Role.RoleName)
-		msg = msg + *role.Role.Arn + "\n\t"
-	}
-	msg = msg + "\nrun `kubefirst reset` with a unique `--cluster-name` to avoid collision or\n"
-	msg = msg + "\n`kubefirst aws rm-roles --confirm`\nto remove them from AWS\n\n"
 
 	return nil
 }

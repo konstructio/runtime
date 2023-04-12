@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package aws
 
 import (
@@ -6,7 +12,7 @@ import (
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,12 +23,11 @@ const (
 	KubectlClientVersion   = "v1.25.7"
 	LocalhostOS            = runtime.GOOS
 	LocalhostArch          = runtime.GOARCH
-	RegionUsEast1          = "us-east-1"
 	TerraformClientVersion = "1.3.8"
 	ArgocdHelmChartVersion = "4.10.5"
 
-	ArgocdPortForwardURL = helpers.ArgocdPortForwardURL
-	VaultPortForwardURL  = helpers.VaultPortForwardURL
+	ArgocdPortForwardURL = pkg.ArgocdPortForwardURL
+	VaultPortForwardURL  = pkg.VaultPortForwardURL
 )
 
 type AwsConfig struct {
@@ -47,7 +52,7 @@ type AwsConfig struct {
 	ToolsDir                        string
 }
 
-// todo move shared values to helpers. or break into common shared configs across git
+// todo move shared values to pkg. or break into common shared configs across git
 // GetConfig - load default values from kubefirst installer
 func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string) *AwsConfig {
 	config := AwsConfig{}

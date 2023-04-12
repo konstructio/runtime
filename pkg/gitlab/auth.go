@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package gitlab
 
 import (
@@ -6,7 +12,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/rs/zerolog/log"
 )
 
@@ -56,6 +62,9 @@ func VerifyTokenPermissions(gitlabToken string) error {
 	// Get token scopes
 	var responseJson interface{}
 	err = json.Unmarshal(body, &responseJson)
+	if err != nil {
+		return err
+	}
 	responseJsonMap := responseJson.(map[string]interface{})
 	scopes := responseJsonMap["scopes"].([]interface{})
 	scopesSlice := make([]string, 0)
@@ -64,20 +73,20 @@ func VerifyTokenPermissions(gitlabToken string) error {
 	}
 
 	// api allows all access so we won't need to check the rest
-	if helpers.FindStringInSlice(scopesSlice, "api") {
+	if pkg.FindStringInSlice(scopesSlice, "api") {
 		return nil
 	}
 
 	// Compare token scopes to required scopes
 	missingScopes := make([]string, 0)
 	for _, ts := range requiredScopes {
-		if !helpers.FindStringInSlice(scopesSlice, ts) {
+		if !pkg.FindStringInSlice(scopesSlice, ts) {
 			missingScopes = append(missingScopes, ts)
 		}
 	}
 
 	// Report on any missing scopes
-	if !helpers.FindStringInSlice(scopesSlice, "api") && len(missingScopes) != 0 {
+	if !pkg.FindStringInSlice(scopesSlice, "api") && len(missingScopes) != 0 {
 		return fmt.Errorf("the supplied github token is missing authorization scopes - please add: %v", missingScopes)
 	}
 

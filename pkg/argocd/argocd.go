@@ -1,10 +1,15 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package argocd
 
 import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,9 +17,8 @@ import (
 	"strings"
 
 	v1alpha1ArgocdApplication "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/kubefirst/runtime/pkg/argocdModel"
-	"github.com/kubefirst/runtime/pkg/helpers"
-	"github.com/kubefirst/runtime/pkg/httpCommon"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -67,7 +71,7 @@ type TLSConfig struct {
 }
 
 // Sync request ArgoCD to manual sync an application.
-func DeleteApplication(httpClient httpCommon.HTTPDoer, applicationName, argoCDToken, cascade string) (httpCodeResponse int, syncStatus string, Error error) {
+func DeleteApplication(httpClient pkg.HTTPDoer, applicationName, argoCDToken, cascade string) (httpCodeResponse int, syncStatus string, Error error) {
 
 	params := url.Values{}
 	params.Add("cascade", cascade)
@@ -118,7 +122,7 @@ func GetArgoCDApplication(token string, applicationName string) (argocdModel.V1a
 	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := http.Client{Transport: customTransport}
 
-	url := helpers.ArgoCDLocalBaseURL + "/applications/" + applicationName
+	url := pkg.ArgoCDLocalBaseURL + "/applications/" + applicationName
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Error().Err(err).Msg("")
@@ -154,7 +158,7 @@ func GetArgoEndpoint() string {
 	if viper.GetString("argocd.local.service") != "" {
 		argoCDLocalEndpoint = viper.GetString("argocd.local.service")
 	} else {
-		argoCDLocalEndpoint = helpers.ArgocdPortForwardURL
+		argoCDLocalEndpoint = pkg.ArgocdPortForwardURL
 	}
 	return argoCDLocalEndpoint
 }
@@ -167,7 +171,7 @@ func GetArgoCDToken(username string, password string) (string, error) {
 	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := http.Client{Transport: customTransport}
 
-	url := helpers.ArgoCDLocalBaseURL + "/session"
+	url := pkg.ArgoCDLocalBaseURL + "/session"
 
 	argoCDConfig := argocdModel.SessionSessionCreateRequest{
 		Username: username,
@@ -190,7 +194,7 @@ func GetArgoCDToken(username string, password string) (string, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return "", errors.New("unable to retrieve argocd token")
+		return "", fmt.Errorf("unable to retrieve argocd token")
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -205,7 +209,7 @@ func GetArgoCDToken(username string, password string) (string, error) {
 	}
 	token := fmt.Sprintf("%v", jsonReturn["token"])
 	if len(token) == 0 {
-		return "", errors.New("unable to retrieve argocd token, make sure provided credentials are valid")
+		return "", fmt.Errorf("unable to retrieve argocd token, make sure provided credentials are valid")
 	}
 
 	return token, nil
@@ -238,7 +242,7 @@ func GetArgocdTokenV2(httpClient *http.Client, argocdBaseURL string, username st
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return "", errors.New("unable to retrieve argocd token")
+		return "", fmt.Errorf("unable to retrieve argocd token")
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -253,7 +257,7 @@ func GetArgocdTokenV2(httpClient *http.Client, argocdBaseURL string, username st
 	}
 	token := fmt.Sprintf("%v", jsonReturn["token"])
 	if len(token) == 0 {
-		return "", errors.New("unable to retrieve argocd token, make sure provided credentials are valid")
+		return "", fmt.Errorf("unable to retrieve argocd token, make sure provided credentials are valid")
 	}
 
 	return token, nil

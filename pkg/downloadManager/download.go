@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package downloadManager
 
 import (
@@ -99,7 +105,7 @@ func Unzip(zipFilepath string, unzipDirectory string) error {
 		log.Info().Msgf("unzipping file %s", filePath)
 
 		if !strings.HasPrefix(filePath, filepath.Clean(dst)+string(os.PathSeparator)) {
-			return errors.New("invalid file path")
+			return fmt.Errorf("invalid file path")
 		}
 		if f.FileInfo().IsDir() {
 			log.Info().Msg("creating directory...")

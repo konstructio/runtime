@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package civo
 
 import (
@@ -5,8 +11,8 @@ import (
 	"os"
 	"sync"
 
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/kubefirst/runtime/pkg/downloadManager"
-	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,7 +21,7 @@ func DownloadTools(kubectlClientPath, kubectlClientVersion, localOs, localArchit
 	log.Info().Msg("starting downloads...")
 
 	// create folder if it doesn't exist
-	err := helpers.CreateDirIfNotExist(toolsDirPath)
+	err := pkg.CreateDirIfNotExist(toolsDirPath)
 	if err != nil {
 		return err
 	}
@@ -50,7 +56,7 @@ func DownloadTools(kubectlClientPath, kubectlClientVersion, localOs, localArchit
 
 		log.Info().Msgf("going to print the kubeconfig env in runtime: %s", os.Getenv("KUBECONFIG"))
 
-		kubectlStdOut, kubectlStdErr, err := helpers.ExecShellReturnStrings(kubectlClientPath, "version", "--client=true", "-oyaml")
+		kubectlStdOut, kubectlStdErr, err := pkg.ExecShellReturnStrings(kubectlClientPath, "version", "--client=true", "-oyaml")
 		log.Info().Msgf("-> kubectl version:\n\t%s\n\t%s\n", kubectlStdOut, kubectlStdErr)
 		if err != nil {
 			errorChannel <- fmt.Errorf("failed to call kubectlVersionCmd.Run(): %v", err)

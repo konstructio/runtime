@@ -1,4 +1,10 @@
-package civo
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
+package digitalocean
 
 import (
 	"fmt"
@@ -8,17 +14,17 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/kubefirst/runtime/pkg/common"
+	"github.com/kubefirst/kubefirst/pkg"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 
 	cp "github.com/otiai10/copy"
 	"github.com/rs/zerolog/log"
 )
 
-func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string) error {
+func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string, apexContentExists bool) error {
 
 	//* clean up all other platforms
-	for _, platform := range common.SupportedPlatforms {
+	for _, platform := range pkg.SupportedPlatforms {
 		if platform != fmt.Sprintf("%s-%s", CloudProvider, gitProvider) {
 			os.RemoveAll(gitopsRepoDir + "/" + platform)
 		}
@@ -49,6 +55,16 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 
 	//* copy $HOME/.k1/gitops/cluster-types/${clusterType}/* $HOME/.k1/gitops/registry/${clusterName}
 	clusterContent := fmt.Sprintf("%s/cluster-types/%s", gitopsRepoDir, clusterType)
+
+	// Remove apex content if apex content already exists
+	if apexContentExists {
+		log.Warn().Msgf("removing nginx-apex since apexContentExists was %v", apexContentExists)
+		os.Remove(fmt.Sprintf("%s/nginx-apex.yaml", clusterContent))
+		os.RemoveAll(fmt.Sprintf("%s/nginx-apex", clusterContent))
+	} else {
+		log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
+	}
+
 	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
 	if err != nil {
 		log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
@@ -174,6 +190,7 @@ func PrepareGitRepositories(
 	gitopsTokens *GitOpsDirectoryValues,
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
+	apexContentExists bool,
 ) error {
 
 	//* clone the gitops-template repo
@@ -184,7 +201,7 @@ func PrepareGitRepositories(
 	log.Info().Msg("gitops repository clone complete")
 
 	//* adjust the content for the gitops repo
-	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir)
+	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, apexContentExists)
 	if err != nil {
 		return err
 	}

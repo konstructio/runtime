@@ -1,20 +1,26 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package k3d
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/kubefirst/runtime/pkg/gitClient"
-	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/rs/zerolog/log"
+
+	"github.com/kubefirst/kubefirst/pkg"
+	"github.com/kubefirst/runtime/pkg/gitClient"
 )
 
 const (
 	// https://hub.docker.com/r/rancher/k3s/tags?page=1&name=v1.23
-	k3dImageTag string = "v1.23.17-k3s1"
+	k3dImageTag string = "v1.26.3-k3s1"
 )
 
 // ClusterCreate create an k3d cluster
@@ -28,7 +34,7 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 			log.Info().Msgf("%s directory already exists, continuing", volumeDir)
 		}
 	}
-	_, _, err := helpers.ExecShellReturnStrings(k3dClient, "cluster", "create",
+	_, _, err := pkg.ExecShellReturnStrings(k3dClient, "cluster", "create",
 		clusterName,
 		"--image", fmt.Sprintf("rancher/k3s:%s", k3dImageTag),
 		"--agents", "3",
@@ -36,7 +42,7 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 		"--registry-create", "k3d-"+clusterName+"-registry",
 		"--k3s-arg", `--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@agent:*`,
 		"--k3s-arg", `--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@agent:*`,
-		"--volume", volumeDir+":/tmp/minio-storage",
+		"--volume", volumeDir+":/var/lib/rancher/k3s/storage@all",
 		"--port", "443:443@loadbalancer")
 
 	if err != nil {
@@ -46,7 +52,7 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 
 	time.Sleep(20 * time.Second)
 
-	kConfigString, _, err := helpers.ExecShellReturnStrings(k3dClient, "kubeconfig", "get", clusterName)
+	kConfigString, _, err := pkg.ExecShellReturnStrings(k3dClient, "kubeconfig", "get", clusterName)
 	if err != nil {
 		return err
 	}
@@ -54,7 +60,7 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 	err = os.WriteFile(kubeconfig, []byte(kConfigString), 0644)
 	if err != nil {
 		log.Error().Err(err).Msg("error updating config")
-		return errors.New("error updating config")
+		return fmt.Errorf("error updating config")
 	}
 
 	return nil
@@ -114,7 +120,7 @@ func PrepareGitRepositories(
 		return err
 	}
 
-	metaphorRepo, err := git.PlainOpen(metaphorDir)
+	metaphorRepo, _ := git.PlainOpen(metaphorDir)
 	//* commit initial gitops-template content
 	err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
 	if err != nil {

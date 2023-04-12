@@ -1,19 +1,24 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package services
 
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 
-	"github.com/kubefirst/runtime/pkg/helpers"
-	"github.com/kubefirst/runtime/pkg/httpCommon"
+	"github.com/kubefirst/kubefirst/pkg"
 )
 
 type GitHubService struct {
-	httpClient httpCommon.HTTPDoer
+	httpClient pkg.HTTPDoer
 }
 
 // gitHubAccessCode host OAuth data
@@ -24,7 +29,7 @@ type gitHubAccessCode struct {
 }
 
 // NewGitHubService instantiate a new GitHub service
-func NewGitHubService(httpClient httpCommon.HTTPDoer) *GitHubService {
+func NewGitHubService(httpClient pkg.HTTPDoer) *GitHubService {
 	return &GitHubService{
 		httpClient: httpClient,
 	}
@@ -36,7 +41,7 @@ func (service GitHubService) CheckUserCodeConfirmation(deviceCode string) (strin
 	gitHubAccessTokenURL := "https://github.com/login/oauth/access_token"
 
 	jsonData, err := json.Marshal(map[string]string{
-		"client_id":   helpers.GitHubOAuthClientId,
+		"client_id":   pkg.GitHubOAuthClientId,
 		"device_code": deviceCode,
 		"grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
 	})
@@ -49,8 +54,8 @@ func (service GitHubService) CheckUserCodeConfirmation(deviceCode string) (strin
 		return "", nil
 	}
 
-	req.Header.Add("Content-Type", helpers.JSONContentType)
-	req.Header.Add("Accept", helpers.JSONContentType)
+	req.Header.Add("Content-Type", pkg.JSONContentType)
+	req.Header.Add("Accept", pkg.JSONContentType)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -59,7 +64,7 @@ func (service GitHubService) CheckUserCodeConfirmation(deviceCode string) (strin
 
 	if res.StatusCode != http.StatusOK {
 		log.Printf("waiting user to authorize at GitHub page..., current status code = %d", res.StatusCode)
-		return "", errors.New("unable to issue a GitHub token")
+		return "", fmt.Errorf("unable to issue a GitHub token")
 	}
 
 	defer res.Body.Close()

@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package aws
 
 import (
@@ -31,9 +37,7 @@ func (conf *AWSConfiguration) GetServiceQuotas(services []string) (map[string][]
 			if err != nil {
 				return map[string][]QuotaDetailResponse{}, err
 			}
-			for _, q := range resp.Quotas {
-				scopedQuotas = append(scopedQuotas, q)
-			}
+			scopedQuotas = append(scopedQuotas, resp.Quotas...)
 			req.NextToken = resp.NextToken
 			if req.NextToken == nil {
 				break

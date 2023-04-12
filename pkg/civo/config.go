@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2023, Kubefirst
+
+This program is licensed under MIT.
+See the LICENSE file for more details.
+*/
 package civo
 
 import (
@@ -7,7 +13,7 @@ import (
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/kubefirst/runtime/pkg/helpers"
+	"github.com/kubefirst/kubefirst/pkg"
 )
 
 const (
@@ -20,8 +26,8 @@ const (
 	TerraformClientVersion = "1.3.8"
 	ArgocdHelmChartVersion = "4.10.5"
 
-	ArgocdPortForwardURL = helpers.ArgocdPortForwardURL
-	VaultPortForwardURL  = helpers.VaultPortForwardURL
+	ArgocdPortForwardURL = pkg.ArgocdPortForwardURL
+	VaultPortForwardURL  = pkg.VaultPortForwardURL
 )
 
 type CivoConfig struct {
@@ -56,7 +62,7 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 
 	// todo do we want these from envs?
 	if err := env.Parse(&config); err != nil {
-		log.Panic(fmt.Sprintf("error reading environment variables %s", err.Error()))
+		log.Panicf("error reading environment variables %s", err.Error())
 	}
 
 	homeDir, err := os.UserHomeDir()
