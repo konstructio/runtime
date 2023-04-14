@@ -7,17 +7,10 @@ See the LICENSE file for more details.
 package segment
 
 import (
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/segmentio/analytics-go"
 )
 
-var Client SegmentClient = SegmentClient{
-	Client: newSegmentClient(),
-}
-
-func newSegmentClient() analytics.Client {
-
-	client := analytics.New(pkg.SegmentIOWriteKey)
-
-	return client
+// SetupClient associates the Segment client with an instance of the local client
+func (c *SegmentClient) SetupClient() {
+	c.Client = analytics.New(SegmentIOWriteKey)
 }
