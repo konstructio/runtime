@@ -31,5 +31,4 @@ type SegmentClient struct {
 	GitProvider       string
 	KubefirstTeam     string
 	KubefirstTeamInfo string
-	MachineID         string
 }

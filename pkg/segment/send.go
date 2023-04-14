@@ -9,6 +9,7 @@ package segment
 import (
 	"fmt"
 
+	"github.com/denisbrodbeck/machineid"
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/segmentio/analytics-go"
 )
@@ -21,7 +22,7 @@ func (c *SegmentClient) SendCountMetric(
 	if err != nil {
 		return "error stripping domain name from value"
 	}
-
+	machineID, _ := machineid.ID()
 	if metricName == MetricInitStarted {
 		err := c.Client.Enqueue(analytics.Identify{
 			UserId: strippedDomainName,
@@ -43,7 +44,7 @@ func (c *SegmentClient) SendCountMetric(
 			Set("git_provider", c.GitProvider).
 			Set("kubefirst_team", c.KubefirstTeam).
 			Set("kubefirst_team_info", c.KubefirstTeamInfo).
-			Set("machine_id", c.MachineID),
+			Set("machine_id", machineID),
 	})
 	if err != nil {
 		return fmt.Sprintf("error sending track to segment %s", err.Error())
