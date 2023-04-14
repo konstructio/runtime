@@ -13,23 +13,16 @@ import (
 	"github.com/segmentio/analytics-go"
 )
 
+// SendCountMetric
 func (c *SegmentClient) SendCountMetric(
-	cliVersion string,
-	cloudProvider string,
-	clusterId string,
-	clusterType string,
-	domainName string,
-	gitProvider string,
-	kubefirstTeam string,
 	metricName string,
 ) string {
-
-	strippedDomainName, err := pkg.RemoveSubdomainV2(domainName)
+	strippedDomainName, err := pkg.RemoveSubdomainV2(c.DomainName)
 	if err != nil {
 		return "error stripping domain name from value"
 	}
 
-	if metricName == pkg.MetricInitStarted {
+	if metricName == MetricInitStarted {
 		err := c.Client.Enqueue(analytics.Identify{
 			UserId: strippedDomainName,
 			Type:   "identify",
@@ -38,18 +31,19 @@ func (c *SegmentClient) SendCountMetric(
 			return fmt.Sprintf("error sending identify to segment %s", err.Error())
 		}
 	}
-
 	err = c.Client.Enqueue(analytics.Track{
 		UserId: strippedDomainName,
 		Event:  metricName,
 		Properties: analytics.NewProperties().
-			Set("cli_version", cliVersion).
-			Set("cloud_provider", cloudProvider).
-			Set("cluster_id", clusterId).
-			Set("cluster_type", clusterType).
+			Set("cli_version", c.CliVersion).
+			Set("cloud_provider", c.CloudProvider).
+			Set("cluster_id", c.ClusterID).
+			Set("cluster_type", c.ClusterType).
 			Set("domain", strippedDomainName).
-			Set("git_provider", gitProvider).
-			Set("kubefirst_team", kubefirstTeam),
+			Set("git_provider", c.GitProvider).
+			Set("kubefirst_team", c.KubefirstTeam).
+			Set("kubefirst_team_info", c.KubefirstTeamInfo).
+			Set("machine_id", c.MachineID),
 	})
 	if err != nil {
 		return fmt.Sprintf("error sending track to segment %s", err.Error())
