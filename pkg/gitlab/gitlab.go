@@ -268,6 +268,45 @@ func (gl *GitLabWrapper) DeleteContainerRegistryRepository(projectName string, r
 
 // Token & Key Management
 
+// CreateGroupDeployToken creates a deploy token for a group
+// If no groupID (0 by default) argument is provided, the parent group ID is used
+func (gl *GitLabWrapper) CreateGroupDeployToken(groupID int, p *DeployTokenCreateParameters) (string, error) {
+	// Check to see if the token already exists
+	allTokens, err := gl.ListGroupDeployTokens(gl.ParentGroupID)
+	if err != nil {
+		return "", err
+	}
+
+	var exists bool = false
+	for _, token := range allTokens {
+		if token.Name == p.Name {
+			exists = true
+		}
+	}
+
+	var gid int = gl.ParentGroupID
+	if groupID != 0 {
+		gid = groupID
+	}
+
+	if !exists {
+		token, _, err := gl.Client.DeployTokens.CreateGroupDeployToken(gid, &gitlab.CreateGroupDeployTokenOptions{
+			Name:     &p.Name,
+			Username: &p.Username,
+			Scopes:   &p.Scopes,
+		})
+		if err != nil {
+			return "", err
+		}
+		log.Info().Msgf("created group deploy token %s", token.Name)
+
+		return token.Token, nil
+	} else {
+		log.Info().Msgf("group deploy token %s already exists - skipping", p.Name)
+		return "", nil
+	}
+}
+
 // CreateProjectDeployToken
 func (gl *GitLabWrapper) CreateProjectDeployToken(projectName string, p *DeployTokenCreateParameters) (string, error) {
 	projectID, err := gl.GetProjectID(projectName)
@@ -297,13 +336,33 @@ func (gl *GitLabWrapper) CreateProjectDeployToken(projectName string, p *DeployT
 		if err != nil {
 			return "", err
 		}
-		log.Info().Msgf("created deploy token %s", token.Name)
+		log.Info().Msgf("created project deploy token %s", token.Name)
 
 		return token.Token, nil
 	} else {
-		log.Info().Msgf("deploy token %s already exists - skipping", p.Name)
+		log.Info().Msgf("project deploy token %s already exists - skipping", p.Name)
 		return "", nil
 	}
+}
+
+// ListGroupDeployTokens
+func (gl *GitLabWrapper) ListGroupDeployTokens(groupID int) ([]gitlab.DeployToken, error) {
+	container := make([]gitlab.DeployToken, 0)
+	for nextPage := 1; nextPage > 0; {
+		tokens, resp, err := gl.Client.DeployTokens.ListGroupDeployTokens(groupID, &gitlab.ListGroupDeployTokensOptions{
+			Page:    nextPage,
+			PerPage: 10,
+		})
+		if err != nil {
+			return []gitlab.DeployToken{}, err
+		}
+		for _, token := range tokens {
+			container = append(container, *token)
+		}
+		nextPage = resp.NextPage
+	}
+
+	return container, nil
 }
 
 // ListProjectDeployTokens
