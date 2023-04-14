@@ -17,6 +17,7 @@ import (
 // SendCountMetric
 func (c *SegmentClient) SendCountMetric(
 	metricName string,
+	errorMessage string,
 ) string {
 	strippedDomainName, err := pkg.RemoveSubdomainV2(c.DomainName)
 	if err != nil {
@@ -44,7 +45,8 @@ func (c *SegmentClient) SendCountMetric(
 			Set("git_provider", c.GitProvider).
 			Set("kubefirst_team", c.KubefirstTeam).
 			Set("kubefirst_team_info", c.KubefirstTeamInfo).
-			Set("machine_id", machineID),
+			Set("machine_id", machineID).
+			Set("error", errorMessage),
 	})
 	if err != nil {
 		return fmt.Sprintf("error sending track to segment %s", err.Error())
