@@ -21,7 +21,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string, createApexContent bool) error {
+func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string, apexContentExists bool) error {
 
 	//* clean up all other platforms
 	for _, platform := range pkg.SupportedPlatforms {
@@ -57,9 +57,12 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 	clusterContent := fmt.Sprintf("%s/cluster-types/%s", gitopsRepoDir, clusterType)
 
 	// Remove apex content if apex content already exists
-	if !createApexContent {
+	if apexContentExists {
+		log.Warn().Msgf("removing nginx-apex since apexContentExists was %v", apexContentExists)
 		os.Remove(fmt.Sprintf("%s/nginx-apex.yaml", clusterContent))
 		os.RemoveAll(fmt.Sprintf("%s/nginx-apex", clusterContent))
+	} else {
+		log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
 	}
 
 	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
@@ -188,7 +191,7 @@ func PrepareGitRepositories(
 	gitopsTokens *GitOpsDirectoryValues,
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
-	createApexContent bool,
+	apexContentExists bool,
 ) error {
 
 	//* clone the gitops-template repo
@@ -199,7 +202,7 @@ func PrepareGitRepositories(
 	log.Info().Msg("gitops repository clone complete")
 
 	//* adjust the content for the gitops repo
-	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, createApexContent)
+	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, apexContentExists)
 	if err != nil {
 		return err
 	}
