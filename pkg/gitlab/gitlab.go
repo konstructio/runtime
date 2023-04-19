@@ -270,6 +270,7 @@ func (gl *GitLabWrapper) DeleteContainerRegistryRepository(projectName string, r
 
 // CreateGroupDeployToken creates a deploy token for a group
 // If no groupID (0 by default) argument is provided, the parent group ID is used
+// If a group deploy token already exists, it will be deleted and recreated
 func (gl *GitLabWrapper) CreateGroupDeployToken(groupID int, p *DeployTokenCreateParameters) (string, error) {
 	// Check to see if the token already exists
 	allTokens, err := gl.ListGroupDeployTokens(gl.ParentGroupID)
@@ -289,22 +290,33 @@ func (gl *GitLabWrapper) CreateGroupDeployToken(groupID int, p *DeployTokenCreat
 		gid = groupID
 	}
 
-	if !exists {
-		token, _, err := gl.Client.DeployTokens.CreateGroupDeployToken(gid, &gitlab.CreateGroupDeployTokenOptions{
-			Name:     &p.Name,
-			Username: &p.Username,
-			Scopes:   &p.Scopes,
-		})
-		if err != nil {
-			return "", err
+	// Remove an existing deploy token
+	if exists {
+		var existingTokenID int
+		for _, t := range allTokens {
+			if t.Name == p.Name {
+				existingTokenID = t.ID
+			}
 		}
-		log.Info().Msgf("created group deploy token %s", token.Name)
 
-		return token.Token, nil
-	} else {
-		log.Info().Msgf("group deploy token %s already exists - skipping", p.Name)
-		return "", nil
+		_, err := gl.Client.DeployTokens.DeleteGroupDeployToken(gid, existingTokenID)
+		if err != nil {
+			return "", fmt.Errorf(err.Error())
+		}
 	}
+
+	// Create the token
+	token, _, err := gl.Client.DeployTokens.CreateGroupDeployToken(gid, &gitlab.CreateGroupDeployTokenOptions{
+		Name:     &p.Name,
+		Username: &p.Username,
+		Scopes:   &p.Scopes,
+	})
+	if err != nil {
+		return "", err
+	}
+	log.Info().Msgf("created group deploy token %s", token.Name)
+
+	return token.Token, nil
 }
 
 // CreateProjectDeployToken
