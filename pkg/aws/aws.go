@@ -14,6 +14,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	route53Types "github.com/aws/aws-sdk-go-v2/service/route53/types"
 )
 
@@ -42,6 +43,23 @@ func NewAwsV2(region string) aws.Config {
 		context.Background(),
 		config.WithRegion(region),
 		config.WithSharedConfigProfile(profile),
+	)
+	if err != nil {
+		log.Panic().Msg("unable to create aws client")
+	}
+
+	return awsClient
+}
+
+func NewAwsV3(region string, accessKeyID string, secretAccessKey string, sessionToken string) aws.Config {
+	awsClient, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			accessKeyID,
+			secretAccessKey,
+			sessionToken,
+		)),
 	)
 	if err != nil {
 		log.Panic().Msg("unable to create aws client")
