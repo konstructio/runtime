@@ -12,14 +12,11 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/rs/zerolog/log"
-
-	"github.com/kubefirst/runtime/configs"
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/rs/zerolog/log"
 )
 
-func initActionAutoApprove(tfAction, tfEntrypoint string, tfEnvs map[string]string) error {
-	config := configs.ReadConfig()
+func initActionAutoApprove(terraformClientPath string, tfAction, tfEntrypoint string, tfEnvs map[string]string) error {
 	log.Printf("initActionAutoApprove - action: %s entrypoint: %s", tfAction, tfEntrypoint)
 
 	err := os.Chdir(tfEntrypoint)
@@ -27,13 +24,13 @@ func initActionAutoApprove(tfAction, tfEntrypoint string, tfEnvs map[string]stri
 		log.Info().Msg("error: could not change to directory " + tfEntrypoint)
 		return err
 	}
-	err = pkg.ExecShellWithVars(tfEnvs, config.TerraformClientPath, "init", "-force-copy")
+	err = pkg.ExecShellWithVars(tfEnvs, terraformClientPath, "init", "-force-copy")
 	if err != nil {
 		log.Printf("error: terraform init for %s failed: %s", tfEntrypoint, err)
 		return err
 	}
 
-	err = pkg.ExecShellWithVars(tfEnvs, config.TerraformClientPath, tfAction, "-auto-approve")
+	err = pkg.ExecShellWithVars(tfEnvs, terraformClientPath, tfAction, "-auto-approve")
 	if err != nil {
 		log.Printf("error: terraform %s -auto-approve for %s failed %s", tfAction, tfEntrypoint, err)
 		return err
@@ -43,18 +40,18 @@ func initActionAutoApprove(tfAction, tfEntrypoint string, tfEnvs map[string]stri
 	return nil
 }
 
-func InitApplyAutoApprove(tfEntrypoint string, tfEnvs map[string]string) error {
+func InitApplyAutoApprove(terraformClientPath string, tfEntrypoint string, tfEnvs map[string]string) error {
 	tfAction := "apply"
-	err := initActionAutoApprove(tfAction, tfEntrypoint, tfEnvs)
+	err := initActionAutoApprove(terraformClientPath, tfAction, tfEntrypoint, tfEnvs)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func InitDestroyAutoApprove(tfEntrypoint string, tfEnvs map[string]string) error {
+func InitDestroyAutoApprove(terraformClientPath string, tfEntrypoint string, tfEnvs map[string]string) error {
 	tfAction := "destroy"
-	err := initActionAutoApprove(tfAction, tfEntrypoint, tfEnvs)
+	err := initActionAutoApprove(terraformClientPath, tfAction, tfEntrypoint, tfEnvs)
 	if err != nil {
 		return err
 	}
@@ -62,12 +59,11 @@ func InitDestroyAutoApprove(tfEntrypoint string, tfEnvs map[string]string) error
 }
 
 // todo need to write something that outputs -json type and can get multiple values
-func OutputSingleValue(directory, tfEntrypoint, outputName string) {
-	config := configs.ReadConfig()
+func OutputSingleValue(terraformClientPath string, directory, tfEntrypoint, outputName string) {
 	os.Chdir(directory)
 
 	var tfOutput bytes.Buffer
-	tfOutputCmd := exec.Command(config.TerraformClientPath, "output", outputName)
+	tfOutputCmd := exec.Command(terraformClientPath, "output", outputName)
 	tfOutputCmd.Stdout = &tfOutput
 	tfOutputCmd.Stderr = os.Stderr
 	err := tfOutputCmd.Run()
