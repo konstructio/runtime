@@ -15,6 +15,8 @@ import (
 	"github.com/caarlos0/env/v6"
 )
 
+// DEPRECATED, will be removed in a future release
+
 /**
 This is an initial implementation of Config. Please keep in mind we're still working to improve how we handle
 environment variables and general config data.

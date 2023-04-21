@@ -100,7 +100,7 @@ func GetConfig(clusterName string, gitProvider string, gitOwner string) *K3dConf
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)
 	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
 	config.KubefirstConfig = fmt.Sprintf("%s/.k1/%s/%s", homeDir, clusterName, ".kubefirst")
-	config.MetaphorDir = fmt.Sprintf("%s/.k1/%s/metaphor", clusterName, homeDir)
+	config.MetaphorDir = fmt.Sprintf("%s/.k1/%s/metaphor", homeDir, clusterName)
 	config.MkCertClient = fmt.Sprintf("%s/.k1/%s/tools/mkcert", homeDir, clusterName)
 	config.MkCertPemDir = fmt.Sprintf("%s/.k1/%s/ssl/%s/pem", homeDir, clusterName, DomainName)
 	config.MkCertSSLSecretDir = fmt.Sprintf("%s/.k1/%s/ssl/%s/secrets", homeDir, clusterName, DomainName)

@@ -91,8 +91,8 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)
 	config.KubefirstConfig = fmt.Sprintf("%s/.k1/%s/%s", homeDir, clusterName, ".kubefirst")
-	config.LogsDir = fmt.Sprintf("%s/.k1/%s/logs", clusterName, homeDir)
-	config.MetaphorDir = fmt.Sprintf("%s/.k1/%s/metaphor", clusterName, homeDir)
+	config.LogsDir = fmt.Sprintf("%s/.k1/%s/logs", homeDir, clusterName)
+	config.MetaphorDir = fmt.Sprintf("%s/.k1/%s/metaphor", homeDir, clusterName)
 	config.RegistryAppName = "registry"
 	config.RegistryYaml = fmt.Sprintf("%s/.k1/%s/gitops/registry/%s/registry.yaml", homeDir, clusterName, clusterName)
 	config.SSLBackupDir = fmt.Sprintf("%s/.k1/%s/ssl/%s", homeDir, clusterName, domainName)
