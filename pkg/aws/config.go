@@ -81,20 +81,20 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
 
-	config.ArgoWorkflowsDir = fmt.Sprintf("%s/.k1/argo-workflows", homeDir)
-	config.GitopsDir = fmt.Sprintf("%s/.k1/gitops", homeDir)
+	config.ArgoWorkflowsDir = fmt.Sprintf("%s/.k1/%s/argo-workflows", homeDir, clusterName)
+	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
-	config.Kubeconfig = fmt.Sprintf("%s/.k1/kubeconfig", homeDir)
-	config.K1Dir = fmt.Sprintf("%s/.k1", homeDir)
-	config.KubectlClient = fmt.Sprintf("%s/.k1/tools/kubectl", homeDir)
-	config.KubefirstConfig = fmt.Sprintf("%s/.k1/%s", homeDir, ".kubefirst")
-	config.LogsDir = fmt.Sprintf("%s/.k1/logs", homeDir)
-	config.MetaphorDir = fmt.Sprintf("%s/.k1/metaphor", homeDir)
+	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
+	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
+	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)
+	config.KubefirstConfig = fmt.Sprintf("%s/.k1/%s/%s", homeDir, clusterName, ".kubefirst")
+	config.LogsDir = fmt.Sprintf("%s/.k1/%s/logs", clusterName, homeDir)
+	config.MetaphorDir = fmt.Sprintf("%s/.k1/%s/metaphor", clusterName, homeDir)
 	config.RegistryAppName = "registry"
-	config.RegistryYaml = fmt.Sprintf("%s/.k1/gitops/registry/%s/registry.yaml", homeDir, clusterName)
-	config.SSLBackupDir = fmt.Sprintf("%s/.k1/ssl/%s", homeDir, domainName)
-	config.TerraformClient = fmt.Sprintf("%s/.k1/tools/terraform", homeDir)
-	config.ToolsDir = fmt.Sprintf("%s/.k1/tools", homeDir)
+	config.RegistryYaml = fmt.Sprintf("%s/.k1/%s/gitops/registry/%s/registry.yaml", homeDir, clusterName, clusterName)
+	config.SSLBackupDir = fmt.Sprintf("%s/.k1/%s/ssl/%s", homeDir, clusterName, domainName)
+	config.TerraformClient = fmt.Sprintf("%s/.k1/%s/tools/terraform", homeDir, clusterName)
+	config.ToolsDir = fmt.Sprintf("%s/.k1/%s/tools", homeDir, clusterName)
 
 	return &config
 }
