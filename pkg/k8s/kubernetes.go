@@ -41,12 +41,7 @@ func GetSecretValue(k8sClient coreV1Types.SecretInterface, secretName, key strin
 }
 
 // GetClientSet - Get reference to k8s credentials to use APIS
-func GetClientSet(dryRun bool, kubeconfigPath string) (*kubernetes.Clientset, error) {
-	if dryRun {
-		log.Info().Msgf("[#99] Dry-run mode, GetClientSet skipped.")
-		return nil, nil
-	}
-
+func GetClientSet(kubeconfigPath string) (*kubernetes.Clientset, error) {
 	kubeconfig, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		log.Error().Err(err).Msg("Error getting kubeconfig")
@@ -63,12 +58,7 @@ func GetClientSet(dryRun bool, kubeconfigPath string) (*kubernetes.Clientset, er
 
 // GetClientConfig returns a rest.Config object for working with the Kubernetes
 // API
-func GetClientConfig(dryRun bool, kubeconfigPath string) (*rest.Config, error) {
-	if dryRun {
-		log.Info().Msgf("[#99] Dry-run mode, GetClientConfig skipped.")
-		return nil, nil
-	}
-
+func GetClientConfig(kubeconfigPath string) (*rest.Config, error) {
 	clientconfig, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		log.Error().Err(err).Msg("Error getting kubeconfig")
@@ -80,11 +70,7 @@ func GetClientConfig(dryRun bool, kubeconfigPath string) (*rest.Config, error) {
 
 // deprecated
 // PortForward - opens port-forward to services
-func PortForward(dryRun bool, filter, kubeconfigPath, kubectlClientPath, namespace, ports string) (*exec.Cmd, error) {
-	if dryRun {
-		log.Info().Msg("[#99] Dry-run mode, K8sPortForward skipped.")
-		return nil, nil
-	}
+func PortForward(filter, kubeconfigPath, kubectlClientPath, namespace, ports string) (*exec.Cmd, error) {
 	// config := configs.ReadConfig()
 
 	var kPortForwardOutb, kPortForwardErrb bytes.Buffer
@@ -114,11 +100,7 @@ func PortForward(dryRun bool, filter, kubeconfigPath, kubectlClientPath, namespa
 	return kPortForward, nil
 }
 
-func WaitForNamespaceandPods(dryRun bool, kubeconfigPath, kubectlClientPath, namespace, podLabel string) {
-	if dryRun {
-		log.Info().Msg("[#99] Dry-run mode, WaitForNamespaceandPods skipped")
-		return
-	}
+func WaitForNamespaceandPods(kubeconfigPath, kubectlClientPath, namespace, podLabel string) {
 	if !viper.GetBool("create.softserve.ready") {
 		x := 50
 		for i := 0; i < x; i++ {

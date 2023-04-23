@@ -16,13 +16,8 @@ import (
 )
 
 // VultrHandoffScreen prints the handoff screen
-func VultrHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *vultr.VultrConfig, dryRun bool, silentMode bool) {
+func VultrHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *vultr.VultrConfig, silentMode bool) {
 	// prepare data for the handoff report
-	if dryRun {
-		log.Printf("[#99] Dry-run mode, LocalHandoffScreen skipped.")
-		return
-	}
-
 	if silentMode {
 		log.Printf("[#99] Silent mode enabled, LocalHandoffScreen skipped, please check ~/.kubefirst file for your cluster and service credentials.")
 		return

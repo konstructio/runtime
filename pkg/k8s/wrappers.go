@@ -98,7 +98,7 @@ func OpenPortForwardServiceWrapper(kubeconfigPath, kubeconfigClientPath, namespa
 		ReadyCh:     readyCh,
 	}
 
-	clientset, err := GetClientSet(false, kubeconfigPath)
+	clientset, err := GetClientSet(kubeconfigPath)
 
 	go func() {
 		// todo, i think we can use the RestConfig and remove the "kubectlClientPath"

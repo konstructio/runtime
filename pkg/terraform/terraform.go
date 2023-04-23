@@ -18,15 +18,9 @@ import (
 	"github.com/kubefirst/runtime/pkg"
 )
 
-func initActionAutoApprove(dryRun bool, tfAction, tfEntrypoint string, tfEnvs map[string]string) error {
-
+func initActionAutoApprove(tfAction, tfEntrypoint string, tfEnvs map[string]string) error {
 	config := configs.ReadConfig()
 	log.Printf("initActionAutoApprove - action: %s entrypoint: %s", tfAction, tfEntrypoint)
-
-	if dryRun {
-		log.Printf("[#99] Dry-run mode, action: %s entrypoint: %s", tfAction, tfEntrypoint)
-		return nil
-	}
 
 	err := os.Chdir(tfEntrypoint)
 	if err != nil {
@@ -49,18 +43,18 @@ func initActionAutoApprove(dryRun bool, tfAction, tfEntrypoint string, tfEnvs ma
 	return nil
 }
 
-func InitApplyAutoApprove(dryRun bool, tfEntrypoint string, tfEnvs map[string]string) error {
+func InitApplyAutoApprove(tfEntrypoint string, tfEnvs map[string]string) error {
 	tfAction := "apply"
-	err := initActionAutoApprove(dryRun, tfAction, tfEntrypoint, tfEnvs)
+	err := initActionAutoApprove(tfAction, tfEntrypoint, tfEnvs)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func InitDestroyAutoApprove(dryRun bool, tfEntrypoint string, tfEnvs map[string]string) error {
+func InitDestroyAutoApprove(tfEntrypoint string, tfEnvs map[string]string) error {
 	tfAction := "destroy"
-	err := initActionAutoApprove(dryRun, tfAction, tfEntrypoint, tfEnvs)
+	err := initActionAutoApprove(tfAction, tfEntrypoint, tfEnvs)
 	if err != nil {
 		return err
 	}
@@ -68,8 +62,7 @@ func InitDestroyAutoApprove(dryRun bool, tfEntrypoint string, tfEnvs map[string]
 }
 
 // todo need to write something that outputs -json type and can get multiple values
-func OutputSingleValue(dryRun bool, directory, tfEntrypoint, outputName string) {
-
+func OutputSingleValue(directory, tfEntrypoint, outputName string) {
 	config := configs.ReadConfig()
 	os.Chdir(directory)
 

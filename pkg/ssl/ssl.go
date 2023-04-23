@@ -31,7 +31,7 @@ func Restore(backupDir, domainName, kubeconfigPath string) error {
 		return err
 	}
 
-	clientset, err := k8s.GetClientSet(false, kubeconfigPath)
+	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func Restore(backupDir, domainName, kubeconfigPath string) error {
 
 func Backup(backupDir, domainName, k1Dir, kubeconfigPath string) error {
 
-	clientset, err := k8s.GetClientSet(false, kubeconfigPath)
+	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		return err
 	}

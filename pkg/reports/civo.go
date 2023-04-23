@@ -16,13 +16,8 @@ import (
 )
 
 // CivoHandoffScreen prints the handoff screen
-func CivoHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *civo.CivoConfig, dryRun bool, silentMode bool) {
+func CivoHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *civo.CivoConfig, silentMode bool) {
 	// prepare data for the handoff report
-	if dryRun {
-		log.Printf("[#99] Dry-run mode, LocalHandoffScreen skipped.")
-		return
-	}
-
 	if silentMode {
 		log.Printf("[#99] Silent mode enabled, LocalHandoffScreen skipped, please check ~/.kubefirst file for your cluster and service credentials.")
 		return

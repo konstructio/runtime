@@ -20,13 +20,8 @@ import (
 var caser = cases.Title(language.AmericanEnglish)
 
 // LocalHandoffScreenV2 prints the handoff screen
-func LocalHandoffScreenV2(argocdAdminPassword, clusterName, gitDestDescriptor string, gitOwner string, config *k3d.K3dConfig, dryRun bool, silentMode bool) {
+func LocalHandoffScreenV2(argocdAdminPassword, clusterName, gitDestDescriptor string, gitOwner string, config *k3d.K3dConfig, silentMode bool) {
 	// prepare data for the handoff report
-	if dryRun {
-		log.Printf("[#99] Dry-run mode, LocalHandoffScreen skipped.")
-		return
-	}
-
 	if silentMode {
 		log.Printf("[#99] Silent mode enabled, LocalHandoffScreen skipped, please check ~/.kubefirst file for your cluster and service credentials.")
 		return

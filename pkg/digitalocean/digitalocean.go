@@ -28,12 +28,7 @@ var backupResolver = &net.Resolver{
 	},
 }
 
-func (c *DigitaloceanConfiguration) TestDomainLiveness(dryRun bool, domainName string) bool {
-	if dryRun {
-		log.Info().Msg("[#99] Dry-run mode, TestDomainLiveness skipped.")
-		return true
-	}
-
+func (c *DigitaloceanConfiguration) TestDomainLiveness(domainName string) bool {
 	doRecordName := "kubefirst-liveness"
 	doRecordValue := "domain record propagated"
 
