@@ -14,9 +14,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func DownloadTools(gitProvider, gitOwner string, toolsDir string) error {
+func DownloadTools(clusterName string, gitProvider string, gitOwner string, toolsDir string) error {
 
-	config := GetConfig(gitProvider, gitOwner)
+	config := GetConfig(clusterName, gitProvider, gitOwner)
 
 	if _, err := os.Stat(toolsDir); os.IsNotExist(err) {
 		err := os.MkdirAll(toolsDir, os.ModePerm)

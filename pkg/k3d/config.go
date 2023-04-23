@@ -66,7 +66,7 @@ type K3dConfig struct {
 }
 
 // GetConfig - load default values from kubefirst installer
-func GetConfig(gitProvider string, gitOwner string) *K3dConfig {
+func GetConfig(clusterName string, gitProvider string, gitOwner string) *K3dConfig {
 	config := K3dConfig{}
 
 	if err := env.Parse(&config); err != nil {
@@ -93,19 +93,19 @@ func GetConfig(gitProvider string, gitOwner string) *K3dConfig {
 	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
 
-	config.GitopsDir = fmt.Sprintf("%s/.k1/gitops", homeDir)
+	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
-	config.K1Dir = fmt.Sprintf("%s/.k1", homeDir)
-	config.K3dClient = fmt.Sprintf("%s/.k1/tools/k3d", homeDir)
-	config.KubectlClient = fmt.Sprintf("%s/.k1/tools/kubectl", homeDir)
-	config.Kubeconfig = fmt.Sprintf("%s/.k1/kubeconfig", homeDir)
-	config.KubefirstConfig = fmt.Sprintf("%s/.kubefirst", homeDir)
-	config.MetaphorDir = fmt.Sprintf("%s/.k1/metaphor", homeDir)
-	config.MkCertClient = fmt.Sprintf("%s/.k1/tools/mkcert", homeDir)
-	config.MkCertPemDir = fmt.Sprintf("%s/.k1/ssl/%s/pem", homeDir, DomainName)
-	config.MkCertSSLSecretDir = fmt.Sprintf("%s/.k1/ssl/%s/secrets", homeDir, DomainName)
-	config.TerraformClient = fmt.Sprintf("%s/.k1/tools/terraform", homeDir)
-	config.ToolsDir = fmt.Sprintf("%s/.k1/tools", homeDir)
+	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
+	config.K3dClient = fmt.Sprintf("%s/.k1/%s/tools/k3d", homeDir, clusterName)
+	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)
+	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
+	config.KubefirstConfig = fmt.Sprintf("%s/.k1/%s/%s", homeDir, clusterName, ".kubefirst")
+	config.MetaphorDir = fmt.Sprintf("%s/.k1/%s/metaphor", homeDir, clusterName)
+	config.MkCertClient = fmt.Sprintf("%s/.k1/%s/tools/mkcert", homeDir, clusterName)
+	config.MkCertPemDir = fmt.Sprintf("%s/.k1/%s/ssl/%s/pem", homeDir, clusterName, DomainName)
+	config.MkCertSSLSecretDir = fmt.Sprintf("%s/.k1/%s/ssl/%s/secrets", homeDir, clusterName, DomainName)
+	config.TerraformClient = fmt.Sprintf("%s/.k1/%s/tools/terraform", homeDir, clusterName)
+	config.ToolsDir = fmt.Sprintf("%s/.k1/%s/tools", homeDir, clusterName)
 
 	return &config
 }
