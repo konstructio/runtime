@@ -30,12 +30,7 @@ var backupResolver = &net.Resolver{
 }
 
 // TestDomainLiveness checks Civo DNS for the liveness test record
-func TestDomainLiveness(dryRun bool, domainName, domainId, region string) bool {
-	if dryRun {
-		log.Info().Msg("[#99] Dry-run mode, TestDomainZoneLiveness skipped.")
-		return true
-	}
-
+func TestDomainLiveness(domainName string, domainId string, region string) bool {
 	civoRecordName := fmt.Sprintf("kubefirst-liveness.%s", domainName)
 	civoRecordValue := "domain record propagated"
 

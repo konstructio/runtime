@@ -150,7 +150,7 @@ func PortForwardService(clientset *kubernetes.Clientset, kubeconfigPath, kubectl
 	ports := fmt.Sprintf("%d:%d", req.LocalPort, req.ServicePort)
 	// Cloud Console UI
 	go func() {
-		_, err := PortForward(false, fmt.Sprintf("svc/%s", req.Service.Name), kubeconfigPath, kubectlClientPath, req.Service.Namespace, ports)
+		_, err := PortForward(fmt.Sprintf("svc/%s", req.Service.Name), kubeconfigPath, kubectlClientPath, req.Service.Namespace, ports)
 		if err != nil {
 			log.Println("error opening Kubefirst-console port forward")
 		}
@@ -169,7 +169,7 @@ func OpenPortForwardForCloudConConsole(kubeconfigPath, kubectlClientPath string)
 
 	// Cloud Console UI
 	go func() {
-		_, err := PortForward(false, "svc/kubefirst-console", kubeconfigPath, kubectlClientPath, "kubefirst", "9094:80")
+		_, err := PortForward("svc/kubefirst-console", kubeconfigPath, kubectlClientPath, "kubefirst", "9094:80")
 		if err != nil {
 			log.Println("error opening Kubefirst-console port forward")
 		}
@@ -190,7 +190,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 	wg.Add(7)
 	// argo workflows
 	go func() {
-		output, err := PortForward(false, "svc/argo-server", kubeconfigPath, kubectlClientPath, "argo", "2746:2746")
+		output, err := PortForward("svc/argo-server", kubeconfigPath, kubectlClientPath, "argo", "2746:2746")
 		if err != nil {
 			log.Println("error opening Argo Workflows port forward")
 		}
@@ -202,7 +202,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 	}()
 	// argocd
 	go func() {
-		output, err := PortForward(false, "svc/argocd-server", kubeconfigPath, kubectlClientPath, "argocd", "8080:80")
+		output, err := PortForward("svc/argocd-server", kubeconfigPath, kubectlClientPath, "argocd", "8080:80")
 		if err != nil {
 			log.Println("error opening ArgoCD port forward")
 		}
@@ -224,7 +224,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 
 	// chartmuseum
 	go func() {
-		output, err := PortForward(false, "chartmuseum", "svc/chartmuseum", kubeconfigPath, kubectlClientPath, "8181:8080")
+		output, err := PortForward("chartmuseum", "svc/chartmuseum", kubeconfigPath, kubectlClientPath, "8181:8080")
 		if err != nil {
 			log.Println("error opening Chartmuseum port forward")
 		}
@@ -237,7 +237,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 
 	// vault
 	go func() {
-		output, err := PortForward(false, "svc/vault", kubeconfigPath, kubectlClientPath, "vault", "8200:8200")
+		output, err := PortForward("svc/vault", kubeconfigPath, kubectlClientPath, "vault", "8200:8200")
 		if err != nil {
 			log.Println("error opening Vault port forward")
 		}
@@ -251,7 +251,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 
 	// minio
 	go func() {
-		output, err := PortForward(false, "svc/minio", kubeconfigPath, kubectlClientPath, "minio", "9000:9000")
+		output, err := PortForward("svc/minio", kubeconfigPath, kubectlClientPath, "minio", "9000:9000")
 		if err != nil {
 			log.Println("error opening Minio port forward")
 		}
@@ -264,7 +264,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 
 	// minio console
 	go func() {
-		output, err := PortForward(false, "svc/minio-console", kubeconfigPath, kubectlClientPath, "minio", "9001:9001")
+		output, err := PortForward("svc/minio-console", kubeconfigPath, kubectlClientPath, "minio", "9001:9001")
 		if err != nil {
 			log.Println("error opening Minio-console port forward")
 		}
@@ -277,7 +277,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 
 	// Kubecon console ui
 	go func() {
-		output, err := PortForward(false, "svc/kubefirst-console", kubeconfigPath, kubectlClientPath, "kubefirst", "9094:80")
+		output, err := PortForward("svc/kubefirst-console", kubeconfigPath, kubectlClientPath, "kubefirst", "9094:80")
 		if err != nil {
 			log.Println("error opening Kubefirst-console port forward")
 		}
@@ -296,7 +296,7 @@ func OpenPortForwardForKubeConConsole(kubeconfigPath, kubectlClientPath string) 
 // OpenAtlantisPortForward opens port forward for Atlantis
 func OpenAtlantisPortForward(kubeconfigPath, kubectlClientPath string) error {
 
-	output, err := PortForward(false, "svc/atlantis", kubeconfigPath, kubectlClientPath, "atlantis", "4141:80")
+	output, err := PortForward("svc/atlantis", kubeconfigPath, kubectlClientPath, "atlantis", "4141:80")
 	if err != nil {
 		return fmt.Errorf("error opening Atlantis port forward")
 	}

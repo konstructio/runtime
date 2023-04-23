@@ -39,7 +39,7 @@ func CreateSecretV2(clientset *kubernetes.Clientset, secret *v1.Secret) error {
 
 // ReadConfigMapV2 reads the content of a Kubernetes ConfigMap
 func ReadConfigMapV2(kubeConfigPath string, namespace string, configMapName string) (map[string]string, error) {
-	clientset, err := GetClientSet(false, kubeConfigPath)
+	clientset, err := GetClientSet(kubeConfigPath)
 	if err != nil {
 		return map[string]string{}, err
 	}
@@ -74,7 +74,7 @@ func ReadSecretV2(clientset *kubernetes.Clientset, namespace string, secretName 
 
 // ReadService reads a Kubernetes Service object
 func ReadService(kubeConfigPath string, namespace string, serviceName string) (*v1.Service, error) {
-	clientset, err := GetClientSet(false, kubeConfigPath)
+	clientset, err := GetClientSet(kubeConfigPath)
 	if err != nil {
 		return &v1.Service{}, err
 	}
@@ -108,12 +108,12 @@ func PodExecSession(kubeConfigPath string, p *PodSessionOptions, silent bool) er
 
 // podExec performs kube-exec on a Pod with a given command
 func podExec(kubeConfigPath string, ps *PodSessionOptions, pe v1.PodExecOptions, silent bool) error {
-	clientset, err := GetClientSet(false, kubeConfigPath)
+	clientset, err := GetClientSet(kubeConfigPath)
 	if err != nil {
 		return err
 	}
 
-	config, err := GetClientConfig(false, kubeConfigPath)
+	config, err := GetClientConfig(kubeConfigPath)
 	if err != nil {
 		return err
 	}
@@ -203,7 +203,7 @@ func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, 
 
 // ReturnPodObject returns a matching v1.Pod object based on the filters
 func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*v1.Pod, error) {
-	clientset, err := GetClientSet(false, kubeConfigPath)
+	clientset, err := GetClientSet(kubeConfigPath)
 	if err != nil {
 		return nil, err
 	}

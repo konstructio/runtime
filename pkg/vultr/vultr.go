@@ -28,12 +28,7 @@ var backupResolver = &net.Resolver{
 	},
 }
 
-func (c *VultrConfiguration) TestDomainLiveness(dryRun bool, domainName string) bool {
-	if dryRun {
-		log.Info().Msg("[#99] Dry-run mode, TestDomainZoneLiveness skipped.")
-		return true
-	}
-
+func (c *VultrConfiguration) TestDomainLiveness(domainName string) bool {
 	vultrRecordName := "kubefirst-liveness"
 	vultrRecordValue := "domain record propagated"
 

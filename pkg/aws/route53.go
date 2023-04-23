@@ -32,12 +32,7 @@ var backupResolver = &net.Resolver{
 }
 
 // TestHostedZoneLiveness checks Route53 for the liveness test record
-func (conf *AWSConfiguration) TestHostedZoneLiveness(dryRun bool, hostedZoneName string) bool {
-	if dryRun {
-		log.Info().Msg("[#99] Dry-run mode, TestHostedZoneLiveness skipped.")
-		return true
-	}
-
+func (conf *AWSConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool {
 	route53RecordName := fmt.Sprintf("kubefirst-liveness.%s", hostedZoneName)
 	route53RecordValue := "domain record propagated"
 

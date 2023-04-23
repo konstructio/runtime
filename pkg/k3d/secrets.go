@@ -23,14 +23,13 @@ func AddK3DSecrets(
 	kbotPublicKey string,
 	destinationGitopsRepoGitURL string,
 	kbotPrivateKey string,
-	dryRun bool,
 	gitProvider string,
 	gitUser string,
 	gitOwner string,
 	kubeconfigPath string,
 	tokenValue string,
 ) error {
-	clientset, err := k8s.GetClientSet(dryRun, kubeconfigPath)
+	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		log.Info().Msg("error getting kubernetes clientset")
 	}
