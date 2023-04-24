@@ -11,8 +11,14 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/pkg"
+	awsinternal "github.com/kubefirst/runtime/pkg/aws"
 	"github.com/lixiangzhong/dnsutil"
 	"github.com/rs/zerolog/log"
+)
+
+const (
+	// Google
+	dnsLookupHost string = "8.8.8.8"
 )
 
 var (
@@ -22,12 +28,25 @@ var (
 )
 
 // VerifyProviderDNS
-func VerifyProviderDNS(cloudProvider string, domainName string) error {
+func VerifyProviderDNS(cloudProvider string, cloudRegion string, domainName string) error {
 	var dig dnsutil.Dig
 	var nameServers []string
-	dig.SetDNS("8.8.8.8")
+	dig.SetDNS(dnsLookupHost)
 
 	switch cloudProvider {
+	case "aws":
+		awsClient := &awsinternal.AWSConfiguration{
+			Config: awsinternal.NewAwsV2(cloudRegion),
+		}
+		hostedZoneID, err := awsClient.GetHostedZoneID(domainName)
+		if err != nil {
+			return err
+		}
+		hostedZone, err := awsClient.GetHostedZone(hostedZoneID)
+		if err != nil {
+			return err
+		}
+		nameServers = hostedZone.DelegationSet.NameServers
 	case "civo":
 		nameServers = CivoNameServers
 	case "digitalocean":

@@ -152,3 +152,16 @@ func (conf *AWSConfiguration) GetHostedZoneID(hostedZoneName string) (string, er
 
 	return hostedZoneId, nil
 }
+
+// GetHostedZone returns an object detailing a hosted zone
+func (conf *AWSConfiguration) GetHostedZone(hostedZoneID string) (*route53.GetHostedZoneOutput, error) {
+	route53Client := route53.NewFromConfig(conf.Config)
+	hostedZone, err := route53Client.GetHostedZone(context.Background(), &route53.GetHostedZoneInput{
+		Id: aws.String(hostedZoneID),
+	})
+	if err != nil {
+		log.Error().Msg(err.Error())
+	}
+
+	return hostedZone, nil
+}
