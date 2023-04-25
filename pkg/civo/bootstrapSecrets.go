@@ -31,6 +31,7 @@ func BootstrapCivoMgmtCluster(kubeconfigPath string, gitProvider string, gitUser
 	newNamespaces := []string{
 		"argocd",
 		"atlantis",
+		"cert-manager",
 		"external-dns",
 		"external-secrets-operator",
 	}
