@@ -73,6 +73,12 @@ func BootstrapCivoMgmtCluster(kubeconfigPath string, gitProvider string, gitUser
 				"civo-token": []byte(os.Getenv("CIVO_TOKEN")),
 			},
 		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "civo-secret", Namespace: "cert-manager"},
+			Data: map[string][]byte{
+				"api-key": []byte(os.Getenv("CIVO_TOKEN")),
+			},
+		},
 	}
 	for _, secret := range createSecrets {
 		_, err := clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Get(context.TODO(), secret.ObjectMeta.Name, metav1.GetOptions{})
