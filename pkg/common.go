@@ -20,6 +20,7 @@ var SupportedPlatforms = []string{
 	"civo-github",
 	"civo-gitlab",
 	"digitalocean-github",
+	"digitalocean-gitlab",
 	"k3d-github",
 	"k3d-gitlab",
 	"vultr-github",
