@@ -85,6 +85,7 @@ type SegmentClient struct {
 	ClusterType       string
 	DomainName        string
 	GitProvider       string
+	KubefirstClient   string
 	KubefirstTeam     string
 	KubefirstTeamInfo string
 }
