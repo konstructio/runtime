@@ -30,7 +30,7 @@ func (c *SegmentClient) SendCountMetric(
 			Type:   "identify",
 		})
 		if err != nil {
-			return fmt.Sprintf("error sending identify to segment %s", err.Error())
+			return fmt.Sprintf("error sending identify to segment: %s", err.Error())
 		}
 	}
 	err = c.Client.Enqueue(analytics.Track{
@@ -43,13 +43,14 @@ func (c *SegmentClient) SendCountMetric(
 			Set("cluster_type", c.ClusterType).
 			Set("domain", strippedDomainName).
 			Set("git_provider", c.GitProvider).
+			Set("client", c.KubefirstClient).
 			Set("kubefirst_team", c.KubefirstTeam).
 			Set("kubefirst_team_info", c.KubefirstTeamInfo).
 			Set("machine_id", machineID).
 			Set("error", errorMessage),
 	})
 	if err != nil {
-		return fmt.Sprintf("error sending track to segment %s", err.Error())
+		return fmt.Sprintf("error sending track to segment: %s", err.Error())
 	}
 
 	return ""
