@@ -75,6 +75,10 @@ const (
 	MetricUsersTerraformApplyStarted   = "kubefirst.users_terraform_apply.started"
 	MetricUsersTerraformApplyCompleted = "kubefirst.users_terraform_apply.completed"
 	MetricUsersTerraformApplyFailed    = "kubefirst.users_terraform_apply.failed"
+
+	// Delete
+	MetricMgmtClusterDeleteStarted   = "kubefirst.mgmt_cluster_delete.started"
+	MetricMgmtClusterDeleteCompleted = "kubefirst.mgmt_cluster_delete.completed"
 )
 
 type SegmentClient struct {
