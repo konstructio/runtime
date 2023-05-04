@@ -43,8 +43,8 @@ var (
 )
 
 type K3dConfig struct {
-	GithubToken string `env:"GITHUB_TOKEN"`
-	CivoToken   string `env:"CIVO_TOKEN"`
+	GithubToken string
+	GitlabToken string
 
 	DestinationGitopsRepoHttpsURL   string
 	DestinationGitopsRepoGitURL     string

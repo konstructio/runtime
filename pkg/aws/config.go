@@ -11,7 +11,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/caarlos0/env/v6"
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/rs/zerolog/log"
 )
@@ -56,11 +55,6 @@ type AwsConfig struct {
 // GetConfig - load default values from kubefirst installer
 func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string) *AwsConfig {
 	config := AwsConfig{}
-
-	// todo do we want these from envs?
-	if err := env.Parse(&config); err != nil {
-		log.Fatal().Msgf(fmt.Sprintf("error reading environment variables %s", err.Error()))
-	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {

@@ -9,7 +9,6 @@ package digitalocean
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -20,7 +19,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func BootstrapDigitaloceanMgmtCluster(kubeconfigPath string, gitProvider string, gitUser string) error {
+func BootstrapDigitaloceanMgmtCluster(digitalOceanToken, kubeconfigPath string, gitProvider string, gitUser string) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		log.Info().Msg("error getting kubernetes clientset")
@@ -70,7 +69,7 @@ func BootstrapDigitaloceanMgmtCluster(kubeconfigPath string, gitProvider string,
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "digitalocean-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
-				"digitalocean-token": []byte(os.Getenv("DO_TOKEN")),
+				"digitalocean-token": []byte(digitalOceanToken),
 			},
 		},
 	}
