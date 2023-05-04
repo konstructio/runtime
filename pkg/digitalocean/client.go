@@ -7,21 +7,14 @@ See the LICENSE file for more details.
 package digitalocean
 
 import (
-	"context"
 	"fmt"
-	"os"
 	"sort"
 
 	"github.com/digitalocean/godo"
 )
 
-var Conf DigitaloceanConfiguration = DigitaloceanConfiguration{
-	Client:  NewDigitalocean(),
-	Context: context.Background(),
-}
-
-func NewDigitalocean() *godo.Client {
-	digitaloceanClient := godo.NewFromToken(os.Getenv("DO_TOKEN"))
+func NewDigitalocean(digitalOceanToken string) *godo.Client {
+	digitaloceanClient := godo.NewFromToken(digitalOceanToken)
 
 	return digitaloceanClient
 }

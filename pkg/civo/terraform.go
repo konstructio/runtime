@@ -8,7 +8,6 @@ package civo
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
@@ -29,9 +28,8 @@ func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *CivoConfi
 	return existingKubernetesSecret["root-token"]
 }
 
-func GetCivoTerraformEnvs(envs map[string]string) map[string]string {
-
-	envs["CIVO_TOKEN"] = os.Getenv("CIVO_TOKEN")
+func GetCivoTerraformEnvs(config *CivoConfig, envs map[string]string) map[string]string {
+	envs["CIVO_TOKEN"] = config.CivoToken
 	// needed for s3 api connectivity to object storage
 	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
 	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
@@ -42,12 +40,11 @@ func GetCivoTerraformEnvs(envs map[string]string) map[string]string {
 	return envs
 }
 
-func GetGithubTerraformEnvs(envs map[string]string) map[string]string {
-
-	envs["GITHUB_TOKEN"] = os.Getenv("GITHUB_TOKEN")
+func GetGithubTerraformEnvs(config *CivoConfig, envs map[string]string) map[string]string {
+	envs["GITHUB_TOKEN"] = config.GithubToken
 	envs["GITHUB_OWNER"] = viper.GetString("flags.github-owner")
 	// todo, this variable is assicated with repos.tf in gitops-template, considering bootstrap container image for metaphor
-	// envs["TF_VAR_github_token"] = os.Getenv("GITHUB_TOKEN")
+	// envs["TF_VAR_github_token"] = config.GithubToken
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
 	envs["TF_VAR_kbot_ssh_public_key"] = viper.GetString("kbot.public-key")
 	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
@@ -58,9 +55,8 @@ func GetGithubTerraformEnvs(envs map[string]string) map[string]string {
 	return envs
 }
 
-func GetGitlabTerraformEnvs(envs map[string]string, gid int) map[string]string {
-
-	envs["GITLAB_TOKEN"] = os.Getenv("GITLAB_TOKEN")
+func GetGitlabTerraformEnvs(config *CivoConfig, envs map[string]string, gid int) map[string]string {
+	envs["GITLAB_TOKEN"] = config.GitlabToken
 	envs["GITLAB_OWNER"] = viper.GetString("flags.gitlab-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
 	envs["TF_VAR_atlantis_repo_webhook_url"] = viper.GetString("gitlab.atlantis.webhook.url")
@@ -107,7 +103,7 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *CivoConfig, 
 	envs[fmt.Sprintf("TF_VAR_%s_token", config.GitProvider)] = tokenValue
 	envs["VAULT_ADDR"] = VaultPortForwardURL
 	envs["VAULT_TOKEN"] = readVaultTokenFromSecret(clientset, config)
-	envs["TF_VAR_civo_token"] = os.Getenv("CIVO_TOKEN")
+	envs["TF_VAR_civo_token"] = config.CivoToken
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
 	envs["TF_VAR_atlantis_repo_webhook_url"] = viper.GetString(fmt.Sprintf("%s.atlantis.webhook.url", config.GitProvider))
 	envs["TF_VAR_kbot_ssh_private_key"] = viper.GetString("kbot.private-key")

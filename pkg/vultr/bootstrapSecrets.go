@@ -9,7 +9,6 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -20,7 +19,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func BootstrapVultrMgmtCluster(kubeconfigPath string, gitProvider string, gitUser string) error {
+func BootstrapVultrMgmtCluster(vultrApiKey string, kubeconfigPath string, gitProvider string, gitUser string) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		log.Info().Msg("error getting kubernetes clientset")
@@ -70,7 +69,7 @@ func BootstrapVultrMgmtCluster(kubeconfigPath string, gitProvider string, gitUse
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "vultr-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
-				"vultr-token": []byte(os.Getenv("VULTR_API_KEY")),
+				"vultr-token": []byte(vultrApiKey),
 			},
 		},
 	}

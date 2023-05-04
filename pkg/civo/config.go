@@ -12,7 +12,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/caarlos0/env/v6"
 	"github.com/kubefirst/runtime/pkg"
 )
 
@@ -31,9 +30,9 @@ const (
 )
 
 type CivoConfig struct {
-	CivoToken   string `env:"CIVO_TOKEN"`
-	GithubToken string `env:"GITHUB_TOKEN"`
-	GitlabToken string `env:"GITLAB_TOKEN"`
+	CivoToken   string
+	GithubToken string
+	GitlabToken string
 
 	ArgoWorkflowsDir                string
 	DestinationGitopsRepoHttpsURL   string
@@ -59,11 +58,6 @@ type CivoConfig struct {
 // GetConfig - load default values from kubefirst installer
 func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string) *CivoConfig {
 	config := CivoConfig{}
-
-	// todo do we want these from envs?
-	if err := env.Parse(&config); err != nil {
-		log.Panicf("error reading environment variables %s", err.Error())
-	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
