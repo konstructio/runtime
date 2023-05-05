@@ -61,7 +61,7 @@ func ReadSecretV2(clientset *kubernetes.Clientset, namespace string, secretName 
 	secret, err := clientset.CoreV1().Secrets(namespace).Get(context.Background(), secretName, metav1.GetOptions{})
 	if err != nil {
 		log.Error().Msgf("error getting secret: %s\n", err)
-		return map[string]string{}, nil
+		return map[string]string{}, err
 	}
 
 	parsedSecretData := make(map[string]string)
