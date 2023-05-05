@@ -54,7 +54,6 @@ func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformC
 			return
 		}
 
-		log.Info().Msgf("going to print the kubeconfig env in runtime: %s", os.Getenv("KUBECONFIG"))
 		kubectlStdOut, kubectlStdErr, err := pkg.ExecShellReturnStrings(awsConfig.KubectlClient, "version", "--client=true", "-oyaml")
 		log.Info().Msgf("-> kubectl version:\n\t%s\n\t%s\n", kubectlStdOut, kubectlStdErr)
 		if err != nil {

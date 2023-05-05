@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/civo/civogo"
@@ -30,11 +29,11 @@ var backupResolver = &net.Resolver{
 }
 
 // TestDomainLiveness checks Civo DNS for the liveness test record
-func TestDomainLiveness(domainName string, domainId string, region string) bool {
+func TestDomainLiveness(civoToken string, domainName string, domainId string, region string) bool {
 	civoRecordName := fmt.Sprintf("kubefirst-liveness.%s", domainName)
 	civoRecordValue := "domain record propagated"
 
-	civoClient, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+	civoClient, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return log.Logger.Fatal().Stack().Enabled()
@@ -126,11 +125,11 @@ func GetDomainApexContent(domainName string) bool {
 }
 
 // GetDNSInfo try to reach the provided domain
-func GetDNSInfo(domainName, region string) (string, error) {
+func GetDNSInfo(civoToken string, domainName string, region string) (string, error) {
 
 	log.Info().Msg("GetDNSInfo (working...)")
 
-	civoClient, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+	civoClient, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return "", err

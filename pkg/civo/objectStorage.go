@@ -7,14 +7,12 @@ See the LICENSE file for more details.
 package civo
 
 import (
-	"os"
-
 	"github.com/civo/civogo"
 	"github.com/rs/zerolog/log"
 )
 
-func CreateStorageBucket(accessKeyId, bucketName, region string) (civogo.ObjectStore, error) {
-	client, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+func CreateStorageBucket(civoToken string, accessKeyId string, bucketName string, region string) (civogo.ObjectStore, error) {
+	client, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return civogo.ObjectStore{}, err
@@ -34,21 +32,20 @@ func CreateStorageBucket(accessKeyId, bucketName, region string) (civogo.ObjectS
 }
 
 // todo refactor or remove this internal library and use the native client. functionality. see next todo client.
-func GetAccessCredentials(credentialName, region string) (civogo.ObjectStoreCredential, error) {
-
-	creds, err := checkKubefirstCredentials(credentialName, region)
+func GetAccessCredentials(civoToken string, credentialName string, region string) (civogo.ObjectStoreCredential, error) {
+	creds, err := checkKubefirstCredentials(civoToken, credentialName, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 	}
 
 	if creds == (civogo.ObjectStoreCredential{}) {
 		log.Info().Msgf("credential name: %s not found, creating", credentialName)
-		creds, err = createAccessCredentials(credentialName, region)
+		creds, err = createAccessCredentials(civoToken, credentialName, region)
 		if err != nil {
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		creds, err = getAccessCredentials(creds.ID, region)
+		creds, err = getAccessCredentials(civoToken, creds.ID, region)
 		if err != nil {
 			return civogo.ObjectStoreCredential{}, err
 		}
@@ -60,15 +57,14 @@ func GetAccessCredentials(credentialName, region string) (civogo.ObjectStoreCred
 	return creds, nil
 }
 
-func DeleteAccessCredentials(credentialName, region string) error {
-
-	client, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+func DeleteAccessCredentials(civoToken string, credentialName string, region string) error {
+	client, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return err
 	}
 
-	creds, err := checkKubefirstCredentials(credentialName, region)
+	creds, err := checkKubefirstCredentials(civoToken, credentialName, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 	}
@@ -81,9 +77,8 @@ func DeleteAccessCredentials(credentialName, region string) error {
 	return nil
 }
 
-func checkKubefirstCredentials(credentialName, region string) (civogo.ObjectStoreCredential, error) {
-
-	client, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+func checkKubefirstCredentials(civoToken string, credentialName string, region string) (civogo.ObjectStoreCredential, error) {
+	client, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return civogo.ObjectStoreCredential{}, err
@@ -110,9 +105,8 @@ func checkKubefirstCredentials(credentialName, region string) (civogo.ObjectStor
 }
 
 // todo client.NewObjectStoreCredential()
-func createAccessCredentials(credentialName, region string) (civogo.ObjectStoreCredential, error) {
-
-	client, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+func createAccessCredentials(civoToken string, credentialName string, region string) (civogo.ObjectStoreCredential, error) {
+	client, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return civogo.ObjectStoreCredential{}, err
@@ -127,9 +121,8 @@ func createAccessCredentials(credentialName, region string) (civogo.ObjectStoreC
 	return *creds, nil
 }
 
-func getAccessCredentials(id, region string) (civogo.ObjectStoreCredential, error) {
-
-	client, err := civogo.NewClient(os.Getenv("CIVO_TOKEN"), region)
+func getAccessCredentials(civoToken string, id string, region string) (civogo.ObjectStoreCredential, error) {
+	client, err := civogo.NewClient(civoToken, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return civogo.ObjectStoreCredential{}, err
