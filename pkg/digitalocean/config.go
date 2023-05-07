@@ -8,11 +8,11 @@ package digitalocean
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -61,7 +61,7 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Panic(err.Error())
+		log.Error().Msgf("something went wrong getting home path: %s", err)
 	}
 
 	// cGitHost describes which git host to use depending on gitProvider

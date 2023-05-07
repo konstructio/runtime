@@ -167,7 +167,7 @@ func ApplyArgoCDKustomize(clientset *kubernetes.Clientset, argoCDInstallPath str
 	// Wait for the Job to finish
 	_, err = k8s.WaitForJobComplete(clientset, job, 240)
 	if err != nil {
-		log.Fatal().Msgf("could not run argocd bootstrap job: %s", err)
+		log.Error().Msgf("could not run argocd bootstrap job: %s", err)
 	}
 
 	// Cleanup

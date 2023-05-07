@@ -45,7 +45,7 @@ func NewAwsV2(region string) aws.Config {
 		config.WithSharedConfigProfile(profile),
 	)
 	if err != nil {
-		log.Panic().Msg("unable to create aws client")
+		log.Error().Msg("unable to create aws client")
 	}
 
 	return awsClient
@@ -62,7 +62,7 @@ func NewAwsV3(region string, accessKeyID string, secretAccessKey string, session
 		)),
 	)
 	if err != nil {
-		log.Panic().Msg("unable to create aws client")
+		log.Error().Msg("unable to create aws client")
 	}
 
 	return awsClient

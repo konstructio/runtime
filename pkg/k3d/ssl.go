@@ -91,7 +91,8 @@ func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error
 				},
 			}, metav1.CreateOptions{})
 			if err != nil {
-				log.Fatal().Msgf("error creating kubernetes secret %s/%s: %s", app.Namespace, app.AppName, err)
+				log.Error().Msgf("error creating kubernetes secret %s/%s: %s", app.Namespace, app.AppName, err)
+				return err
 			}
 			log.Info().Msgf("created kubernetes secret: %s/%s", app.Namespace, app.AppName)
 		}

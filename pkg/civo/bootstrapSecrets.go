@@ -87,7 +87,8 @@ func BootstrapCivoMgmtCluster(civoToken string, kubeconfigPath string, gitProvid
 		} else if strings.Contains(err.Error(), "not found") {
 			_, err = clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Create(context.TODO(), secret, metav1.CreateOptions{})
 			if err != nil {
-				log.Fatal().Msgf("error creating kubernetes secret %s/%s: %s", secret.Namespace, secret.Name, err)
+				log.Error().Msgf("error creating kubernetes secret %s/%s: %s", secret.Namespace, secret.Name, err)
+				return err
 			}
 			log.Info().Msgf("created kubernetes secret: %s/%s", secret.Namespace, secret.Name)
 		}
@@ -115,7 +116,8 @@ func BootstrapCivoMgmtCluster(civoToken string, kubeconfigPath string, gitProvid
 		} else if strings.Contains(err.Error(), "not found") {
 			_, err = clientset.CoreV1().ServiceAccounts(serviceAccount.ObjectMeta.Namespace).Create(context.TODO(), serviceAccount, metav1.CreateOptions{})
 			if err != nil {
-				log.Fatal().Msgf("error creating kubernetes service account %s/%s: %s", serviceAccount.Namespace, serviceAccount.Name, err)
+				log.Error().Msgf("error creating kubernetes service account %s/%s: %s", serviceAccount.Namespace, serviceAccount.Name, err)
+				return err
 			}
 			log.Info().Msgf("created kubernetes service account: %s/%s", serviceAccount.Namespace, serviceAccount.Name)
 		}

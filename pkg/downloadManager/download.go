@@ -55,7 +55,7 @@ func DownloadFile(localFilename string, url string) error {
 func ExtractFileFromTarGz(gzipStream io.Reader, tarAddress string, targetFilePath string) {
 	uncompressedStream, err := gzip.NewReader(gzipStream)
 	if err != nil {
-		log.Panic().Msg("extractTarGz: NewReader failed")
+		log.Error().Msg("extractTarGz: NewReader failed")
 	}
 
 	tarReader := tar.NewReader(uncompressedStream)
@@ -66,7 +66,7 @@ func ExtractFileFromTarGz(gzipStream io.Reader, tarAddress string, targetFilePat
 			break
 		}
 		if err != nil {
-			log.Panic().Msgf("extractTarGz: Next() failed: %s", err.Error())
+			log.Error().Msgf("extractTarGz: Next() failed: %s", err.Error())
 		}
 		log.Info().Msg(header.Name)
 		if header.Name == tarAddress {
@@ -74,10 +74,10 @@ func ExtractFileFromTarGz(gzipStream io.Reader, tarAddress string, targetFilePat
 			case tar.TypeReg:
 				outFile, err := os.Create(targetFilePath)
 				if err != nil {
-					log.Panic().Msgf("extractTarGz: Create() failed: %s", err.Error())
+					log.Error().Msgf("extractTarGz: Create() failed: %s", err.Error())
 				}
 				if _, err := io.Copy(outFile, tarReader); err != nil {
-					log.Panic().Msgf("extractTarGz: Copy() failed: %s", err.Error())
+					log.Error().Msgf("extractTarGz: Copy() failed: %s", err.Error())
 				}
 				outFile.Close()
 

@@ -18,7 +18,8 @@ import (
 func NewDockerClient() *client.Client {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
-		log.Fatal().Msgf("error instantiating docker client: %s", err)
+		log.Error().Msgf("error instantiating docker client: %s", err)
+		return nil
 	}
 
 	return cli
@@ -27,7 +28,7 @@ func NewDockerClient() *client.Client {
 func (docker DockerClientWrapper) ListContainers() {
 	containers, err := docker.Client.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
-		panic(err)
+		log.Error().Msg(err.Error())
 	}
 
 	for _, container := range containers {

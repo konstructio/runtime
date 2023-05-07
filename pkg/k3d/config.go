@@ -8,11 +8,11 @@ package k3d
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -70,13 +70,12 @@ func GetConfig(clusterName string, gitProvider string, gitOwner string) *K3dConf
 	config := K3dConfig{}
 
 	if err := env.Parse(&config); err != nil {
-		log.Println("something went wrong loading the environment variables")
-		log.Panic(err)
+		log.Error().Msgf("something went wrong loading the environment variables: %s", err)
 	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Panic(err)
+		log.Error().Msgf("something went wrong getting home path: %s", err)
 	}
 
 	// cGitHost describes which git host to use depending on gitProvider

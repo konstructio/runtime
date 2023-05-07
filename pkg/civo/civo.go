@@ -35,8 +35,8 @@ func TestDomainLiveness(civoToken string, domainName string, domainId string, re
 
 	civoClient, err := civogo.NewClient(civoToken, region)
 	if err != nil {
-		log.Info().Msg(err.Error())
-		return log.Logger.Fatal().Stack().Enabled()
+		log.Error().Msg(err.Error())
+		return false
 	}
 
 	civoRecordConfig := &civogo.DNSRecordConfig{
@@ -95,7 +95,7 @@ func TestDomainLiveness(civoToken string, domainName string, domainId string, re
 			}
 		}
 		if count == 100 {
-			log.Panic().Msg("unable to resolve domain dns record. please check your domain registrar")
+			log.Error().Msg("unable to resolve domain dns record. please check your domain registrar")
 		}
 	}
 	return true
