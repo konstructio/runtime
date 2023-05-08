@@ -8,11 +8,11 @@ package configs
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 
 	"github.com/caarlos0/env/v6"
+	"github.com/rs/zerolog/log"
 )
 
 // DEPRECATED, will be removed in a future release
@@ -122,21 +122,16 @@ func ReadConfig() *Config {
 	config := Config{}
 
 	if err := env.Parse(&config); err != nil {
-		log.Println("something went wrong loading the environment variables")
-		log.Panic(err)
+		log.Fatal().Msgf("something went wrong loading the environment variables: %s", err)
 	}
 
 	homePath, err := os.UserHomeDir()
 	if err != nil {
-		log.Panic(err)
+		log.Fatal().Msgf("something went wrong getting home path: %s", err)
 	}
 
 	config.HomePath = homePath
 	config.K1FolderPath = fmt.Sprintf("%s/.k1", homePath)
-	if err != nil {
-		log.Panic(err)
-	}
-
 	config.GitopsDir = fmt.Sprintf("%s/.k1/gitops", homePath)
 	config.K1Dir = fmt.Sprintf("%s/.k1", homePath)
 
@@ -210,7 +205,7 @@ func ReadConfig() *Config {
 	// AWS SDK client will take it in advance
 	err = os.Setenv("AWS_SDK_LOAD_CONFIG", "1")
 	if err != nil {
-		log.Panicf("unable to set AWS_SDK_LOAD_CONFIG enviroment value, error is: %v", err)
+		log.Error().Msgf("unable to set AWS_SDK_LOAD_CONFIG enviroment value, error is: %v", err)
 	}
 
 	return &config

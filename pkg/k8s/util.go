@@ -41,7 +41,8 @@ func WaitForJobComplete(clientset *kubernetes.Clientset, job *batchv1.Job, timeo
 		Jobs(job.ObjectMeta.Namespace).
 		Watch(context.Background(), watchOptions)
 	if err != nil {
-		log.Fatal().Msgf("error when attempting to wait for Job: %s", err)
+		log.Error().Msgf("error when attempting to wait for Job: %s", err)
+		return false, err
 	}
 	log.Info().Msgf("waiting for %s Job completion. This could take up to %v seconds.", job.Name, timeoutSeconds)
 
