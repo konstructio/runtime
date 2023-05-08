@@ -122,12 +122,12 @@ func ReadConfig() *Config {
 	config := Config{}
 
 	if err := env.Parse(&config); err != nil {
-		log.Error().Msgf("something went wrong loading the environment variables: %s", err)
+		log.Fatal().Msgf("something went wrong loading the environment variables: %s", err)
 	}
 
 	homePath, err := os.UserHomeDir()
 	if err != nil {
-		log.Error().Msgf("something went wrong getting home path: %s", err)
+		log.Fatal().Msgf("something went wrong getting home path: %s", err)
 	}
 
 	config.HomePath = homePath

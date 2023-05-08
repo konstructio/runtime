@@ -90,6 +90,7 @@ func (c *DigitaloceanConfiguration) TestDomainLiveness(domainName string) bool {
 		}
 		if count == 100 {
 			log.Error().Msg("unable to resolve domain dns record. please check your domain registrar")
+			return false
 		}
 	}
 	return true

@@ -120,6 +120,7 @@ func (conf *AWSConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool
 		}
 		if count == 100 {
 			log.Error().Msg("unable to resolve hosted zone dns record. please check your domain registrar")
+			return false
 		}
 	}
 	return true
