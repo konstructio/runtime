@@ -142,3 +142,19 @@ func GetDomainApexContent(domainName string) bool {
 
 	return exists
 }
+
+// GetDNSDomains lists all available DNS domains
+func (c *DigitaloceanConfiguration) GetDNSDomains() ([]string, error) {
+	var domainList []string
+
+	domains, _, err := c.Client.Domains.List(c.Context, &godo.ListOptions{})
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, domain := range domains {
+		domainList = append(domainList, domain.Name)
+	}
+
+	return domainList, nil
+}

@@ -142,3 +142,19 @@ func GetDomainApexContent(domainName string) bool {
 
 	return exists
 }
+
+// GetDNSDomains lists all available DNS domains
+func (c *VultrConfiguration) GetDNSDomains() ([]string, error) {
+	var domainList []string
+
+	domains, _, _, err := c.Client.Domain.List(c.Context, &govultr.ListOptions{})
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, domain := range domains {
+		domainList = append(domainList, domain.Domain)
+	}
+
+	return domainList, nil
+}
