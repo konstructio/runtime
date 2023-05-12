@@ -145,3 +145,25 @@ func GetDNSInfo(civoToken string, domainName string, region string) (string, err
 	return civoDNSDomain.ID, nil
 
 }
+
+// GetDNSDomains lists all available DNS domains
+func GetDNSDomains(civoToken string, region string) ([]string, error) {
+	civoClient, err := civogo.NewClient(civoToken, region)
+	if err != nil {
+		log.Info().Msg(err.Error())
+		return []string{}, err
+	}
+
+	var domainList []string
+
+	domains, err := civoClient.ListDNSDomains()
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, domain := range domains {
+		domainList = append(domainList, domain.Name)
+	}
+
+	return domainList, nil
+}
