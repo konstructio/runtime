@@ -66,6 +66,24 @@ func (conf *AWSConfiguration) CreateBucket(bucketName string) (*s3.CreateBucketO
 	return bucket, nil
 }
 
+// DeleteBucket
+func (conf *AWSConfiguration) DeleteBucket(bucketName string) error {
+	s3Client := s3.NewFromConfig(conf.Config)
+
+	// Create bucket
+	log.Info().Msgf("deleting s3 bucket %s", bucketName)
+	s3DeleteBucketInput := &s3.DeleteBucketInput{
+		Bucket: aws.String(bucketName),
+	}
+
+	_, err := s3Client.DeleteBucket(context.Background(), s3DeleteBucketInput)
+	if err != nil {
+		return fmt.Errorf("error deleting s3 bucket %s: %s", bucketName, err)
+	}
+
+	return nil
+}
+
 func (conf *AWSConfiguration) ListBuckets() (*s3.ListBucketsOutput, error) {
 	fmt.Println("listing buckets")
 	s3Client := s3.NewFromConfig(conf.Config)
