@@ -29,7 +29,7 @@ var backupResolver = &net.Resolver{
 }
 
 // TestDomainLiveness checks Civo DNS for the liveness test record
-func (c *CivoConfiguration) TestDomainLiveness(civoToken string, domainName string, domainId string, region string) bool {
+func (c *CivoConfiguration) TestDomainLiveness(domainName string, domainId string, region string) bool {
 	civoRecordName := fmt.Sprintf("kubefirst-liveness.%s", domainName)
 	civoRecordValue := "domain record propagated"
 
@@ -120,8 +120,7 @@ func GetDomainApexContent(domainName string) bool {
 }
 
 // GetDNSInfo try to reach the provided domain
-func (c *CivoConfiguration) GetDNSInfo(civoToken string, domainName string, region string) (string, error) {
-
+func (c *CivoConfiguration) GetDNSInfo(domainName string, region string) (string, error) {
 	log.Info().Msg("GetDNSInfo (working...)")
 
 	civoDNSDomain, err := c.Client.FindDNSDomain(domainName)
@@ -135,7 +134,7 @@ func (c *CivoConfiguration) GetDNSInfo(civoToken string, domainName string, regi
 }
 
 // GetDNSDomains lists all available DNS domains
-func (c *CivoConfiguration) GetDNSDomains(civoToken string, region string) ([]string, error) {
+func (c *CivoConfiguration) GetDNSDomains(region string) ([]string, error) {
 	var domainList []string
 
 	domains, err := c.Client.ListDNSDomains()
