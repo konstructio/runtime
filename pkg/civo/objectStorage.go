@@ -7,18 +7,15 @@ See the LICENSE file for more details.
 package civo
 
 import (
+	"fmt"
+
 	"github.com/civo/civogo"
 	"github.com/rs/zerolog/log"
 )
 
-func CreateStorageBucket(civoToken string, accessKeyId string, bucketName string, region string) (civogo.ObjectStore, error) {
-	client, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return civogo.ObjectStore{}, err
-	}
-
-	bucket, err := client.NewObjectStore(&civogo.CreateObjectStoreRequest{
+// CreateStorageBucket creates an object storage bucket
+func (c *CivoConfiguration) CreateStorageBucket(accessKeyId string, bucketName string, region string) (civogo.ObjectStore, error) {
+	bucket, err := c.Client.NewObjectStore(&civogo.CreateObjectStoreRequest{
 		Name:        bucketName,
 		Region:      region,
 		AccessKeyID: accessKeyId,
@@ -31,21 +28,48 @@ func CreateStorageBucket(civoToken string, accessKeyId string, bucketName string
 	return *bucket, nil
 }
 
-// todo refactor or remove this internal library and use the native client. functionality. see next todo client.
-func GetAccessCredentials(civoToken string, credentialName string, region string) (civogo.ObjectStoreCredential, error) {
-	creds, err := checkKubefirstCredentials(civoToken, credentialName, region)
+// DeleteStorageBucket deletes an object storage bucket
+func (c *CivoConfiguration) DeleteStorageBucket(bucketName string) error {
+	objsts, err := c.Client.ListObjectStores()
+	if err != nil {
+		return err
+	}
+
+	var bucketID string
+
+	for _, objst := range objsts.Items {
+		if objst.Name == bucketName {
+			bucketID = objst.ID
+		}
+	}
+
+	if bucketID == "" {
+		return fmt.Errorf("bucket %s not found", bucketName)
+	}
+
+	_, err = c.Client.DeleteObjectStore(bucketID)
+	if err != nil {
+		return fmt.Errorf("error deleting object store %s: %s", bucketName, err)
+	}
+
+	return nil
+}
+
+// GetAccessCredentials creates object store access credentials if they do not exist and returns them if they do
+func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region string) (civogo.ObjectStoreCredential, error) {
+	creds, err := c.checkKubefirstCredentials(credentialName, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 	}
 
 	if creds == (civogo.ObjectStoreCredential{}) {
 		log.Info().Msgf("credential name: %s not found, creating", credentialName)
-		creds, err = createAccessCredentials(civoToken, credentialName, region)
+		creds, err = c.createAccessCredentials(credentialName, region)
 		if err != nil {
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		creds, err = getAccessCredentials(civoToken, creds.ID, region)
+		creds, err = c.getAccessCredentials(creds.ID, region)
 		if err != nil {
 			return civogo.ObjectStoreCredential{}, err
 		}
@@ -57,19 +81,14 @@ func GetAccessCredentials(civoToken string, credentialName string, region string
 	return creds, nil
 }
 
-func DeleteAccessCredentials(civoToken string, credentialName string, region string) error {
-	client, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return err
-	}
-
-	creds, err := checkKubefirstCredentials(civoToken, credentialName, region)
+// DeleteAccessCredentials deletes object store credentials
+func (c *CivoConfiguration) DeleteAccessCredentials(credentialName string, region string) error {
+	creds, err := c.checkKubefirstCredentials(credentialName, region)
 	if err != nil {
 		log.Info().Msg(err.Error())
 	}
 
-	_, err = client.DeleteObjectStoreCredential(creds.ID)
+	_, err = c.Client.DeleteObjectStoreCredential(creds.ID)
 	if err != nil {
 		return err
 	}
@@ -77,16 +96,10 @@ func DeleteAccessCredentials(civoToken string, credentialName string, region str
 	return nil
 }
 
-func checkKubefirstCredentials(civoToken string, credentialName string, region string) (civogo.ObjectStoreCredential, error) {
-	client, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return civogo.ObjectStoreCredential{}, err
-	}
-
-	// todo client.FindObjectStoreCredential()
+// checkKubefirstCredentials determines whether or not object store credentials exist
+func (c *CivoConfiguration) checkKubefirstCredentials(credentialName string, region string) (civogo.ObjectStoreCredential, error) {
 	log.Info().Msgf("looking for credential: %s", credentialName)
-	remoteCredentials, err := client.ListObjectStoreCredentials()
+	remoteCredentials, err := c.Client.ListObjectStoreCredentials()
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return civogo.ObjectStoreCredential{}, err
@@ -104,14 +117,9 @@ func checkKubefirstCredentials(civoToken string, credentialName string, region s
 	return creds, err
 }
 
-// todo client.NewObjectStoreCredential()
-func createAccessCredentials(civoToken string, credentialName string, region string) (civogo.ObjectStoreCredential, error) {
-	client, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return civogo.ObjectStoreCredential{}, err
-	}
-	creds, err := client.NewObjectStoreCredential(&civogo.CreateObjectStoreCredentialRequest{
+// createAccessCredentials creates access credentials for an object store
+func (c *CivoConfiguration) createAccessCredentials(credentialName string, region string) (civogo.ObjectStoreCredential, error) {
+	creds, err := c.Client.NewObjectStoreCredential(&civogo.CreateObjectStoreCredentialRequest{
 		Name:   credentialName,
 		Region: region,
 	})
@@ -121,14 +129,9 @@ func createAccessCredentials(civoToken string, credentialName string, region str
 	return *creds, nil
 }
 
-func getAccessCredentials(civoToken string, id string, region string) (civogo.ObjectStoreCredential, error) {
-	client, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return civogo.ObjectStoreCredential{}, err
-	}
-
-	creds, err := client.GetObjectStoreCredential(id)
+// getAccessCredentials retrieves an object store's access credentials
+func (c *CivoConfiguration) getAccessCredentials(id string, region string) (civogo.ObjectStoreCredential, error) {
+	creds, err := c.Client.GetObjectStoreCredential(id)
 	if err != nil {
 		return civogo.ObjectStoreCredential{}, err
 	}

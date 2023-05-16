@@ -29,15 +29,9 @@ var backupResolver = &net.Resolver{
 }
 
 // TestDomainLiveness checks Civo DNS for the liveness test record
-func TestDomainLiveness(civoToken string, domainName string, domainId string, region string) bool {
+func (c *CivoConfiguration) TestDomainLiveness(civoToken string, domainName string, domainId string, region string) bool {
 	civoRecordName := fmt.Sprintf("kubefirst-liveness.%s", domainName)
 	civoRecordValue := "domain record propagated"
-
-	civoClient, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Error().Msg(err.Error())
-		return false
-	}
 
 	civoRecordConfig := &civogo.DNSRecordConfig{
 		Type:     civogo.DNSRecordTypeTXT,
@@ -52,7 +46,7 @@ func TestDomainLiveness(civoToken string, domainName string, domainId string, re
 	log.Info().Msgf("domainName %s", domainName)
 
 	//check for existing records
-	records, err := civoClient.ListDNSRecords(domainId)
+	records, err := c.Client.ListDNSRecords(domainId)
 	if err != nil {
 		log.Warn().Msgf("%s", err)
 		return false
@@ -63,7 +57,7 @@ func TestDomainLiveness(civoToken string, domainName string, domainId string, re
 	}
 
 	//create record if it does not exist
-	_, err = civoClient.CreateDNSRecord(domainId, civoRecordConfig)
+	_, err = c.Client.CreateDNSRecord(domainId, civoRecordConfig)
 	if err != nil {
 		log.Warn().Msgf("%s", err)
 		return false
@@ -126,17 +120,11 @@ func GetDomainApexContent(domainName string) bool {
 }
 
 // GetDNSInfo try to reach the provided domain
-func GetDNSInfo(civoToken string, domainName string, region string) (string, error) {
+func (c *CivoConfiguration) GetDNSInfo(civoToken string, domainName string, region string) (string, error) {
 
 	log.Info().Msg("GetDNSInfo (working...)")
 
-	civoClient, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return "", err
-	}
-
-	civoDNSDomain, err := civoClient.FindDNSDomain(domainName)
+	civoDNSDomain, err := c.Client.FindDNSDomain(domainName)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		return "", err
@@ -147,16 +135,10 @@ func GetDNSInfo(civoToken string, domainName string, region string) (string, err
 }
 
 // GetDNSDomains lists all available DNS domains
-func GetDNSDomains(civoToken string, region string) ([]string, error) {
-	civoClient, err := civogo.NewClient(civoToken, region)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		return []string{}, err
-	}
-
+func (c *CivoConfiguration) GetDNSDomains(civoToken string, region string) ([]string, error) {
 	var domainList []string
 
-	domains, err := civoClient.ListDNSDomains()
+	domains, err := c.Client.ListDNSDomains()
 	if err != nil {
 		return []string{}, err
 	}
