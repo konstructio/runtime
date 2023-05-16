@@ -60,6 +60,28 @@ func (c *VultrConfiguration) CreateObjectStorage(region string, storeName string
 	return govultr.ObjectStorage{}, err
 }
 
+// DeleteObjectStorage deletes a Vultr object storage resource
+func (c *VultrConfiguration) DeleteObjectStorage(region string, storeName string) error {
+	// Get object storage id
+	res, _, _, err := c.Client.ObjectStorage.List(c.Context, &govultr.ListOptions{
+		Label: storeName,
+	})
+	if err != nil {
+		return fmt.Errorf("error listing object storage: %s", err)
+	}
+
+	if len(res) == 0 {
+		return fmt.Errorf("could not find object storage %s", storeName)
+	}
+
+	err = c.Client.ObjectStorage.Delete(c.Context, res[0].ID)
+	if err != nil {
+		return fmt.Errorf("error deleting object storage: %s", err)
+	}
+
+	return nil
+}
+
 // GetObjectStorage retrieves all Vultr object storage resources
 func (c *VultrConfiguration) GetObjectStorage(region string) ([]govultr.ObjectStorage, error) {
 	objst, _, _, err := c.Client.ObjectStorage.List(c.Context, &govultr.ListOptions{
