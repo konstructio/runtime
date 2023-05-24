@@ -148,3 +148,19 @@ func (c *CivoConfiguration) GetDNSDomains(region string) ([]string, error) {
 
 	return domainList, nil
 }
+
+// GetRegions lists all available regions
+func (c *CivoConfiguration) GetRegions(region string) ([]string, error) {
+	var regionList []string
+
+	regions, err := c.Client.ListRegions()
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, region := range regions {
+		regionList = append(regionList, region.Code)
+	}
+
+	return regionList, nil
+}

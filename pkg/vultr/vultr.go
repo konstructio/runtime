@@ -158,3 +158,19 @@ func (c *VultrConfiguration) GetDNSDomains() ([]string, error) {
 
 	return domainList, nil
 }
+
+// GetRegions lists all available regions
+func (c *VultrConfiguration) GetRegions() ([]string, error) {
+	var regionList []string
+
+	regions, _, _, err := c.Client.Region.List(c.Context, &govultr.ListOptions{})
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, region := range regions {
+		regionList = append(regionList, region.ID)
+	}
+
+	return regionList, nil
+}
