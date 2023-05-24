@@ -158,3 +158,19 @@ func (c *DigitaloceanConfiguration) GetDNSDomains() ([]string, error) {
 
 	return domainList, nil
 }
+
+// GetRegions lists all available regions
+func (c *DigitaloceanConfiguration) GetRegions() ([]string, error) {
+	var regionList []string
+
+	regions, _, err := c.Client.Regions.List(c.Context, &godo.ListOptions{})
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, region := range regions {
+		regionList = append(regionList, region.Slug)
+	}
+
+	return regionList, nil
+}

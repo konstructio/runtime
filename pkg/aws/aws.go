@@ -8,6 +8,7 @@ package aws
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/rs/zerolog/log"
@@ -15,6 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	route53Types "github.com/aws/aws-sdk-go-v2/service/route53/types"
 )
 
@@ -66,4 +68,22 @@ func NewAwsV3(region string, accessKeyID string, secretAccessKey string, session
 	}
 
 	return awsClient
+}
+
+// GetRegions lists all available regions
+func (conf *AWSConfiguration) GetRegions(region string) ([]string, error) {
+	var regionList []string
+
+	ec2Client := ec2.NewFromConfig(conf.Config)
+
+	regions, err := ec2Client.DescribeRegions(context.Background(), &ec2.DescribeRegionsInput{})
+	if err != nil {
+		return []string{}, fmt.Errorf("error listing regions: %s", err)
+	}
+
+	for _, region := range regions.Regions {
+		regionList = append(regionList, *region.RegionName)
+	}
+
+	return regionList, nil
 }
