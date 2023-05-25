@@ -43,8 +43,43 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 		"--k3s-arg", `--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@agent:*`,
 		"--k3s-arg", `--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@agent:*`,
 		"--volume", volumeDir+":/var/lib/rancher/k3s/storage@all",
-		"--port", "443:443@loadbalancer")
+		"--port", "443:443@loadbalancer",
+	)
+	if err != nil {
+		log.Info().Msg("error creating k3d cluster")
+		return err
+	}
 
+	time.Sleep(20 * time.Second)
+
+	kConfigString, _, err := pkg.ExecShellReturnStrings(k3dClient, "kubeconfig", "get", clusterName)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(kubeconfig, []byte(kConfigString), 0644)
+	if err != nil {
+		log.Error().Err(err).Msg("error updating config")
+		return fmt.Errorf("error updating config")
+	}
+
+	return nil
+}
+
+// ClusterCreate create an k3d cluster for use with console and api
+func ClusterCreateConsoleAPI(clusterName string, k1Dir string, k3dClient string, kubeconfig string) error {
+	log.Info().Msg("creating K3d cluster...")
+
+	_, _, err := pkg.ExecShellReturnStrings(k3dClient, "cluster", "create",
+		clusterName,
+		"--image", fmt.Sprintf("rancher/k3s:%s", k3dImageTag),
+		"--agents", "1",
+		"--agents-memory", "1024m",
+		"--registry-create", "k3d-"+clusterName+"-registry",
+		"--k3s-arg", `--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@agent:*`,
+		"--k3s-arg", `--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@agent:*`,
+		"--port", "443:443@loadbalancer",
+	)
 	if err != nil {
 		log.Info().Msg("error creating k3d cluster")
 		return err
