@@ -34,7 +34,7 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 			log.Info().Msgf("%s directory already exists, continuing", volumeDir)
 		}
 	}
-	_, _, err := pkg.ExecShellReturnStrings(k3dClient, "cluster", "create",
+	errLineOne, errLineTwo, err := pkg.ExecShellReturnStrings(k3dClient, "cluster", "create",
 		clusterName,
 		"--image", fmt.Sprintf("rancher/k3s:%s", k3dImageTag),
 		"--agents", "3",
@@ -47,6 +47,7 @@ func ClusterCreate(clusterName string, k1Dir string, k3dClient string, kubeconfi
 	)
 	if err != nil {
 		log.Info().Msg("error creating k3d cluster")
+		log.Info().Msgf(" err: %s %s %s", errLineOne, errLineTwo, err)
 		return err
 	}
 
