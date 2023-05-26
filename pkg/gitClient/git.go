@@ -134,3 +134,16 @@ func Commit(repo *git.Repository, commitMsg string) error {
 	})
 	return nil
 }
+
+func Pull(repo *git.Repository, branch string) error {
+	w, _ := repo.Worktree()
+	branchName := plumbing.NewBranchReferenceName(branch)
+	err := w.Pull(&git.PullOptions{
+		ReferenceName: branchName,
+	})
+	if err != nil {
+		return fmt.Errorf("error during git pull: %s", err)
+	}
+
+	return nil
+}
