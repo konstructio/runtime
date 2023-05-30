@@ -32,11 +32,17 @@ import (
 //			vaultStopChannel)
 //		wg.Done()
 //	}()
-func OpenPortForwardPodWrapper(clientset *kubernetes.Clientset, restConfig *rest.Config, podName, namespace string, podPort int, podLocalPort int, stopChannel chan struct{}) {
+func OpenPortForwardPodWrapper(
+	clientset *kubernetes.Clientset,
+	restConfig *rest.Config,
+	podName string,
+	namespace string,
+	podPort int,
+	podLocalPort int,
+	stopChannel chan struct{},
+) {
 	// readyCh communicate when the port forward is ready to get traffic
 	readyCh := make(chan struct{})
-
-	// todo: constants for podName, PodPort and localPort, namespace
 
 	portForwardRequest := PortForwardAPodRequest{
 		RestConfig: restConfig,
@@ -50,6 +56,12 @@ func OpenPortForwardPodWrapper(clientset *kubernetes.Clientset, restConfig *rest
 		LocalPort: podLocalPort,
 		StopCh:    stopChannel,
 		ReadyCh:   readyCh,
+	}
+
+	// Check to see if the port is already used
+	err := CheckForExistingPortForwards(podLocalPort)
+	if err != nil {
+		log.Fatal().Msgf("unable to start port forward for pod %s in namespace %s: %s", podName, namespace, err)
 	}
 
 	go func() {
@@ -73,7 +85,15 @@ func OpenPortForwardPodWrapper(clientset *kubernetes.Clientset, restConfig *rest
 
 }
 
-func OpenPortForwardServiceWrapper(kubeconfigPath, kubeconfigClientPath, namespace, serviceName string, servicePort int, serviceLocalPort int, stopChannel chan struct{}) {
+func OpenPortForwardServiceWrapper(
+	kubeconfigPath string,
+	kubeconfigClientPath string,
+	namespace string,
+	serviceName string,
+	servicePort int,
+	serviceLocalPort int,
+	stopChannel chan struct{},
+) {
 	kubeconfig, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		log.Error().Err(err).Msg("")
@@ -81,8 +101,6 @@ func OpenPortForwardServiceWrapper(kubeconfigPath, kubeconfigClientPath, namespa
 
 	// readyCh communicate when the port forward is ready to get traffic
 	readyCh := make(chan struct{})
-
-	// todo: constants for podName, PodPort and localPort, namespace
 
 	portForwardRequest := PortForwardAServiceRequest{
 		RestConfig: kubeconfig,
@@ -98,7 +116,13 @@ func OpenPortForwardServiceWrapper(kubeconfigPath, kubeconfigClientPath, namespa
 		ReadyCh:     readyCh,
 	}
 
-	clientset, err := GetClientSet(kubeconfigPath)
+	clientset, _ := GetClientSet(kubeconfigPath)
+
+	// Check to see if the port is already used
+	err = CheckForExistingPortForwards(serviceLocalPort)
+	if err != nil {
+		log.Fatal().Msgf("unable to start port forward for service %s in namespace %s: %s", serviceName, namespace, err)
+	}
 
 	go func() {
 		// todo, i think we can use the RestConfig and remove the "kubectlClientPath"
