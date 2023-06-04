@@ -74,7 +74,7 @@ func (conf *VaultConfiguration) IterSecrets(
 
 	for _, m := range result {
 		for k, v := range m {
-			if k == "VAULT_ADRR" {
+			if k == "VAULT_ADDR" {
 				_, err = f.WriteString(fmt.Sprintf("export %s=\"%v\"\n", k, endpoint))
 				if err != nil {
 					return fmt.Errorf("error writing to file: %s", err)
