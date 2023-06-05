@@ -16,6 +16,9 @@ import (
 const (
 	SegmentIOWriteKey = "0gAYkX5RV3vt7s4pqCOOsDb6WHPLT30M"
 
+	// Install
+	MetricKubefirstInstalled = "kubefirst.installed"
+
 	// Init
 	MetricInitStarted   = "kubefirst.init.started"
 	MetricInitCompleted = "kubefirst.init.completed"
@@ -41,8 +44,8 @@ const (
 	MetricKbotSetupFailed    = "kubefirst.init.kbot_setup.failed"
 
 	// Create
-	MetricMgmtClusterInstallStarted   = "kubefirst.mgmt_cluster_install.started"
-	MetricMgmtClusterInstallCompleted = "kubefirst.mgmt_cluster_install.completed"
+	MetricClusterInstallStarted   = "kubefirst.cluster_install.started"
+	MetricClusterInstallCompleted = "kubefirst.cluster_install.completed"
 
 	MetricGitTerraformApplyStarted   = "kubefirst.git_terraform_apply.started"
 	MetricGitTerraformApplyCompleted = "kubefirst.git_terraform_apply.completed"
@@ -77,8 +80,8 @@ const (
 	MetricUsersTerraformApplyFailed    = "kubefirst.users_terraform_apply.failed"
 
 	// Delete
-	MetricMgmtClusterDeleteStarted   = "kubefirst.mgmt_cluster_delete.started"
-	MetricMgmtClusterDeleteCompleted = "kubefirst.mgmt_cluster_delete.completed"
+	MetricClusterDeleteStarted   = "kubefirst.cluster_delete.started"
+	MetricClusterDeleteCompleted = "kubefirst.cluster_delete.completed"
 )
 
 type SegmentClient struct {
@@ -89,6 +92,7 @@ type SegmentClient struct {
 	ClusterType       string
 	DomainName        string
 	GitProvider       string
+	InstallMethod     string
 	KubefirstClient   string
 	KubefirstTeam     string
 	KubefirstTeamInfo string
