@@ -47,8 +47,8 @@ func (c *SegmentClient) SendCountMetric(
 			Set("kubefirst_team", c.KubefirstTeam).
 			Set("kubefirst_team_info", c.KubefirstTeamInfo).
 			Set("machine_id", machineID).
-			Set("error", errorMessage),
-		Set("install_method", c.InstallMethod),
+			Set("error", errorMessage).
+			Set("install_method", c.InstallMethod),
 	})
 	if err != nil {
 		return fmt.Sprintf("error sending track to segment: %s", err.Error())
