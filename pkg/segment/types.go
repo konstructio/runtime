@@ -44,8 +44,6 @@ const (
 	MetricKbotSetupFailed    = "kubefirst.init.kbot_setup.failed"
 
 	// Create
-	MetricMgmtClusterInstallStarted   = "kubefirst.mgmt_cluster_install.started"
-	MetricMgmtClusterInstallCompleted = "kubefirst.mgmt_cluster_install.completed"
 	MetricClusterInstallStarted   = "kubefirst.cluster_install.started"
 	MetricClusterInstallCompleted = "kubefirst.cluster_install.completed"
 
@@ -82,8 +80,6 @@ const (
 	MetricUsersTerraformApplyFailed    = "kubefirst.users_terraform_apply.failed"
 
 	// Delete
-	MetricMgmtClusterDeleteStarted   = "kubefirst.mgmt_cluster_delete.started"
-	MetricMgmtClusterDeleteCompleted = "kubefirst.mgmt_cluster_delete.completed"
 	MetricClusterDeleteStarted   = "kubefirst.cluster_delete.started"
 	MetricClusterDeleteCompleted = "kubefirst.cluster_delete.completed"
 )
