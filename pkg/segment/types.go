@@ -16,6 +16,9 @@ import (
 const (
 	SegmentIOWriteKey = "0gAYkX5RV3vt7s4pqCOOsDb6WHPLT30M"
 
+	// Heartbeat
+	MetricKubefirstHeartbeat = "kubefirst.heartbeat"
+
 	// Install
 	MetricKubefirstInstalled = "kubefirst.installed"
 
@@ -96,4 +99,5 @@ type SegmentClient struct {
 	KubefirstClient   string
 	KubefirstTeam     string
 	KubefirstTeamInfo string
+	Url               string
 }
