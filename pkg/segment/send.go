@@ -56,3 +56,26 @@ func (c *SegmentClient) SendCountMetric(
 
 	return ""
 }
+
+// SendCountClusterZeroMetric
+func (c *SegmentClient) SendCountClusterZeroMetric(
+	metricName string,
+	errorMessage string,
+) string {
+	err := c.Client.Enqueue(analytics.Track{
+		Event: metricName,
+		Properties: analytics.NewProperties().
+			Set("cli_version", c.CliVersion).
+			Set("cluster_id", c.ClusterID).
+			Set("cluster_type", c.ClusterType).
+			Set("client", c.KubefirstClient).
+			Set("kubefirst_team", c.KubefirstTeam).
+			Set("kubefirst_team_info", c.KubefirstTeamInfo).
+			Set("install_method", c.InstallMethod),
+	})
+	if err != nil {
+		return fmt.Sprintf("error sending track to segment: %s", err.Error())
+	}
+
+	return ""
+}
