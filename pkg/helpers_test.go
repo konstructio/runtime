@@ -75,6 +75,44 @@ func TestRemoveSubDomain(t *testing.T) {
 	}
 }
 
+func TestRemoveSubDomainV2(t *testing.T) {
+
+	type args struct {
+		domain string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "single domain",
+			args:    args{"example.com"},
+			want:    "example.com",
+			wantErr: false,
+		},
+		{
+			name:    "no domain value",
+			args:    args{""},
+			want:    "",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := RemoveSubdomainV2(tt.args.domain)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("RemoveSubdomainV2() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("RemoveSubdomainV2() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_isValidURL(t *testing.T) {
 	type args struct {
 		rawURL string
