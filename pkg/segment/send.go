@@ -63,7 +63,7 @@ func (c *SegmentClient) SendCountClusterZeroMetric(
 	errorMessage string,
 ) string {
 	err := c.Client.Enqueue(analytics.Track{
-		UserId: "bootstrap",
+		UserId: c.ClusterID,
 		Event:  metricName,
 		Properties: analytics.NewProperties().
 			Set("cli_version", c.CliVersion).
