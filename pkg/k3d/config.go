@@ -52,6 +52,7 @@ type K3dConfig struct {
 	DestinationMetaphorRepoGitURL   string
 	GitopsDir                       string
 	GitProvider                     string
+	GitProtocol                     string
 	K1Dir                           string
 	K3dClient                       string
 	Kubeconfig                      string
@@ -116,6 +117,7 @@ type GitopsTokenValues struct {
 	GitlabOwnerGroupID            int
 	GitlabUser                    string
 	GitopsRepoGitURL              string
+	GitopsRepoHttpsURL            string
 	DomainName                    string
 	AtlantisAllowList             string
 	AlertsEmail                   string

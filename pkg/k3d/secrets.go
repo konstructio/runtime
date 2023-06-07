@@ -21,7 +21,7 @@ import (
 func AddK3DSecrets(
 	atlantisWebhookSecret string,
 	kbotPublicKey string,
-	destinationGitopsRepoGitURL string,
+	destinationGitopsRepoURL string,
 	kbotPrivateKey string,
 	gitProvider string,
 	gitUser string,
@@ -68,6 +68,29 @@ func AddK3DSecrets(
 	}
 
 	// Create secrets
+
+	// swap secret data based on https flag
+	data := map[string][]byte{}
+	if strings.Contains(destinationGitopsRepoURL, "https://") {
+
+		// http basic auth
+		data = map[string][]byte{
+			"type":     []byte("git"),
+			"name":     []byte(fmt.Sprintf("%s-gitops", gitUser)),
+			"url":      []byte(destinationGitopsRepoURL),
+			"username": []byte(gitUser),
+			"password": []byte(tokenValue),
+		}
+	} else {
+		// ssh
+		data = map[string][]byte{
+			"type":          []byte("git"),
+			"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
+			"url":           []byte(destinationGitopsRepoURL),
+			"sshPrivateKey": []byte(kbotPrivateKey),
+		}
+	}
+
 	createSecrets := []*v1.Secret{
 		// argocd
 		{
@@ -77,12 +100,7 @@ func AddK3DSecrets(
 				Annotations: map[string]string{"managed-by": "argocd.argoproj.io"},
 				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
 			},
-			Data: map[string][]byte{
-				"type":          []byte("git"),
-				"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
-				"url":           []byte(destinationGitopsRepoGitURL),
-				"sshPrivateKey": []byte(kbotPrivateKey),
-			},
+			Data: data,
 		},
 	}
 	for _, secret := range createSecrets {

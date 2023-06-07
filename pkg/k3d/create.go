@@ -107,45 +107,47 @@ func PrepareGitRepositories(
 	gitProvider string,
 	clusterName string,
 	clusterType string,
-	destinationGitopsRepoGitURL string,
+	DestinationGitopsRepoHttpsURL string,
 	gitopsDir string,
 	gitopsTemplateBranch string,
 	gitopsTemplateURL string,
-	destinationMetaphorRepoGitURL string,
+	destinationMetaphorRepoHttpsURL string,
 	k1Dir string,
 	gitopsTokens *GitopsTokenValues,
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
+	gitProtocol string,
 ) error {
 
 	//* clone the gitops-template repo
 	gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
 	if err != nil {
-		log.Info().Msgf("error opening repo at: %s", gitopsDir)
+		log.Info().Msgf("error opening repo at: %s, err: %v", gitopsDir, err)
 	}
 	log.Info().Msg("gitops repository clone complete")
 
 	//* adjust the content for the gitops repo
 	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir)
 	if err != nil {
+		log.Info().Msgf("err: %v", err)
 		return err
 	}
 
 	//* detokenize the gitops repo
-	detokenizeGitGitops(gitopsDir, gitopsTokens)
+	detokenizeGitGitops(gitopsDir, gitopsTokens, gitProtocol)
 	if err != nil {
 		return err
 	}
 
 	//* add new remote
-	err = gitClient.AddRemote(destinationGitopsRepoGitURL, gitProvider, gitopsRepo)
+	err = gitClient.AddRemote(DestinationGitopsRepoHttpsURL, gitProvider, gitopsRepo)
 	if err != nil {
 		return err
 	}
 
 	//! metaphor
 	//* adjust the content for the gitops repo
-	err = AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsDir, gitProvider, k1Dir)
+	err = AdjustMetaphorRepo(destinationMetaphorRepoHttpsURL, gitopsDir, gitProvider, k1Dir)
 	if err != nil {
 		return err
 	}
@@ -164,7 +166,7 @@ func PrepareGitRepositories(
 	}
 
 	//* add new remote
-	err = gitClient.AddRemote(destinationMetaphorRepoGitURL, gitProvider, metaphorRepo)
+	err = gitClient.AddRemote(destinationMetaphorRepoHttpsURL, gitProvider, metaphorRepo)
 	if err != nil {
 		return err
 	}

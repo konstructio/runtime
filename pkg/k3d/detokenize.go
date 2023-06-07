@@ -18,9 +18,9 @@ import (
 )
 
 // detokenizeGitGitops - Translate tokens by values on a given path
-func detokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
+func detokenizeGitGitops(path string, tokens *GitopsTokenValues, gitProtocol string) error {
 
-	err := filepath.Walk(path, detokenizeGitops(path, tokens))
+	err := filepath.Walk(path, detokenizeGitops(path, tokens, gitProtocol))
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func detokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
 	return nil
 }
 
-func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc {
+func detokenizeGitops(path string, tokens *GitopsTokenValues, gitProtocol string) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -71,7 +71,6 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc 
 				newContents = strings.Replace(newContents, "<GITHUB_OWNER>", strings.ToLower(tokens.GithubOwner), -1)
 				newContents = strings.Replace(newContents, "<GITHUB_USER>", tokens.GithubUser, -1)
 				newContents = strings.Replace(newContents, "<GIT_PROVIDER>", tokens.GitProvider, -1)
-				newContents = strings.Replace(newContents, "<GITOPS_REPO_GIT_URL>", tokens.GitopsRepoGitURL, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_HOST>", tokens.GitlabHost, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_OWNER>", tokens.GitlabOwner, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_USER>", tokens.GitlabUser, -1)
@@ -79,6 +78,13 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc 
 				newContents = strings.Replace(newContents, "<VAULT_INGRESS_URL>", tokens.VaultIngressURL, -1)
 				newContents = strings.Replace(newContents, "<USE_TELEMETRY>", tokens.UseTelemetry, -1)
 				newContents = strings.Replace(newContents, "<K3D_DOMAIN>", DomainName, -1)
+
+				// Switch the repo url based on https flag
+				if strings.Contains(gitProtocol, "https") {
+					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoHttpsURL, -1)
+				} else {
+					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoGitURL, -1)
+				}
 
 				err = ioutil.WriteFile(path, []byte(newContents), 0)
 				if err != nil {
