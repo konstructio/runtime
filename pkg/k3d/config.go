@@ -10,9 +10,11 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/caarlos0/env/v6"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -48,10 +50,12 @@ type K3dConfig struct {
 
 	DestinationGitopsRepoHttpsURL   string
 	DestinationGitopsRepoGitURL     string
+	DestinationGitopsRepoURL        string
 	DestinationMetaphorRepoHttpsURL string
 	DestinationMetaphorRepoGitURL   string
 	GitopsDir                       string
 	GitProvider                     string
+	GitProtocol                     string
 	K1Dir                           string
 	K3dClient                       string
 	Kubeconfig                      string
@@ -92,6 +96,14 @@ func GetConfig(clusterName string, gitProvider string, gitOwner string) *K3dConf
 	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
 
+	// Define constant url based on flag input, only expecting 2 protocols
+	if strings.Contains(viper.GetString("flags.git-protocol"), "https") {
+		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoHttpsURL
+
+	} else {
+		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoGitURL
+	}
+
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
@@ -116,6 +128,7 @@ type GitopsTokenValues struct {
 	GitlabOwnerGroupID            int
 	GitlabUser                    string
 	GitopsRepoGitURL              string
+	GitopsRepoHttpsURL            string
 	DomainName                    string
 	AtlantisAllowList             string
 	AlertsEmail                   string
@@ -130,6 +143,7 @@ type GitopsTokenValues struct {
 	MetaphorDevelopmentIngressURL string
 	MetaphorStagingIngressURL     string
 	MetaphorProductionIngressURL  string
+	GitopsRepoURL                 string
 	KubefirstVersion              string
 	KubefirstTeam                 string
 	UseTelemetry                  string

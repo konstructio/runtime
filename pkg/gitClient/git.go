@@ -50,6 +50,7 @@ func CloneRefSetMain(gitRef, repoLocalPath, repoURL string) (*git.Repository, er
 
 	repo, err := Clone(gitRef, repoLocalPath, repoURL)
 	if err != nil {
+		log.Error().Msgf("error cloning repo (%s) at: %s, err: %v", repoURL, repoLocalPath, err)
 		return nil, err
 	}
 
