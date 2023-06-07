@@ -70,11 +70,11 @@ func AddK3DSecrets(
 	// Create secrets
 
 	// swap secret data based on https flag
-	data := map[string][]byte{}
-	if strings.Contains(destinationGitopsRepoURL, "https://") {
+	secretData := map[string][]byte{}
 
+	if strings.Contains(destinationGitopsRepoURL, "https") {
 		// http basic auth
-		data = map[string][]byte{
+		secretData = map[string][]byte{
 			"type":     []byte("git"),
 			"name":     []byte(fmt.Sprintf("%s-gitops", gitUser)),
 			"url":      []byte(destinationGitopsRepoURL),
@@ -83,7 +83,7 @@ func AddK3DSecrets(
 		}
 	} else {
 		// ssh
-		data = map[string][]byte{
+		secretData = map[string][]byte{
 			"type":          []byte("git"),
 			"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
 			"url":           []byte(destinationGitopsRepoURL),
@@ -100,7 +100,7 @@ func AddK3DSecrets(
 				Annotations: map[string]string{"managed-by": "argocd.argoproj.io"},
 				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
 			},
-			Data: data,
+			Data: secretData,
 		},
 	}
 	for _, secret := range createSecrets {
