@@ -11,7 +11,9 @@ import (
 )
 
 func (conf *VaultConfiguration) AutoUnseal() (*vaultapi.InitResponse, error) {
-	vaultClient, err := vaultapi.NewClient(&conf.Config)
+	vaultClient, err := vaultapi.NewClient(&vaultapi.Config{
+		Address: VaultDefaultAddress,
+	})
 	if err != nil {
 		return &vaultapi.InitResponse{}, err
 	}
