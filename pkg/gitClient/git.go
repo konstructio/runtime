@@ -36,8 +36,6 @@ func Clone(gitRef, repoLocalPath, repoURL string) (*git.Repository, error) {
 		URL:           repoURL,
 		ReferenceName: refName,
 		SingleBranch:  true,
-		// Limit depth to 1 to avoid history
-		Depth: 1,
 	})
 	if err != nil {
 		return nil, err
