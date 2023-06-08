@@ -7,6 +7,8 @@ See the LICENSE file for more details.
 package vault
 
 const (
+	// Default address when leveraging port-forward
+	VaultDefaultAddress = "http://127.0.0.1:8200"
 	// Name for the Secret that gets created that contains root auth data
 	VaultSecretName string = "vault-unseal-secret"
 	// Namespace that Vault runs in
