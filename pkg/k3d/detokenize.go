@@ -71,6 +71,7 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues, gitProtocol string
 				newContents = strings.Replace(newContents, "<GITHUB_OWNER>", strings.ToLower(tokens.GithubOwner), -1)
 				newContents = strings.Replace(newContents, "<GITHUB_USER>", tokens.GithubUser, -1)
 				newContents = strings.Replace(newContents, "<GIT_PROVIDER>", tokens.GitProvider, -1)
+				newContents = strings.Replace(newContents, "<GIT-PROTOCOL>", gitProtocol, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_HOST>", tokens.GitlabHost, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_OWNER>", tokens.GitlabOwner, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_USER>", tokens.GitlabUser, -1)
