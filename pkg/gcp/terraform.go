@@ -29,7 +29,7 @@ func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *GCPConfig
 }
 
 func GetGCPTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]string {
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = ""
+	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
 	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
 	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
 	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
@@ -40,7 +40,7 @@ func GetGCPTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]s
 }
 
 func GetGithubTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]string {
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = ""
+	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
 	envs["GITHUB_TOKEN"] = config.GithubToken
 	envs["GITHUB_OWNER"] = viper.GetString("flags.github-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
@@ -54,7 +54,7 @@ func GetGithubTerraformEnvs(config *GCPConfig, envs map[string]string) map[strin
 }
 
 func GetGitlabTerraformEnvs(config *GCPConfig, envs map[string]string, gid int) map[string]string {
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = ""
+	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
 	envs["GITLAB_TOKEN"] = config.GitlabToken
 	envs["GITLAB_OWNER"] = viper.GetString("flags.gitlab-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
@@ -78,7 +78,7 @@ func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, e
 	case "gitlab":
 		tokenValue = config.GitlabToken
 	}
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = ""
+	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
 	envs["VAULT_TOKEN"] = readVaultTokenFromSecret(clientset, config)
 	envs["VAULT_ADDR"] = VaultPortForwardURL
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
@@ -99,7 +99,7 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, e
 	case "gitlab":
 		tokenValue = config.GitlabToken
 	}
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = ""
+	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
 	envs["TF_VAR_email_address"] = viper.GetString("flags.alerts-email")
