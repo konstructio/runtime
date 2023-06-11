@@ -21,7 +21,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string) error {
+func AdjustGitopsRepo(
+	cloudProvider string,
+	clusterName string,
+	clusterType string,
+	gitopsRepoDir string,
+	gitProvider string,
+	k1Dir string,
+	apexContentExists bool,
+) error {
 
 	//* clean up all other platforms
 	for _, platform := range pkg.SupportedPlatforms {
@@ -55,6 +63,16 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 
 	//* copy $HOME/.k1/gitops/cluster-types/${clusterType}/* $HOME/.k1/gitops/registry/${clusterName}
 	clusterContent := fmt.Sprintf("%s/cluster-types/%s", gitopsRepoDir, clusterType)
+
+	// Remove apex content if apex content already exists
+	if apexContentExists {
+		log.Warn().Msgf("removing nginx-apex since apexContentExists was %v", apexContentExists)
+		os.Remove(fmt.Sprintf("%s/nginx-apex.yaml", clusterContent))
+		os.RemoveAll(fmt.Sprintf("%s/nginx-apex", clusterContent))
+	} else {
+		log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
+	}
+
 	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
 	if err != nil {
 		log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
@@ -130,7 +148,16 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		log.Info().Msgf("error populating metaphor repository with %s: %s", argoWorkflowsFolderContent, err)
 		return err
 	}
-	os.RemoveAll(fmt.Sprintf("%s/ci", gitopsRepoDir))
+
+	//* copy $HOME/.k1/gitops/metaphor/Dockerfile $HOME/.k1/metaphor/build/Dockerfile
+	dockerfileContent := fmt.Sprintf("%s/Dockerfile", metaphorDir)
+	os.Mkdir(metaphorDir+"/build", 0700)
+	log.Info().Msgf("copying dockerfile content: %s", argoWorkflowsFolderContent)
+	err = cp.Copy(dockerfileContent, fmt.Sprintf("%s/build/Dockerfile", metaphorDir), opt)
+	if err != nil {
+		log.Info().Msgf("error populating metaphor repository with %s: %s", argoWorkflowsFolderContent, err)
+		return err
+	}
 	os.RemoveAll(fmt.Sprintf("%s/metaphor", gitopsRepoDir))
 
 	//  add
@@ -151,9 +178,85 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		return fmt.Errorf("error removing previous git ref: %s", err)
 	}
 	// create remote
-	_, _ = metaphorRepo.CreateRemote(&config.RemoteConfig{
+	_, err = metaphorRepo.CreateRemote(&config.RemoteConfig{
 		Name: "origin",
 		URLs: []string{destinationMetaphorRepoGitURL},
 	})
+	return nil
+}
+
+func PrepareGitRepositories(
+	gitProvider string,
+	clusterName string,
+	clusterType string,
+	destinationGitopsRepoGitURL string,
+	gitopsDir string,
+	gitopsTemplateBranch string,
+	gitopsTemplateURL string,
+	destinationMetaphorRepoGitURL string,
+	k1Dir string,
+	gitopsTokens *GitOpsDirectoryValues,
+	metaphorDir string,
+	metaphorTokens *MetaphorTokenValues,
+	apexContentExists bool,
+) error {
+
+	//* clone the gitops-template repo
+	gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
+	if err != nil {
+		log.Info().Msgf("error opening repo at: %s", gitopsDir)
+	}
+	log.Info().Msg("gitops repository clone complete")
+
+	//* adjust the content for the gitops repo
+	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, apexContentExists)
+	if err != nil {
+		return err
+	}
+
+	//* detokenize the gitops repo
+	DetokenizeGitGitops(gitopsDir, gitopsTokens)
+	if err != nil {
+		return err
+	}
+
+	//* commit initial gitops-template content
+	err = gitClient.Commit(gitopsRepo, "committing initial detokenized gitops-template repo content")
+	if err != nil {
+		return err
+	}
+
+	//* add new remote
+	err = gitClient.AddRemote(destinationGitopsRepoGitURL, gitProvider, gitopsRepo)
+	if err != nil {
+		return err
+	}
+
+	//! metaphor
+	//* adjust the content for the gitops repo
+	err = AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsDir, gitProvider, k1Dir)
+	if err != nil {
+		return err
+	}
+
+	//* detokenize the gitops repo
+	DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
+	if err != nil {
+		return err
+	}
+
+	metaphorRepo, err := git.PlainOpen(metaphorDir)
+	//* commit initial gitops-template content
+	err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
+	if err != nil {
+		return err
+	}
+
+	//* add new remote
+	err = gitClient.AddRemote(destinationMetaphorRepoGitURL, gitProvider, metaphorRepo)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
