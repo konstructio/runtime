@@ -66,7 +66,6 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkF
 				newContents = strings.Replace(newContents, "<KUBEFIRST_TEAM>", tokens.KubefirstTeam, -1)
 				newContents = strings.Replace(newContents, "<KUBEFIRST_VERSION>", tokens.KubefirstVersion, -1)
 
-				newContents = strings.Replace(newContents, "<GOOGLE_CLOUD_KEYFILE_JSON>", tokens.GCPAuth, -1)
 				newContents = strings.Replace(newContents, "<GCP_PROJECT>", tokens.GCPProject, -1)
 
 				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_URL>", tokens.ArgoCDIngressURL, -1)
