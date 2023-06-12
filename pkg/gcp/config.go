@@ -123,6 +123,7 @@ type GitOpsDirectoryValues struct {
 	ChartMuseumIngressURL          string
 	VaultIngressURL                string
 	VaultIngressNoHTTPSURL         string
+	VaultDataBucketName            string
 	VouchIngressURL                string
 
 	GCPAuth    string

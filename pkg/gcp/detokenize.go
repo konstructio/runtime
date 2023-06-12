@@ -78,6 +78,7 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkF
 				newContents = strings.Replace(newContents, "<CHARTMUSEUM_INGRESS_URL>", tokens.ChartMuseumIngressURL, -1)
 				newContents = strings.Replace(newContents, "<VAULT_INGRESS_URL>", tokens.VaultIngressURL, -1)
 				newContents = strings.Replace(newContents, "<VAULT_INGRESS_NO_HTTPS_URL>", tokens.VaultIngressNoHTTPSURL, -1)
+				newContents = strings.Replace(newContents, "<VAULT_DATA_BUCKET>", tokens.VaultDataBucketName, -1)
 				newContents = strings.Replace(newContents, "<VOUCH_INGRESS_URL>", tokens.VouchIngressURL, -1)
 
 				newContents = strings.Replace(newContents, "<GIT_DESCRIPTION>", tokens.GitDescription, -1)
