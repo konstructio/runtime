@@ -13,18 +13,13 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kubefirst/runtime/pkg/k8s"
 	"github.com/spf13/viper"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
-func BootstrapGCPMgmtCluster(kubeconfigPath string, gitProvider string, gitUser string) error {
-	clientset, err := k8s.GetClientSet(kubeconfigPath)
-	if err != nil {
-		log.Info().Msg("error getting kubernetes clientset")
-	}
-
+func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset, gitProvider string, gitUser string) error {
 	// Create namespace
 	// Skip if it already exists
 	newNamespaces := []string{
