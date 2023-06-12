@@ -29,41 +29,29 @@ func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *GCPConfig
 }
 
 func GetGCPTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]string {
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
-	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
-	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["TF_VAR_aws_secret_access_key"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
+	envs["GOOGLE_APPLICATION_CREDENTIALS"] = config.GCPAuth
 	//envs["TF_LOG"] = "debug"
 
 	return envs
 }
 
 func GetGithubTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]string {
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
+	envs["GOOGLE_APPLICATION_CREDENTIALS"] = config.GCPAuth
 	envs["GITHUB_TOKEN"] = config.GithubToken
 	envs["GITHUB_OWNER"] = viper.GetString("flags.github-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
 	envs["TF_VAR_kbot_ssh_public_key"] = viper.GetString("kbot.public-key")
-	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
-	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["TF_VAR_aws_secret_access_key"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
 
 	return envs
 }
 
 func GetGitlabTerraformEnvs(config *GCPConfig, envs map[string]string, gid int) map[string]string {
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
+	envs["GOOGLE_APPLICATION_CREDENTIALS"] = config.GCPAuth
 	envs["GITLAB_TOKEN"] = config.GitlabToken
 	envs["GITLAB_OWNER"] = viper.GetString("flags.gitlab-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
 	envs["TF_VAR_atlantis_repo_webhook_url"] = viper.GetString("gitlab.atlantis.webhook.url")
 	envs["TF_VAR_kbot_ssh_public_key"] = viper.GetString("kbot.public-key")
-	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
-	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["TF_VAR_aws_secret_access_key"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
 	envs["TF_VAR_owner_group_id"] = strconv.Itoa(gid)
 	envs["TF_VAR_gitlab_owner"] = viper.GetString("flags.gitlab-owner")
 
@@ -78,15 +66,11 @@ func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, e
 	case "gitlab":
 		tokenValue = config.GitlabToken
 	}
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
+	envs["GOOGLE_APPLICATION_CREDENTIALS"] = config.GCPAuth
 	envs["VAULT_TOKEN"] = readVaultTokenFromSecret(clientset, config)
 	envs["VAULT_ADDR"] = VaultPortForwardURL
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
-	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
-	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
-	envs["TF_VAR_aws_secret_access_key"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
 
 	return envs
 }
@@ -99,7 +83,7 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, e
 	case "gitlab":
 		tokenValue = config.GitlabToken
 	}
-	envs["GOOGLE_CLOUD_KEYFILE_JSON"] = config.GCPAuth
+	envs["GOOGLE_APPLICATION_CREDENTIALS"] = config.GCPAuth
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
 	envs["TF_VAR_email_address"] = viper.GetString("flags.alerts-email")
