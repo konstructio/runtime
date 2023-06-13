@@ -83,8 +83,10 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues, gitProtocol string
 				// Switch the repo url based on https flag
 				if strings.Contains(gitProtocol, "https") {
 					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoHttpsURL, -1)
+					newContents = strings.Replace(newContents, "<GIT_FQDN>", "https://github.com/", -1)
 				} else {
 					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoGitURL, -1)
+					newContents = strings.Replace(newContents, "<GIT_FQDN>", "git@github.com:", -1)
 				}
 
 				err = ioutil.WriteFile(path, []byte(newContents), 0)
