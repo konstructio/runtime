@@ -70,7 +70,7 @@ func ParseAuthData(clientset *kubernetes.Clientset, cloudProvider string, gitPro
 	var argoCDPassword string
 	argoCDSecretData, err := k8s.ReadSecretV2(clientset, "argocd", "argocd-initial-admin-secret")
 	if err != nil {
-		log.Warn().Msgf("argocd secret may not exist: %s", err)
+		log.Warn().Msgf("Argo CD secret may not exist: %s", err)
 	}
 	argoCDPassword = argoCDSecretData["password"]
 
@@ -105,7 +105,7 @@ func ParseAuthData(clientset *kubernetes.Clientset, cloudProvider string, gitPro
 		if err != nil {
 			log.Error().Err(err).Msg("")
 		}
-		fmt.Println("The ArgoCD initial admin password has been copied to the clipboard. Note that if you change this password, this value is no longer valid.")
+		fmt.Println("The Argo CD initial admin password has been copied to the clipboard. Note that if you change this password, this value is no longer valid.")
 		return nil
 	case opts.CopyKbotPasswordToClipboard:
 		err := clipboard.WriteAll(kbotPassword)
@@ -133,13 +133,13 @@ func ParseAuthData(clientset *kubernetes.Clientset, cloudProvider string, gitPro
 
 	// Each item from the objects above should be added to params
 	if argoCDPassword != "" {
-		params["ArgoCD Admin Password"] = argoCDPassword
+		params["Argo CD admin Password"] = argoCDPassword
 	}
 	if kbotPassword != "" {
 		params["KBot User Password"] = kbotPassword
 	}
 	if vaultRootToken != "" {
-		params["Vault Root Token"] = vaultRootToken
+		params["Vault root Token"] = vaultRootToken
 	}
 
 	// Sort
