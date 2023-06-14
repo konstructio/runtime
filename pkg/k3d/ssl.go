@@ -19,8 +19,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// GenerateTLSSecrets generates default certificates for k3d
 func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error {
-
 	sslPemDir := config.MkCertPemDir
 	if _, err := os.Stat(sslPemDir); os.IsNotExist(err) {
 		err := os.MkdirAll(sslPemDir, os.ModePerm)
@@ -30,7 +30,6 @@ func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error
 	}
 
 	for i, app := range pkg.GetCertificateAppList() {
-
 		namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: app.Namespace}}
 		_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), app.Namespace, metav1.GetOptions{})
 		if err != nil {
@@ -97,5 +96,80 @@ func GenerateTLSSecrets(clientset *kubernetes.Clientset, config K3dConfig) error
 			log.Info().Msgf("created kubernetes secret: %s/%s", app.Namespace, app.AppName)
 		}
 	}
+	return nil
+}
+
+// GenerateSingleTLSSecret creates a single certificate for a host for k3d
+func GenerateSingleTLSSecret(
+	clientset *kubernetes.Clientset,
+	config K3dConfig,
+	app string,
+	ns string,
+) error {
+	namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: app}}
+	_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), ns, metav1.GetOptions{})
+	if err != nil {
+		_, err = clientset.CoreV1().Namespaces().Create(context.TODO(), namespace, metav1.CreateOptions{})
+		if err != nil {
+			log.Error().Err(err).Msg("")
+			return fmt.Errorf("error creating namespace")
+		}
+		log.Info().Msgf("namespace created: %s", ns)
+	} else {
+		log.Warn().Msgf("namespace %s already exists - skipping", ns)
+	}
+
+	//* generate certificate
+	fullAppAddress := app + "." + DomainName                      // example: app-name.kubefirst.dev
+	certFileName := config.MkCertPemDir + "/" + app + "-cert.pem" // example: app-name-cert.pem
+	keyFileName := config.MkCertPemDir + "/" + app + "-key.pem"   // example: app-name-key.pem
+
+	//* generate the mkcert
+	log.Info().Msgf("generating certificate %s.%s on %s", app, DomainName, config.MkCertClient)
+	_, _, err = pkg.ExecShellReturnStrings(
+		config.MkCertClient,
+		"-cert-file",
+		certFileName,
+		"-key-file",
+		keyFileName,
+		DomainName,
+		fullAppAddress,
+	)
+	if err != nil {
+		return err
+	}
+
+	//* read certificate files
+	certPem, err := os.ReadFile(fmt.Sprintf("%s/ssl/%s/pem/%s-cert.pem", config.K1Dir, DomainName, app))
+	if err != nil {
+		return fmt.Errorf("error reading %s file %s", fmt.Sprintf("%s/ssl/%s/pem/%s-cert.pem", config.K1Dir, DomainName, app), err)
+	}
+	keyPem, err := os.ReadFile(fmt.Sprintf("%s/ssl/%s/pem/%s-key.pem", config.K1Dir, DomainName, app))
+	if err != nil {
+		return fmt.Errorf("error reading %s file %s", fmt.Sprintf("%s/ssl/%s/pem/%s-key.pem", config.K1Dir, DomainName, app), err)
+	}
+
+	_, err = clientset.CoreV1().Secrets(ns).Get(context.TODO(), app, metav1.GetOptions{})
+	if err == nil {
+		log.Info().Msgf("kubernetes secret %s/%s already created - skipping", ns, app)
+	} else if strings.Contains(err.Error(), "not found") {
+		_, err = clientset.CoreV1().Secrets(ns).Create(context.TODO(), &v1.Secret{
+			Type: "kubernetes.io/tls",
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      fmt.Sprintf("%s-tls", app),
+				Namespace: ns,
+			},
+			Data: map[string][]byte{
+				"tls.crt": []byte(certPem),
+				"tls.key": []byte(keyPem),
+			},
+		}, metav1.CreateOptions{})
+		if err != nil {
+			log.Error().Msgf("error creating kubernetes secret %s/%s: %s", ns, app, err)
+			return err
+		}
+		log.Info().Msgf("created kubernetes secret: %s/%s", ns, app)
+	}
+
 	return nil
 }

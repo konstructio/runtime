@@ -454,7 +454,6 @@ type CertificateAppList struct {
 }
 
 func GetCertificateAppList() []CertificateAppList {
-
 	certificateAppList := []CertificateAppList{
 		{
 			Namespace: "argo",
