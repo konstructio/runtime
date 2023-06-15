@@ -76,5 +76,13 @@ func LocalHandoffScreenV2(argocdAdminPassword, clusterName, gitDestDescriptor st
 	handOffData.WriteString("\n  Note that this command allows you to copy these passwords diretly")
 	handOffData.WriteString("\n  to your clipboard. Provide the -h flag for additional details.")
 
+	handOffData.WriteString("\n\nNote:")
+	handOffData.WriteString("\n  The kubefirst CLI process is still running. This is a convenience feature")
+	handOffData.WriteString("\n  that keeps port-forwarding active so you can reach your Kubernetes cluster.")
+	handOffData.WriteString("\n  Before attempting to run any additional commands, such as `destroy`, please")
+	handOffData.WriteString("\n  end this process by pressing ESC (escape) to release the port allocations.")
+	handOffData.WriteString("\n  If you attempt to run any additional commands before doing so, you may get")
+	handOffData.WriteString("\n  errors or warnings about ports already being in use.")
+
 	CommandSummary(handOffData)
 }
