@@ -6,7 +6,7 @@ See the LICENSE file for more details.
 */
 package helpers
 
-type CompletionFlags struct {
+type ClusterStatusFlags struct {
 	CloudProvider string
 	GitProvider   string
 	SetupComplete bool

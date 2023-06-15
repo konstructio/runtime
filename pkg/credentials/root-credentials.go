@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/atotto/clipboard"
-	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/helpers"
 	"github.com/kubefirst/runtime/pkg/httpCommon"
 	"github.com/kubefirst/runtime/pkg/k8s"
@@ -26,21 +25,7 @@ import (
 // EvalAuth determines whether or not there are active kubefirst platforms
 // If there are not, an error is returned
 func EvalAuth(expectedCloudProvider string, expectedGitProvider string) (bool, error) {
-	flags := helpers.GetCompletionFlags()
-
-	platformHint := expectedCloudProvider
-	for _, betaProvider := range pkg.BetaProviders {
-		if expectedCloudProvider == betaProvider {
-			platformHint = fmt.Sprintf("beta %s", expectedCloudProvider)
-		}
-	}
-
-	if !flags.SetupComplete {
-		return false, fmt.Errorf(
-			"There are no active kubefirst platforms to retrieve credentials for.\n\tTo get started, run: kubefirst %s create -h\n",
-			platformHint,
-		)
-	}
+	flags := helpers.GetClusterStatusFlags()
 
 	switch {
 	case flags.CloudProvider == "" || flags.GitProvider == "":
@@ -72,47 +57,59 @@ func ParseAuthData(clientset *kubernetes.Clientset, cloudProvider string, gitPro
 	if err != nil {
 		log.Warn().Msgf("Argo CD secret may not exist: %s", err)
 	}
-	argoCDPassword = argoCDSecretData["password"]
+	if len(argoCDSecretData) != 0 {
+		argoCDPassword = argoCDSecretData["password"]
+	}
 
 	// Retrieve kbot password
-	vaultUrl := fmt.Sprintf("https://vault.%s", domainName)
-	vaultResolves := httpCommon.ResolveAddress(vaultUrl)
 	var kbotPassword string
+	if vaultRootToken != "" {
+		vaultUrl := fmt.Sprintf("https://vault.%s", domainName)
+		vaultResolves := httpCommon.ResolveAddress(vaultUrl)
 
-	if vaultResolves == nil {
-		if vaultRootToken == "" {
-			fmt.Println("Cannot retrieve Vault token automatically. Please provide one here:")
-			fmt.Scanln(&vaultRootToken)
+		if vaultResolves == nil {
+			if vaultRootToken == "" {
+				fmt.Println("Cannot retrieve Vault token automatically. Please provide one here:")
+				fmt.Scanln(&vaultRootToken)
+			}
+			vault := vault.VaultConfiguration{}
+			kbotPassword, err = vault.GetUserPassword(
+				vaultUrl,
+				vaultRootToken,
+				"kbot",
+				"initial-password",
+			)
+			if err != nil {
+				log.Warn().Msgf("problem retrieving kbot password: %s", err)
+			}
+		} else {
+			kbotPassword = fmt.Sprintf("Cannot resolve Vault yet: %s - wait a few minutes and try again.", vaultResolves)
 		}
-		vault := vault.VaultConfiguration{}
-		kbotPassword, err = vault.GetUserPassword(
-			vaultUrl,
-			vaultRootToken,
-			"kbot",
-			"initial-password",
-		)
-		if err != nil {
-			log.Warn().Msgf("problem retrieving kbot password: %s", err)
-		}
-	} else {
-		kbotPassword = fmt.Sprintf("Cannot resolve Vault yet: %s - wait a few minutes and try again.", vaultResolves)
 	}
 
 	// If copying to clipboard, no need to return all output
 	switch {
 	case opts.CopyArgoCDPasswordToClipboard:
-		err := clipboard.WriteAll(argoCDPassword)
-		if err != nil {
-			log.Error().Err(err).Msg("")
+		if kbotPassword != "" {
+			err := clipboard.WriteAll(argoCDPassword)
+			if err != nil {
+				log.Error().Err(err).Msg("")
+			}
+			fmt.Println("The Argo CD initial admin password has been copied to the clipboard. Note that if you change this password, this value is no longer valid.")
+		} else {
+			fmt.Println("The Argo CD initial admin password could not be found and has not been copied to the clipboard.")
 		}
-		fmt.Println("The Argo CD initial admin password has been copied to the clipboard. Note that if you change this password, this value is no longer valid.")
 		return nil
 	case opts.CopyKbotPasswordToClipboard:
-		err := clipboard.WriteAll(kbotPassword)
-		if err != nil {
-			log.Error().Err(err).Msg("")
+		if kbotPassword != "" {
+			err := clipboard.WriteAll(kbotPassword)
+			if err != nil {
+				log.Error().Err(err).Msg("")
+			}
+			fmt.Println("The kbot password has been copied to the clipboard.")
+		} else {
+			fmt.Println("The kbot password could not be found and was not copied to the clipboard.")
 		}
-		fmt.Println("The kbot password has been copied to the clipboard.")
 		return nil
 	case opts.CopyVaultPasswordToClipboard:
 		if vaultRootToken != "" {
@@ -122,7 +119,7 @@ func ParseAuthData(clientset *kubernetes.Clientset, cloudProvider string, gitPro
 			}
 			fmt.Println("The Vault root token has been copied to the clipboard.")
 		} else {
-			fmt.Println("The Vault root token secret does not exist and was not copied to the clipboard.")
+			fmt.Println("The Vault root token secret could not be found and was not copied to the clipboard.")
 		}
 		return nil
 	}
