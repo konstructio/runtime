@@ -13,8 +13,10 @@ import (
 )
 
 type VultrConfiguration struct {
-	Client  *govultr.Client
-	Context context.Context
+	Client              *govultr.Client
+	Context             context.Context
+	Region              string
+	ObjectStorageRegion string
 }
 
 type VultrBucketCredentials struct {
