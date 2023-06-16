@@ -21,8 +21,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string) error {
-
+// AdjustGitopsRepo
+func AdjustGitopsRepo(
+	cloudProvider string,
+	clusterName string,
+	clusterType string,
+	gitopsRepoDir string,
+	gitProvider string,
+	k1Dir string,
+) error {
 	//* clean up all other platforms
 	for _, platform := range pkg.SupportedPlatforms {
 		if platform != fmt.Sprintf("%s-%s", CloudProvider, gitProvider) {
@@ -55,6 +62,7 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 
 	//* copy $HOME/.k1/gitops/cluster-types/${clusterType}/* $HOME/.k1/gitops/registry/${clusterName}
 	clusterContent := fmt.Sprintf("%s/cluster-types/%s", gitopsRepoDir, clusterType)
+
 	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
 	if err != nil {
 		log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
@@ -66,8 +74,13 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 	return nil
 }
 
-func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvider, k1Dir string) error {
-
+// AdjustMetaphorRepo
+func AdjustMetaphorRepo(
+	destinationMetaphorRepoGitURL string,
+	gitopsRepoDir string,
+	gitProvider string,
+	k1Dir string,
+) error {
 	//* create ~/.k1/metaphor
 	metaphorDir := fmt.Sprintf("%s/metaphor", k1Dir)
 	os.Mkdir(metaphorDir, 0700)
@@ -130,12 +143,11 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		log.Info().Msgf("error populating metaphor repository with %s: %s", argoWorkflowsFolderContent, err)
 		return err
 	}
-	os.RemoveAll(fmt.Sprintf("%s/ci", gitopsRepoDir))
+
+	// Remove metaphor content from gitops repository directory
 	os.RemoveAll(fmt.Sprintf("%s/metaphor", gitopsRepoDir))
 
-	//  add
-	// commit
-	err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
+	err = gitClient.Commit(metaphorRepo, "init commit pre ref change")
 	if err != nil {
 		return err
 	}
@@ -150,10 +162,91 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 	if err != nil {
 		return fmt.Errorf("error removing previous git ref: %s", err)
 	}
+
 	// create remote
-	_, _ = metaphorRepo.CreateRemote(&config.RemoteConfig{
+	_, err = metaphorRepo.CreateRemote(&config.RemoteConfig{
 		Name: "origin",
 		URLs: []string{destinationMetaphorRepoGitURL},
 	})
+	if err != nil {
+		return fmt.Errorf("error creating remote for metaphor repository: %s", err)
+	}
+
+	return nil
+}
+
+func PrepareGitRepositories(
+	gitProvider string,
+	clusterName string,
+	clusterType string,
+	destinationGitopsRepoGitURL string,
+	gitopsDir string,
+	gitopsTemplateBranch string,
+	gitopsTemplateURL string,
+	destinationMetaphorRepoGitURL string,
+	k1Dir string,
+	gitopsTokens *GitOpsDirectoryValues,
+	metaphorDir string,
+	metaphorTokens *MetaphorTokenValues,
+) error {
+
+	//* clone the gitops-template repo
+	gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
+	if err != nil {
+		log.Info().Msgf("error opening repo at: %s", gitopsDir)
+	}
+	log.Info().Msg("gitops repository clone complete")
+
+	//* adjust the content for the gitops repo
+	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir)
+	if err != nil {
+		return err
+	}
+
+	//* detokenize the gitops repo
+	DetokenizeGitGitops(gitopsDir, gitopsTokens)
+	if err != nil {
+		return err
+	}
+
+	//* add new remote
+	err = gitClient.AddRemote(destinationGitopsRepoGitURL, gitProvider, gitopsRepo)
+	if err != nil {
+		return err
+	}
+
+	//! metaphor
+	//* adjust the content for the gitops repo
+	err = AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsDir, gitProvider, k1Dir)
+	if err != nil {
+		return err
+	}
+
+	//* detokenize the gitops repo
+	DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
+	if err != nil {
+		return err
+	}
+
+	metaphorRepo, _ := git.PlainOpen(metaphorDir)
+	//* commit initial gitops-template content
+	err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
+	if err != nil {
+		return err
+	}
+
+	//* add new remote
+	err = gitClient.AddRemote(destinationMetaphorRepoGitURL, gitProvider, metaphorRepo)
+	if err != nil {
+		return err
+	}
+
+	//* commit initial gitops-template content
+	// need to wait for the metaphor content to be removed
+	err = gitClient.Commit(gitopsRepo, "committing initial detokenized gitops-template repo content")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
