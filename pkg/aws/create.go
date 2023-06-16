@@ -8,6 +8,7 @@ package aws
 
 import (
 	"github.com/go-git/go-git/v5"
+	"github.com/kubefirst/runtime/pkg/detokenization"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 	"github.com/rs/zerolog/log"
 )
@@ -22,9 +23,9 @@ func PrepareGitRepositories(
 	gitopsTemplateURL string,
 	destinationMetaphorRepoGitURL string,
 	k1Dir string,
-	gitopsTokens *GitOpsDirectoryValues,
+	gitopsTokens *detokenization.GitOpsDirectoryValues,
 	metaphorDir string,
-	metaphorTokens *MetaphorTokenValues,
+	metaphorTokens *detokenization.MetaphorTokenValues,
 ) error {
 
 	//* clone the gitops-template repo
@@ -41,7 +42,7 @@ func PrepareGitRepositories(
 	}
 
 	//* detokenize the gitops repo
-	DetokenizeGitGitops(gitopsDir, gitopsTokens)
+	detokenization.DetokenizeGitGitops(gitopsDir, gitopsTokens)
 	if err != nil {
 		return err
 	}
@@ -60,7 +61,7 @@ func PrepareGitRepositories(
 	}
 
 	//* detokenize the gitops repo
-	DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
+	detokenization.DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
 	if err != nil {
 		return err
 	}

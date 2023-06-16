@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package digitalocean
+package detokenization
 
 import (
 	"fmt"
@@ -52,6 +52,22 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkF
 				}
 
 				newContents := string(read)
+
+				if tokens.CloudProvider == "aws" {
+					newContents = strings.Replace(newContents, "<KUBE_CONFIG_PATH>", tokens.Kubeconfig, -1)
+					newContents = strings.Replace(newContents, "<KUBEFIRST_ARTIFACTS_BUCKET>", tokens.KubefirstArtifactsBucket, -1)
+
+					newContents = strings.Replace(newContents, "<AWS_ACCOUNT_ID>", tokens.AwsAccountID, -1)
+					newContents = strings.Replace(newContents, "<AWS_IAM_ARN_ACCOUNT_ROOT>", tokens.AwsIamArnAccountRoot, -1)
+					newContents = strings.Replace(newContents, "<AWS_NODE_CAPACITY_TYPE>", tokens.AwsNodeCapacityType, -1)
+					newContents = strings.Replace(newContents, "<CONTAINER_REGISTRY_URL>", tokens.ContainerRegistryURL, -1)
+				}
+
+				if tokens.CloudProvider == "gcp" {
+					newContents = strings.Replace(newContents, "<GCP_PROJECT>", tokens.GCPProject, -1)
+					newContents = strings.Replace(newContents, "<VAULT_DATA_BUCKET>", tokens.VaultDataBucketName, -1)
+				}
+
 				newContents = strings.Replace(newContents, "<ALERTS_EMAIL>", tokens.AlertsEmail, -1)
 				newContents = strings.Replace(newContents, "<ATLANTIS_ALLOW_LIST>", tokens.AtlantisAllowList, -1)
 				newContents = strings.Replace(newContents, "<CLUSTER_NAME>", tokens.ClusterName, -1)
@@ -65,7 +81,6 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkF
 				newContents = strings.Replace(newContents, "<KUBEFIRST_STATE_STORE_BUCKET>", tokens.KubefirstStateStoreBucket, -1)
 				newContents = strings.Replace(newContents, "<KUBEFIRST_TEAM>", tokens.KubefirstTeam, -1)
 				newContents = strings.Replace(newContents, "<KUBEFIRST_VERSION>", tokens.KubefirstVersion, -1)
-				newContents = strings.Replace(newContents, "<KUBEFIRST_STATE_STORE_BUCKET_HOSTNAME>", tokens.StateStoreBucketHostname, -1)
 
 				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_URL>", tokens.ArgoCDIngressURL, -1)
 				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_NO_HTTP_URL>", tokens.ArgoCDIngressNoHTTPSURL, -1)
@@ -139,17 +154,20 @@ func detokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) filepa
 		// var matched bool
 		matched, err := filepath.Match("*", fi.Name())
 		if matched {
-			read, err := ioutil.ReadFile(path)
-			if err != nil {
-				return err
-			}
+			// ignore .git files
+			if !strings.Contains(path, "/.git/") {
+				read, err := ioutil.ReadFile(path)
+				if err != nil {
+					return err
+				}
 
-			newContents := string(read)
-			newContents = strings.Replace(newContents, "<GITLAB_OWNER>", tokens.GitlabOwner, -1)
+				newContents := string(read)
+				newContents = strings.Replace(newContents, "<GITLAB_OWNER>", tokens.GitlabOwner, -1)
 
-			err = ioutil.WriteFile(path, []byte(newContents), 0)
-			if err != nil {
-				return err
+				err = ioutil.WriteFile(path, []byte(newContents), 0)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		return nil

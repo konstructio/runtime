@@ -15,10 +15,11 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/configs"
+	"github.com/kubefirst/runtime/pkg/detokenization"
 )
 
 // detokenizeGitGitops - Translate tokens by values on a given path
-func detokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
+func detokenizeGitGitops(path string, tokens *detokenization.GitOpsDirectoryValues) error {
 
 	err := filepath.Walk(path, detokenizeGitops(path, tokens))
 	if err != nil {
@@ -28,7 +29,7 @@ func detokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
 	return nil
 }
 
-func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc {
+func detokenizeGitops(path string, tokens *detokenization.GitOpsDirectoryValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -52,7 +53,7 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc 
 				// todo reduce to terraform tokens by moving to helm chart?
 				newContents := string(read)
 				newContents = strings.Replace(newContents, "<ALERTS_EMAIL>", "your@email.com", -1) //
-				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_URL>", tokens.ArgocdIngressURL, -1)
+				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_URL>", tokens.ArgoCDIngressURL, -1)
 				newContents = strings.Replace(newContents, "<ARGO_WORKFLOWS_INGRESS_URL>", tokens.ArgoWorkflowsIngressURL, -1)
 				newContents = strings.Replace(newContents, "<ATLANTIS_ALLOW_LIST>", tokens.AtlantisAllowList, -1)
 				newContents = strings.Replace(newContents, "<ATLANTIS_INGRESS_URL>", tokens.AtlantisIngressURL, -1)
@@ -67,11 +68,11 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc 
 				newContents = strings.Replace(newContents, "<METAPHOR_DEVELOPMENT_INGRESS_URL>", tokens.MetaphorDevelopmentIngressURL, -1)
 				newContents = strings.Replace(newContents, "<METAPHOR_STAGING_INGRESS_URL>", tokens.MetaphorStagingIngressURL, -1)
 				newContents = strings.Replace(newContents, "<METAPHOR_PRODUCTION_INGRESS_URL>", tokens.MetaphorProductionIngressURL, -1)
-				newContents = strings.Replace(newContents, "<GITHUB_HOST>", tokens.GithubHost, -1)
-				newContents = strings.Replace(newContents, "<GITHUB_OWNER>", strings.ToLower(tokens.GithubOwner), -1)
-				newContents = strings.Replace(newContents, "<GITHUB_USER>", tokens.GithubUser, -1)
+				newContents = strings.Replace(newContents, "<GITHUB_HOST>", tokens.GitHubHost, -1)
+				newContents = strings.Replace(newContents, "<GITHUB_OWNER>", strings.ToLower(tokens.GitHubOwner), -1)
+				newContents = strings.Replace(newContents, "<GITHUB_USER>", tokens.GitHubUser, -1)
 				newContents = strings.Replace(newContents, "<GIT_PROVIDER>", tokens.GitProvider, -1)
-				newContents = strings.Replace(newContents, "<GITOPS_REPO_GIT_URL>", tokens.GitopsRepoGitURL, -1)
+				newContents = strings.Replace(newContents, "<GITOPS_REPO_GIT_URL>", tokens.GitOpsRepoGitURL, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_HOST>", tokens.GitlabHost, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_OWNER>", tokens.GitlabOwner, -1)
 				newContents = strings.Replace(newContents, "<GITLAB_USER>", tokens.GitlabUser, -1)
@@ -91,7 +92,7 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc 
 }
 
 // postRunDetokenizeGitGitops - Translate tokens by values on a given path
-func postRunDetokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
+func postRunDetokenizeGitGitops(path string, tokens *detokenization.GitOpsDirectoryValues) error {
 
 	err := filepath.Walk(path, postRunDetokenizeGitops(path, tokens))
 	if err != nil {
@@ -101,7 +102,7 @@ func postRunDetokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
 	return nil
 }
 
-func postRunDetokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc {
+func postRunDetokenizeGitops(path string, tokens *detokenization.GitOpsDirectoryValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -136,7 +137,7 @@ func postRunDetokenizeGitops(path string, tokens *GitopsTokenValues) filepath.Wa
 }
 
 // detokenizeGitMetaphor - Translate tokens by values on a given path
-func detokenizeGitMetaphor(path string, tokens *MetaphorTokenValues) error {
+func detokenizeGitMetaphor(path string, tokens *detokenization.MetaphorTokenValues) error {
 
 	err := filepath.Walk(path, detokenize(path, tokens))
 	if err != nil {
@@ -146,7 +147,7 @@ func detokenizeGitMetaphor(path string, tokens *MetaphorTokenValues) error {
 	return nil
 }
 
-func detokenize(metaphorDir string, tokens *MetaphorTokenValues) filepath.WalkFunc {
+func detokenize(metaphorDir string, tokens *detokenization.MetaphorTokenValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err

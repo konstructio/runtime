@@ -15,6 +15,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/detokenization"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 )
 
@@ -113,9 +114,9 @@ func PrepareGitRepositories(
 	gitopsTemplateURL string,
 	destinationMetaphorRepoGitURL string,
 	k1Dir string,
-	gitopsTokens *GitopsTokenValues,
+	gitopsTokens *detokenization.GitOpsDirectoryValues,
 	metaphorDir string,
-	metaphorTokens *MetaphorTokenValues,
+	metaphorTokens *detokenization.MetaphorTokenValues,
 ) error {
 
 	//* clone the gitops-template repo
@@ -183,7 +184,7 @@ func PostRunPrepareGitopsRepository(clusterName string,
 	//destinationGitopsRepoGitURL string,
 	gitopsDir string,
 	//gitopsRepo *git.Repository,
-	tokens *GitopsTokenValues,
+	tokens *detokenization.GitOpsDirectoryValues,
 ) error {
 
 	err := postRunDetokenizeGitGitops(gitopsDir, tokens)

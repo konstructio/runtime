@@ -15,6 +15,7 @@ import (
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/kubefirst/runtime/pkg"
+	"github.com/kubefirst/runtime/pkg/detokenization"
 	"github.com/kubefirst/runtime/pkg/gitClient"
 
 	cp "github.com/otiai10/copy"
@@ -188,9 +189,9 @@ func PrepareGitRepositories(
 	gitopsTemplateURL string,
 	destinationMetaphorRepoGitURL string,
 	k1Dir string,
-	gitopsTokens *GitOpsDirectoryValues,
+	gitopsTokens *detokenization.GitOpsDirectoryValues,
 	metaphorDir string,
-	metaphorTokens *MetaphorTokenValues,
+	metaphorTokens *detokenization.MetaphorTokenValues,
 	apexContentExists bool,
 ) error {
 
@@ -208,7 +209,7 @@ func PrepareGitRepositories(
 	}
 
 	//* detokenize the gitops repo
-	DetokenizeGitGitops(gitopsDir, gitopsTokens)
+	detokenization.DetokenizeGitGitops(gitopsDir, gitopsTokens)
 	if err != nil {
 		return err
 	}
@@ -227,7 +228,7 @@ func PrepareGitRepositories(
 	}
 
 	//* detokenize the gitops repo
-	DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
+	detokenization.DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
 	if err != nil {
 		return err
 	}
