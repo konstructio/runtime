@@ -29,9 +29,7 @@ var (
 
 // VerifyProviderDNS
 func VerifyProviderDNS(cloudProvider string, cloudRegion string, domainName string) error {
-	var dig dnsutil.Dig
 	var nameServers []string
-	dig.SetDNS(dnsLookupHost)
 
 	switch cloudProvider {
 	case "aws":
@@ -57,14 +55,9 @@ func VerifyProviderDNS(cloudProvider string, cloudRegion string, domainName stri
 		return fmt.Errorf("unsupported cloud provider for dns verification: %s", cloudProvider)
 	}
 
-	records, err := dig.NS(domainName)
+	foundNSRecords, err := GetDomainNSRecords(domainName)
 	if err != nil {
-		return fmt.Errorf("error checking NS record for domain %s: %s", domainName, err)
-	}
-
-	var foundNSRecords []string
-	for _, rec := range records {
-		foundNSRecords = append(foundNSRecords, strings.TrimSuffix(rec.Ns, "."))
+		return err
 	}
 
 	for _, reqrec := range nameServers {
@@ -76,4 +69,22 @@ func VerifyProviderDNS(cloudProvider string, cloudRegion string, domainName stri
 	}
 
 	return nil
+}
+
+// GetDomainNSRecords
+func GetDomainNSRecords(domainName string) ([]string, error) {
+	var dig dnsutil.Dig
+	dig.SetDNS(dnsLookupHost)
+
+	records, err := dig.NS(domainName)
+	if err != nil {
+		return []string{}, fmt.Errorf("error checking NS record for domain %s: %s", domainName, err)
+	}
+
+	var foundNSRecords []string
+	for _, rec := range records {
+		foundNSRecords = append(foundNSRecords, strings.TrimSuffix(rec.Ns, "."))
+	}
+
+	return foundNSRecords, nil
 }
