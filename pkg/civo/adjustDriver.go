@@ -233,14 +233,14 @@ func PrepareGitRepositories(
 	}
 
 	// ADJUST CONTENT
-	//* adjust the content for the gitops repo
+	//* adjust the content for the metaphor repo
 	err = AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsDir, gitProvider, k1Dir)
 	if err != nil {
 		return err
 	}
 
 	// DETOKENIZE
-	//* detokenize the gitops repo
+	//* detokenize the metaphor repo
 	DetokenizeGitMetaphor(metaphorDir, metaphorTokens)
 	if err != nil {
 		return err
@@ -265,13 +265,13 @@ func PrepareGitRepositories(
 	}
 
 	// ADD REMOTE(S)
-	//* add new remote
+	//* add new remote for gitops repo
 	err = gitClient.AddRemote(destinationGitopsRepoGitURL, gitProvider, gitopsRepo)
 	if err != nil {
 		return err
 	}
 
-	//* add new remote
+	//* add new remote for metaphor repo
 	err = gitClient.AddRemote(destinationMetaphorRepoGitURL, gitProvider, metaphorRepo)
 	if err != nil {
 		return err
