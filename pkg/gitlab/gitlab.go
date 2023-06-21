@@ -29,7 +29,7 @@ func NewGitLabClient(token string, parentGroupName string) (GitLabWrapper, error
 		groups, resp, err := git.Groups.ListGroups(&gitlab.ListGroupsOptions{
 			ListOptions: gitlab.ListOptions{
 				Page:    nextPage,
-				PerPage: 10,
+				PerPage: 100,
 			},
 			MinAccessLevel: &minAccessLevel,
 		})
@@ -90,7 +90,7 @@ func (gl *GitLabWrapper) GetProjectID(projectName string) (int, error) {
 		projects, resp, err := gl.Client.Groups.ListGroupProjects(gl.ParentGroupID, &gitlab.ListGroupProjectsOptions{
 			ListOptions: gitlab.ListOptions{
 				Page:    nextPage,
-				PerPage: 10,
+				PerPage: 20,
 			},
 		})
 		if err != nil {
@@ -119,7 +119,7 @@ func (gl *GitLabWrapper) GetProjects() ([]gitlab.Project, error) {
 		projects, resp, err := gl.Client.Groups.ListGroupProjects(gl.ParentGroupID, &gitlab.ListGroupProjectsOptions{
 			ListOptions: gitlab.ListOptions{
 				Page:    nextPage,
-				PerPage: 10,
+				PerPage: 20,
 			},
 		})
 		if err != nil {
@@ -144,7 +144,7 @@ func (gl *GitLabWrapper) GetSubGroups() ([]gitlab.Group, error) {
 		subgroups, resp, err := gl.Client.Groups.ListSubGroups(gl.ParentGroupID, &gitlab.ListSubGroupsOptions{
 			ListOptions: gitlab.ListOptions{
 				Page:    nextPage,
-				PerPage: 10,
+				PerPage: 20,
 			},
 		})
 		if err != nil {
@@ -224,7 +224,7 @@ func (gl *GitLabWrapper) GetProjectContainerRegistryRepositories(projectName str
 		repositories, resp, err := gl.Client.ContainerRegistry.ListProjectRegistryRepositories(projectID, &gitlab.ListRegistryRepositoriesOptions{
 			ListOptions: gitlab.ListOptions{
 				Page:    nextPage,
-				PerPage: 10,
+				PerPage: 20,
 			},
 		})
 		if err != nil {
@@ -363,7 +363,7 @@ func (gl *GitLabWrapper) ListGroupDeployTokens(groupID int) ([]gitlab.DeployToke
 	for nextPage := 1; nextPage > 0; {
 		tokens, resp, err := gl.Client.DeployTokens.ListGroupDeployTokens(groupID, &gitlab.ListGroupDeployTokensOptions{
 			Page:    nextPage,
-			PerPage: 10,
+			PerPage: 20,
 		})
 		if err != nil {
 			return []gitlab.DeployToken{}, err
@@ -388,7 +388,7 @@ func (gl *GitLabWrapper) ListProjectDeployTokens(projectName string) ([]gitlab.D
 	for nextPage := 1; nextPage > 0; {
 		tokens, resp, err := gl.Client.DeployTokens.ListProjectDeployTokens(projectID, &gitlab.ListProjectDeployTokensOptions{
 			Page:    nextPage,
-			PerPage: 10,
+			PerPage: 20,
 		})
 		if err != nil {
 			return []gitlab.DeployToken{}, err
@@ -458,7 +458,7 @@ func (gl *GitLabWrapper) ListGroupRunners() ([]gitlab.Runner, error) {
 	container := make([]gitlab.Runner, 0)
 	for nextPage := 1; nextPage > 0; {
 		runners, resp, err := gl.Client.Runners.ListGroupsRunners(gl.ParentGroupID, &gitlab.ListGroupsRunnersOptions{
-			ListOptions: gitlab.ListOptions{Page: nextPage, PerPage: 10},
+			ListOptions: gitlab.ListOptions{Page: nextPage, PerPage: 20},
 			Type:        gitlab.String("group_type"),
 		})
 		if err != nil {

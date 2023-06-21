@@ -7,11 +7,8 @@ See the LICENSE file for more details.
 package k8s
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -66,38 +63,6 @@ func GetClientConfig(kubeconfigPath string) (*rest.Config, error) {
 	}
 
 	return clientconfig, nil
-}
-
-// deprecated
-// PortForward - opens port-forward to services
-func PortForward(filter, kubeconfigPath, kubectlClientPath, namespace, ports string) (*exec.Cmd, error) {
-	// config := configs.ReadConfig()
-
-	var kPortForwardOutb, kPortForwardErrb bytes.Buffer
-	kPortForward := exec.Command(kubectlClientPath, "--kubeconfig", kubeconfigPath, "-n", namespace, "port-forward", filter, ports)
-	kPortForward.Stdout = &kPortForwardOutb
-	kPortForward.Stderr = &kPortForwardErrb
-	err := kPortForward.Start()
-
-	// make port forward port available for log
-	log.Info().Msgf("kubectl port-forward started for (%s) available at http://localhost:%s", filter, strings.Split(ports, ":")[0])
-	//defer kPortForwardVault.Process.Signal(syscall.SIGTERM)
-
-	//Please, don't remove this sleep, pf takes a while to be ready to search calls.
-	//So, if next command is called to curl this address it will get connection refused.
-	//this sleep protects that.
-	//Please, don't remove this comment either.
-	time.Sleep(time.Second * 5)
-	log.Info().Msgf("%s %s %s %s %s %s %s %s", kubectlClientPath, "--kubeconfig", kubeconfigPath, "-n", namespace, "port-forward", filter, ports)
-	if err != nil {
-		// If it doesn't error, we kinda don't care much.
-		log.Info().Msgf("Commad Execution STDOUT: %s", kPortForwardOutb.String())
-		log.Error().Err(err).Msgf("Commad Execution STDERR: %s", kPortForwardErrb.String())
-		log.Error().Err(err).Msgf("$error: failed to port-forward to %s in main thread", filter)
-		return kPortForward, err
-	}
-
-	return kPortForward, nil
 }
 
 func WaitForNamespaceandPods(kubeconfigPath, kubectlClientPath, namespace, podLabel string) {
