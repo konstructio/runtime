@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/pkg"
-	awsinternal "github.com/kubefirst/runtime/pkg/aws"
 	"github.com/lixiangzhong/dnsutil"
 	"github.com/rs/zerolog/log"
 )
@@ -28,23 +27,9 @@ var (
 )
 
 // VerifyProviderDNS
-func VerifyProviderDNS(cloudProvider string, cloudRegion string, domainName string) error {
-	var nameServers []string
-
+func VerifyProviderDNS(cloudProvider string, cloudRegion string, domainName string, nameServers []string) error {
 	switch cloudProvider {
 	case "aws":
-		awsClient := &awsinternal.AWSConfiguration{
-			Config: awsinternal.NewAwsV2(cloudRegion),
-		}
-		hostedZoneID, err := awsClient.GetHostedZoneID(domainName)
-		if err != nil {
-			return err
-		}
-		hostedZone, err := awsClient.GetHostedZone(hostedZoneID)
-		if err != nil {
-			return err
-		}
-		nameServers = hostedZone.DelegationSet.NameServers
 	case "civo":
 		nameServers = CivoNameServers
 	case "digitalocean":

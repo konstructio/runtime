@@ -14,19 +14,9 @@ import (
 	"time"
 
 	"github.com/civo/civogo"
+	"github.com/kubefirst/runtime/pkg/dns"
 	"github.com/rs/zerolog/log"
 )
-
-// Some systems fail to resolve TXT records, so try to use Google as a backup
-var backupResolver = &net.Resolver{
-	PreferGo: true,
-	Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-		d := net.Dialer{
-			Timeout: time.Millisecond * time.Duration(10000),
-		}
-		return d.DialContext(ctx, network, "8.8.8.8:53")
-	},
-}
 
 // TestDomainLiveness checks Civo DNS for the liveness test record
 func (c *CivoConfiguration) TestDomainLiveness(domainName string, domainId string, region string) bool {
@@ -73,7 +63,7 @@ func (c *CivoConfiguration) TestDomainLiveness(domainName string, domainId strin
 		log.Info().Msgf("%s", civoRecordName)
 		ips, err := net.LookupTXT(civoRecordName)
 		if err != nil {
-			ips, err = backupResolver.LookupTXT(context.Background(), civoRecordName)
+			ips, err = dns.BackupResolver.LookupTXT(context.Background(), civoRecordName)
 		}
 
 		log.Info().Msgf("%s", ips)
