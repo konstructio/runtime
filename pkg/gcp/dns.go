@@ -13,27 +13,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kubefirst/runtime/pkg/dns"
 	"github.com/rs/zerolog/log"
-	dns "google.golang.org/api/dns/v1"
+	googleDNS "google.golang.org/api/dns/v1"
 )
-
-// Some systems fail to resolve TXT records, so try to use Google as a backup
-var backupResolver = &net.Resolver{
-	PreferGo: true,
-	Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-		d := net.Dialer{
-			Timeout: time.Millisecond * time.Duration(10000),
-		}
-		return d.DialContext(ctx, network, "8.8.8.8:53")
-	},
-}
 
 // TestHostedZoneLiveness checks DNS for the liveness test record
 func (conf *GCPConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool {
 	recordName := fmt.Sprintf("kubefirst-liveness.%s.", hostedZoneName)
 	recordValue := "domain record propagated"
 
-	dnsService, err := dns.NewService(conf.Context)
+	dnsService, err := googleDNS.NewService(conf.Context)
 	if err != nil {
 		log.Error().Msgf("error creating google dns client: %s", err)
 		return false
@@ -81,7 +71,7 @@ func (conf *GCPConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool
 	}
 
 	// create record if it does not exist
-	stat, err := dnsService.ResourceRecordSets.Create(conf.Project, zone.Name, &dns.ResourceRecordSet{
+	stat, err := dnsService.ResourceRecordSets.Create(conf.Project, zone.Name, &googleDNS.ResourceRecordSet{
 		Name:    recordName,
 		Rrdatas: []string{recordValue},
 		Ttl:     10,
@@ -102,7 +92,7 @@ func (conf *GCPConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool
 		log.Info().Msgf("%s", recordName)
 		ips, err := net.LookupTXT(recordName)
 		if err != nil {
-			ips, err = backupResolver.LookupTXT(context.Background(), recordName)
+			ips, err = dns.BackupResolver.LookupTXT(context.Background(), recordName)
 		}
 
 		log.Info().Msgf("%s", ips)

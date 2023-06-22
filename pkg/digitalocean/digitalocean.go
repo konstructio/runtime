@@ -14,19 +14,9 @@ import (
 	"time"
 
 	"github.com/digitalocean/godo"
+	"github.com/kubefirst/runtime/pkg/dns"
 	"github.com/rs/zerolog/log"
 )
-
-// Some systems fail to resolve TXT records, so try to use Google as a backup
-var backupResolver = &net.Resolver{
-	PreferGo: true,
-	Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-		d := net.Dialer{
-			Timeout: time.Millisecond * time.Duration(10000),
-		}
-		return d.DialContext(ctx, network, "8.8.8.8:53")
-	},
-}
 
 func (c *DigitaloceanConfiguration) TestDomainLiveness(domainName string) bool {
 	doRecordName := "kubefirst-liveness"
@@ -73,7 +63,7 @@ func (c *DigitaloceanConfiguration) TestDomainLiveness(domainName string) bool {
 		log.Info().Msgf("%s", doRecordName)
 		ips, err := net.LookupTXT(fmt.Sprintf("%s.%s", doRecordName, domainName))
 		if err != nil {
-			ips, err = backupResolver.LookupTXT(context.Background(), doRecordName)
+			ips, err = dns.BackupResolver.LookupTXT(context.Background(), doRecordName)
 		}
 
 		log.Info().Msgf("%s", ips)

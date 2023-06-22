@@ -13,20 +13,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kubefirst/runtime/pkg/dns"
 	"github.com/rs/zerolog/log"
 	"github.com/vultr/govultr/v3"
 )
-
-// Some systems fail to resolve TXT records, so try to use Google as a backup
-var backupResolver = &net.Resolver{
-	PreferGo: true,
-	Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-		d := net.Dialer{
-			Timeout: time.Millisecond * time.Duration(10000),
-		}
-		return d.DialContext(ctx, network, "8.8.8.8:53")
-	},
-}
 
 func (c *VultrConfiguration) TestDomainLiveness(domainName string) bool {
 	vultrRecordName := "kubefirst-liveness"
@@ -73,7 +63,7 @@ func (c *VultrConfiguration) TestDomainLiveness(domainName string) bool {
 		log.Info().Msgf("%s", vultrRecordName)
 		ips, err := net.LookupTXT(fmt.Sprintf("%s.%s", vultrRecordName, domainName))
 		if err != nil {
-			ips, err = backupResolver.LookupTXT(context.Background(), vultrRecordName)
+			ips, err = dns.BackupResolver.LookupTXT(context.Background(), vultrRecordName)
 		}
 
 		log.Info().Msgf("%s", ips)

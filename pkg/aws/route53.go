@@ -17,19 +17,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/route53"
 	route53Types "github.com/aws/aws-sdk-go-v2/service/route53/types"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/kubefirst/runtime/pkg/dns"
 	"github.com/rs/zerolog/log"
 )
-
-// Some systems fail to resolve TXT records, so try to use Google as a backup
-var backupResolver = &net.Resolver{
-	PreferGo: true,
-	Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-		d := net.Dialer{
-			Timeout: time.Millisecond * time.Duration(10000),
-		}
-		return d.DialContext(ctx, network, "8.8.8.8:53")
-	},
-}
 
 // TestHostedZoneLiveness checks Route53 for the liveness test record
 func (conf *AWSConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool {
@@ -41,6 +31,7 @@ func (conf *AWSConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool
 	hostedZoneID, err := conf.GetHostedZoneID(hostedZoneName)
 	if err != nil {
 		log.Error().Msg(err.Error())
+		return false
 	}
 
 	log.Info().Msgf("checking to see if record %s exists", route53RecordName)
@@ -103,7 +94,7 @@ func (conf *AWSConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool
 		log.Info().Msgf("%s", route53RecordName)
 		ips, err := net.LookupTXT(route53RecordName)
 		if err != nil {
-			ips, err = backupResolver.LookupTXT(context.Background(), route53RecordName)
+			ips, err = dns.BackupResolver.LookupTXT(context.Background(), route53RecordName)
 		}
 
 		log.Info().Msgf("%s", ips)
@@ -136,7 +127,7 @@ func (conf *AWSConfiguration) GetHostedZoneID(hostedZoneName string) (string, er
 		},
 	)
 	if err != nil {
-		log.Error().Msg(err.Error())
+		return "", fmt.Errorf("error listing hosted zones: %s", err)
 	}
 
 	var hostedZoneId string
@@ -148,7 +139,7 @@ func (conf *AWSConfiguration) GetHostedZoneID(hostedZoneName string) (string, er
 	}
 
 	if hostedZoneId == "" {
-		return "", fmt.Errorf("could not find hosted zone ID for hosted zone %s", hostedZoneName)
+		return "", fmt.Errorf("error finding hosted zone ID for hosted zone %s", hostedZoneName)
 	}
 
 	return hostedZoneId, nil
@@ -161,7 +152,7 @@ func (conf *AWSConfiguration) GetHostedZone(hostedZoneID string) (*route53.GetHo
 		Id: aws.String(hostedZoneID),
 	})
 	if err != nil {
-		log.Error().Msg(err.Error())
+		return nil, fmt.Errorf("error fetching details for hosted zone %s: %s", hostedZoneID, err)
 	}
 
 	return hostedZone, nil
@@ -172,7 +163,7 @@ func (conf *AWSConfiguration) GetHostedZones() ([]string, error) {
 	route53Client := route53.NewFromConfig(conf.Config)
 	hostedZones, err := route53Client.ListHostedZones(context.Background(), &route53.ListHostedZonesInput{})
 	if err != nil {
-		log.Error().Msg(err.Error())
+		return nil, fmt.Errorf("error listing hosted zones: %s", err)
 	}
 
 	var domainList []string
@@ -182,4 +173,19 @@ func (conf *AWSConfiguration) GetHostedZones() ([]string, error) {
 	}
 
 	return domainList, nil
+}
+
+// GetHostedZoneNameServers
+func (conf *AWSConfiguration) GetHostedZoneNameServers(domainName string) ([]string, error) {
+	hostedZoneID, err := conf.GetHostedZoneID(domainName)
+	if err != nil {
+		return nil, err
+	}
+
+	hostedZone, err := conf.GetHostedZone(hostedZoneID)
+	if err != nil {
+		return nil, err
+	}
+
+	return hostedZone.DelegationSet.NameServers, nil
 }
