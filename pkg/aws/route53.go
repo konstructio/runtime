@@ -175,17 +175,25 @@ func (conf *AWSConfiguration) GetHostedZones() ([]string, error) {
 	return domainList, nil
 }
 
-// GetHostedZoneNameServers
-func (conf *AWSConfiguration) GetHostedZoneNameServers(domainName string) ([]string, error) {
+// GetHostedZoneNameServers returns nameservers for a hosted zone if available
+// for private zones, nothing is returned
+func (conf *AWSConfiguration) GetHostedZoneNameServers(domainName string) (bool, []string, error) {
 	hostedZoneID, err := conf.GetHostedZoneID(domainName)
 	if err != nil {
-		return nil, err
+		return false, nil, err
 	}
 
 	hostedZone, err := conf.GetHostedZone(hostedZoneID)
 	if err != nil {
-		return nil, err
+		return false, nil, err
 	}
 
-	return hostedZone.DelegationSet.NameServers, nil
+	switch hostedZone.HostedZone.Config.PrivateZone {
+	case true:
+		return true, nil, nil
+	case false:
+		return false, hostedZone.DelegationSet.NameServers, nil
+	}
+
+	return false, nil, nil
 }
