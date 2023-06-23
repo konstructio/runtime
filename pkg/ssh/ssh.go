@@ -72,7 +72,7 @@ func EvalSSHKey(req *EvalSSHKeyRequest) error {
 				if strings.Contains(key.Key, strings.TrimSuffix(viper.GetString("kbot.public-key"), "\n")) {
 					log.Info().Msgf("ssh key %s already exists and key is up to date, continuing", keyName)
 				} else {
-					log.Fatal().Msgf("ssh key %s already exists and key data has drifted - it will be recreated", keyName)
+					log.Warn().Msgf("ssh key %s already exists and key data has drifted - it will be recreated", keyName)
 					err := gitlabClient.DeleteUserSSHKey(keyName)
 					if err != nil {
 						return fmt.Errorf("error deleting gitlab user ssh key %s: %s", keyName, err)
