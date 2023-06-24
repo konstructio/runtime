@@ -66,22 +66,22 @@ func EvalSSHKey(req *EvalSSHKeyRequest) error {
 		}
 
 		var keyName = "kbot-ssh-key"
-		var createKey bool = false
+		var keyFound bool = false
 		for _, key := range keys {
 			if key.Title == keyName {
 				if strings.Contains(key.Key, strings.TrimSuffix(viper.GetString("kbot.public-key"), "\n")) {
 					log.Info().Msgf("ssh key %s already exists and key is up to date, continuing", keyName)
+					keyFound = true
 				} else {
 					log.Warn().Msgf("ssh key %s already exists and key data has drifted - it will be recreated", keyName)
 					err := gitlabClient.DeleteUserSSHKey(keyName)
 					if err != nil {
 						return fmt.Errorf("error deleting gitlab user ssh key %s: %s", keyName, err)
 					}
-					createKey = true
 				}
 			}
 		}
-		if createKey {
+		if !keyFound {
 			log.Info().Msgf("creating ssh key %s...", keyName)
 			err := gitlabClient.AddUserSSHKey(keyName, viper.GetString("kbot.public-key"))
 			if err != nil {
