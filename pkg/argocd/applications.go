@@ -10,6 +10,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -89,6 +90,31 @@ func deleteArgoCDApplicationV2(clientset kubernetes.Interface, applicationName s
 		}
 		time.Sleep(time.Second * 1)
 	}
+
+	return nil
+}
+
+// RefreshRegistryApplication forces the registry application to fetch upstream manifests
+func RefreshRegistryApplication(host string, token string) error {
+	// Build request to ArgoCD API
+	request, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/api/v1/applications/registry?refresh=true", host),
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+
+	// Submit request to ArgoCD API
+	client := &http.Client{Timeout: 10 * time.Second}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
 
 	return nil
 }
