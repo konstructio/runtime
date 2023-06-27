@@ -34,13 +34,5 @@ func (c *DigitaloceanConfiguration) CreateSpaceBucket(cr DigitaloceanSpacesCrede
 		return fmt.Errorf("error creating bucket %s for %s: %s", bucketName, cr.Endpoint, err)
 	}
 
-	spaces, err := minioClient.ListBuckets(ctx)
-	if err != nil {
-		return fmt.Errorf("could not list spaces: %s", err)
-	}
-	for _, space := range spaces {
-		fmt.Println(space.Name)
-	}
-
 	return nil
 }
