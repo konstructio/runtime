@@ -63,21 +63,22 @@ type PortForwardAServiceRequest struct {
 }
 
 func PortForwardPodWithRetry(clientset *kubernetes.Clientset, req PortForwardAPodRequest) error {
+	var err error
 	for i := 0; i < 10; i++ {
-		err := PortForwardPod(clientset, req)
+		err = PortForwardPod(clientset, req)
 		if err == nil {
 			return nil
 		}
 		time.Sleep(20 * time.Second)
 	}
-	return fmt.Errorf("not able to open port-forward")
+
+	return fmt.Errorf("not able to open port-forward: %s", err)
 
 }
 
-// PortForwardPod receives a PortForwardAPodRequest, and enable port forward for the specified resource. If the provided
-// Pod name matches a running Pod, it will try to port forward for that Pod on the specified port.
+// PortForwardPod receives a PortForwardAPodRequest, and enables port forwarding for the specified resource.
+// If the provided Pod name matches a running Pod, it will try to port forward for that Pod on the specified port.
 func PortForwardPod(clientset *kubernetes.Clientset, req PortForwardAPodRequest) error {
-
 	podList, err := clientset.CoreV1().Pods(req.Pod.Namespace).List(context.Background(), metav1.ListOptions{})
 	if err != nil || len(podList.Items) == 0 {
 		fmt.Fprintln(os.Stderr, err)
@@ -95,10 +96,12 @@ func PortForwardPod(clientset *kubernetes.Clientset, req PortForwardAPodRequest)
 	if runningPod == nil {
 		return fmt.Errorf("error reading pod details")
 	}
+
 	log.Println("Namespace for PF", runningPod.Namespace)
 	log.Println("Name for PF", runningPod.Name)
+
 	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", runningPod.Namespace, runningPod.Name)
-	hostIP := strings.TrimLeft(req.RestConfig.Host, "https:/")
+	hostIP := strings.TrimPrefix(req.RestConfig.Host, "https://")
 
 	transport, upgrader, err := spdy.RoundTripperFor(req.RestConfig)
 	if err != nil {
@@ -136,5 +139,4 @@ func PortForwardPod(clientset *kubernetes.Clientset, req PortForwardAPodRequest)
 	}
 
 	return nil
-
 }
