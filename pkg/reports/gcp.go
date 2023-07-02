@@ -13,10 +13,11 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/pkg/gcp"
+	"github.com/kubefirst/runtime/pkg/providerConfigs"
 )
 
 // GCPHandoffScreen prints the handoff screen
-func GCPHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *gcp.GCPConfig, silentMode bool) {
+func GCPHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *providerConfigs.ProviderConfig, silentMode bool) {
 	// prepare data for the handoff report
 	if silentMode {
 		log.Printf("[#99] Silent mode enabled, LocalHandoffScreen skipped, please check ~/.kubefirst file for your cluster and service credentials.")

@@ -13,10 +13,12 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/kubefirst/runtime/pkg/providerConfigs"
 )
 
 // DetokenizeGitGitops - Translate tokens by values on a given path
-func DetokenizeGitGitops(path string, tokens *GitOpsDirectoryValues) error {
+func DetokenizeGitGitops(path string, tokens *providerConfigs.GitOpsDirectoryValues) error {
 	err := filepath.Walk(path, detokenizeGitops(path, tokens))
 	if err != nil {
 		return err
@@ -25,7 +27,7 @@ func DetokenizeGitGitops(path string, tokens *GitOpsDirectoryValues) error {
 	return nil
 }
 
-func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkFunc {
+func detokenizeGitops(path string, tokens *providerConfigs.GitOpsDirectoryValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -116,7 +118,7 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkF
 }
 
 // DetokenizeAdditionalPath - Translate tokens by values on a given path
-func DetokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) error {
+func DetokenizeAdditionalPath(path string, tokens *providerConfigs.GitOpsDirectoryValues) error {
 	err := filepath.Walk(path, detokenizeAdditionalPath(path, tokens))
 	if err != nil {
 		return err
@@ -126,7 +128,7 @@ func DetokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) error 
 }
 
 // detokenizeAdditionalPath temporary addition to handle detokenizing additional files
-func detokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) filepath.WalkFunc {
+func detokenizeAdditionalPath(path string, tokens *providerConfigs.GitOpsDirectoryValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -157,7 +159,7 @@ func detokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) filepa
 }
 
 // DetokenizeGithubMetaphor - Translate tokens by values on a given path
-func DetokenizeGitMetaphor(path string, tokens *MetaphorTokenValues) error {
+func DetokenizeGitMetaphor(path string, tokens *providerConfigs.MetaphorTokenValues) error {
 	err := filepath.Walk(path, detokenizeGitopsMetaphor(path, tokens))
 	if err != nil {
 		return err
@@ -166,7 +168,7 @@ func DetokenizeGitMetaphor(path string, tokens *MetaphorTokenValues) error {
 }
 
 // DetokenizeDirectoryGithubMetaphor - Translate tokens by values on a directory level.
-func detokenizeGitopsMetaphor(path string, tokens *MetaphorTokenValues) filepath.WalkFunc {
+func detokenizeGitopsMetaphor(path string, tokens *providerConfigs.MetaphorTokenValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err

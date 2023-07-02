@@ -13,10 +13,11 @@ import (
 
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/downloadManager"
+	"github.com/kubefirst/runtime/pkg/providerConfigs"
 	"github.com/rs/zerolog/log"
 )
 
-func DownloadTools(awsConfig *AwsConfig, kubectlClientVersion string, terraformClientVersion string) error {
+func DownloadTools(awsConfig *providerConfigs.ProviderConfig, kubectlClientVersion string, terraformClientVersion string) error {
 
 	log.Info().Msg("starting downloads...")
 

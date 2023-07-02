@@ -16,6 +16,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/gitClient"
+	"github.com/kubefirst/runtime/pkg/providerConfigs"
 
 	cp "github.com/otiai10/copy"
 	"github.com/rs/zerolog/log"
@@ -206,9 +207,9 @@ func PrepareGitRepositories(
 	gitopsTemplateURL string,
 	destinationMetaphorRepoGitURL string,
 	k1Dir string,
-	gitopsTokens *GitOpsDirectoryValues,
+	gitopsTokens *providerConfigs.GitOpsDirectoryValues,
 	metaphorDir string,
-	metaphorTokens *MetaphorTokenValues,
+	metaphorTokens *providerConfigs.MetaphorTokenValues,
 	apexContentExists bool,
 ) error {
 	//* clone the gitops-template repo

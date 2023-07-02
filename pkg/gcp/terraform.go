@@ -12,13 +12,14 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/pkg/k8s"
+	"github.com/kubefirst/runtime/pkg/providerConfigs"
 	"github.com/kubefirst/runtime/pkg/vault"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/kubernetes"
 )
 
-func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *GCPConfig) string {
+func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *providerConfigs.ProviderConfig) string {
 	existingKubernetesSecret, err := k8s.ReadSecretV2(clientset, vault.VaultNamespace, vault.VaultSecretName)
 	if err != nil || existingKubernetesSecret == nil {
 		log.Printf("Error reading existing Secret data: %s", err)
@@ -28,13 +29,13 @@ func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *GCPConfig
 	return existingKubernetesSecret["root-token"]
 }
 
-func GetGCPTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]string {
+func GetGCPTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	//envs["TF_LOG"] = "debug"
 
 	return envs
 }
 
-func GetGithubTerraformEnvs(config *GCPConfig, envs map[string]string) map[string]string {
+func GetGithubTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	envs["GITHUB_TOKEN"] = config.GithubToken
 	envs["GITHUB_OWNER"] = viper.GetString("flags.github-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
@@ -43,7 +44,7 @@ func GetGithubTerraformEnvs(config *GCPConfig, envs map[string]string) map[strin
 	return envs
 }
 
-func GetGitlabTerraformEnvs(config *GCPConfig, envs map[string]string, gid int) map[string]string {
+func GetGitlabTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[string]string, gid int) map[string]string {
 	envs["GITLAB_TOKEN"] = config.GitlabToken
 	envs["GITLAB_OWNER"] = viper.GetString("flags.gitlab-owner")
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
@@ -55,7 +56,7 @@ func GetGitlabTerraformEnvs(config *GCPConfig, envs map[string]string, gid int) 
 	return envs
 }
 
-func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, envs map[string]string) map[string]string {
+func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	var tokenValue string
 	switch config.GitProvider {
 	case "github":
@@ -64,14 +65,14 @@ func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, e
 		tokenValue = config.GitlabToken
 	}
 	envs["VAULT_TOKEN"] = readVaultTokenFromSecret(clientset, config)
-	envs["VAULT_ADDR"] = VaultPortForwardURL
+	envs["VAULT_ADDR"] = providerConfigs.VaultPortForwardURL
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
 
 	return envs
 }
 
-func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, envs map[string]string) map[string]string {
+func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	var tokenValue string
 	switch config.GitProvider {
 	case "github":
@@ -82,10 +83,10 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *GCPConfig, e
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
 	envs["TF_VAR_email_address"] = viper.GetString("flags.alerts-email")
-	envs["TF_VAR_vault_addr"] = VaultPortForwardURL
+	envs["TF_VAR_vault_addr"] = providerConfigs.VaultPortForwardURL
 	envs["TF_VAR_vault_token"] = readVaultTokenFromSecret(clientset, config)
 	envs[fmt.Sprintf("TF_VAR_%s_token", config.GitProvider)] = tokenValue
-	envs["VAULT_ADDR"] = VaultPortForwardURL
+	envs["VAULT_ADDR"] = providerConfigs.VaultPortForwardURL
 	envs["VAULT_TOKEN"] = readVaultTokenFromSecret(clientset, config)
 	envs["TF_VAR_atlantis_repo_webhook_secret"] = viper.GetString("secrets.atlantis-webhook")
 	envs["TF_VAR_atlantis_repo_webhook_url"] = viper.GetString(fmt.Sprintf("%s.atlantis.webhook.url", config.GitProvider))
