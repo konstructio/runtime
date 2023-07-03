@@ -8,6 +8,7 @@ package civo
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/civo/civogo"
 	"github.com/rs/zerolog/log"
@@ -69,12 +70,16 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		creds, err = c.getAccessCredentials(creds.ID, region)
-		if err != nil {
-			return civogo.ObjectStoreCredential{}, err
+		for i := 0; i < 60; i++ {
+			if creds.AccessKeyID != "" && creds.ID != "" && creds.Name != "" && creds.SecretAccessKeyID != "" {
+				break
+			}
+			log.Warn().Msg("waiting for civo credentials creation")
+			time.Sleep(time.Second * 2)
 		}
 
 		log.Info().Msgf("created object storage credential %s", credentialName)
+
 		return creds, nil
 	}
 
