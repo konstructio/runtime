@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package providerConfigs
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func AdjustGitopsRepo(
 ) error {
 	//* clean up all other platforms
 	for _, platform := range pkg.SupportedPlatforms {
-		if platform != fmt.Sprintf("%s-%s", CloudProvider, gitProvider) {
+		if platform != fmt.Sprintf("%s-%s", cloudProvider, gitProvider) {
 			os.RemoveAll(gitopsRepoDir + "/" + platform)
 		}
 	}
@@ -53,10 +53,10 @@ func AdjustGitopsRepo(
 	}
 
 	//* copy $cloudProvider-$gitProvider/* $HOME/.k1/gitops/
-	driverContent := fmt.Sprintf("%s/%s-%s/", gitopsRepoDir, CloudProvider, gitProvider)
+	driverContent := fmt.Sprintf("%s/%s-%s/", gitopsRepoDir, cloudProvider, gitProvider)
 	err := cp.Copy(driverContent, gitopsRepoDir, opt)
 	if err != nil {
-		log.Info().Msgf("Error populating gitops repository with driver content: %s. error: %s", fmt.Sprintf("%s-%s", CloudProvider, gitProvider), err.Error())
+		log.Info().Msgf("Error populating gitops repository with driver content: %s. error: %s", fmt.Sprintf("%s-%s", cloudProvider, gitProvider), err.Error())
 		return err
 	}
 	os.RemoveAll(driverContent)
@@ -197,6 +197,7 @@ func AdjustMetaphorRepo(
 
 // PrepareGitRepositories
 func PrepareGitRepositories(
+	cloudProvider string,
 	gitProvider string,
 	clusterName string,
 	clusterType string,
@@ -220,7 +221,7 @@ func PrepareGitRepositories(
 
 	// ADJUST CONTENT
 	//* adjust the content for the gitops repo
-	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, apexContentExists)
+	err = AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, apexContentExists)
 	if err != nil {
 		return err
 	}

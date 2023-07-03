@@ -13,10 +13,11 @@ import (
 	"strings"
 
 	"github.com/kubefirst/runtime/pkg/civo"
+	"github.com/kubefirst/runtime/pkg/providerConfigs"
 )
 
 // CivoHandoffScreen prints the handoff screen
-func CivoHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *civo.CivoConfig, silentMode bool) {
+func CivoHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *providerConfigs.ProviderConfig, silentMode bool) {
 	// prepare data for the handoff report
 	if silentMode {
 		log.Printf("[#99] Silent mode enabled, LocalHandoffScreen skipped, please check ~/.kubefirst file for your cluster and service credentials.")
