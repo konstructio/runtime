@@ -70,12 +70,12 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		for i := 0; i < 60; i++ {
+		for i := 0; i < 12; i++ {
 			if creds.AccessKeyID != "" && creds.ID != "" && creds.Name != "" && creds.SecretAccessKeyID != "" {
 				break
 			}
 			log.Warn().Msg("waiting for civo credentials creation")
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Second * 10)
 		}
 
 		log.Info().Msgf("created object storage credential %s", credentialName)
