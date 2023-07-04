@@ -78,13 +78,13 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 
 			switch {
 			case creds.AccessKeyID == "":
-				civoCredsFailureMessage = "when retrieving civo access credentials, AccessKeyID was empty - please retry your cluster creation"
+				civoCredsFailureMessage = "when retrieving civo access credentials, AccessKeyID was empty - the credentials will be recreated"
 			case creds.ID == "":
-				civoCredsFailureMessage = "when retrieving civo access credentials, ID was empty - please retry your cluster creation"
+				civoCredsFailureMessage = "when retrieving civo access credentials, ID was empty - the credentials will be recreated"
 			case creds.Name == "":
-				civoCredsFailureMessage = "when retrieving civo access credentials, Name was empty - please retry your cluster creation"
+				civoCredsFailureMessage = "when retrieving civo access credentials, Name was empty - the credentials will be recreated"
 			case creds.SecretAccessKeyID == "":
-				civoCredsFailureMessage = "when retrieving civo access credentials, SecretAccessKeyID was empty - please retry your cluster creation"
+				civoCredsFailureMessage = "when retrieving civo access credentials, SecretAccessKeyID was empty - the credentials will be recreated"
 			}
 
 			if civoCredsFailureMessage != "" {
