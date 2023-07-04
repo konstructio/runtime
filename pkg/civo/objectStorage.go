@@ -8,7 +8,6 @@ package civo
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/civo/civogo"
 	"github.com/rs/zerolog/log"
@@ -70,12 +69,36 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		for i := 0; i < 60; i++ {
-			if creds.AccessKeyID != "" && creds.ID != "" && creds.Name != "" && creds.SecretAccessKeyID != "" {
+		// Try 10 times to create credentials
+		// If they don't create, something in Civo is broken and the operation will need
+		// to be run again
+		for i := 0; i < 10; i++ {
+			// Verify all credentials fields are present
+			var civoCredsFailureMessage string
+
+			switch {
+			case creds.AccessKeyID == "":
+				civoCredsFailureMessage = "when retrieving civo access credentials, AccessKeyID was empty - please retry your cluster creation"
+			case creds.ID == "":
+				civoCredsFailureMessage = "when retrieving civo access credentials, ID was empty - please retry your cluster creation"
+			case creds.Name == "":
+				civoCredsFailureMessage = "when retrieving civo access credentials, Name was empty - please retry your cluster creation"
+			case creds.SecretAccessKeyID == "":
+				civoCredsFailureMessage = "when retrieving civo access credentials, SecretAccessKeyID was empty - please retry your cluster creation"
+			}
+
+			if civoCredsFailureMessage != "" {
+				// Creds failed to properly parse, so remove them
+				log.Warn().Msgf(civoCredsFailureMessage)
+
+				err := c.DeleteAccessCredentials(credentialName, region)
+				if err != nil {
+					return civogo.ObjectStoreCredential{}, err
+				}
+			} else {
+				// Continue if all fields were present
 				break
 			}
-			log.Warn().Msg("waiting for civo credentials creation")
-			time.Sleep(time.Second * 2)
 		}
 
 		log.Info().Msgf("created object storage credential %s", credentialName)
