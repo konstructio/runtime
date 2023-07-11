@@ -68,6 +68,11 @@ type GitOpsDirectoryValues struct {
 	GitOpsRepoGitURL             string
 	GitOpsRepoNoHTTPSURL         string
 
+	ExternalDNSProviderName         string
+	ExternalDNSProviderTokenEnvName string
+	ExternalDNSProviderSecretName   string
+	ExternalDNSProviderSecretKey    string
+
 	UseTelemetry string
 }
 
