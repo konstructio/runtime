@@ -9,8 +9,10 @@ package providerConfigs
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
 type ProviderConfig struct {
@@ -26,10 +28,13 @@ type ProviderConfig struct {
 	ArgoWorkflowsDir                string
 	DestinationGitopsRepoHttpsURL   string
 	DestinationGitopsRepoGitURL     string
+	DestinationGitopsRepoURL        string
 	DestinationMetaphorRepoHttpsURL string
 	DestinationMetaphorRepoGitURL   string
+	DestinationMetaphorRepoURL      string
 	GitopsDir                       string
 	GitProvider                     string
+	GitProtocols                    string
 	K1Dir                           string
 	Kubeconfig                      string
 	KubectlClient                   string
@@ -66,6 +71,15 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.DestinationGitopsRepoGitURL = fmt.Sprintf("git@%s:%s/gitops.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
+
+	// Define constant url based on flag input, only expecting 2 protocols
+	if strings.Contains(viper.GetString("flags.git-protocol"), "https") {
+		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoHttpsURL
+		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoHttpsURL
+	} else {
+		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoGitURL
+		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoGitURL
+	}
 
 	config.ArgoWorkflowsDir = fmt.Sprintf("%s/.k1/%s/argo-workflows", homeDir, clusterName)
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
