@@ -111,7 +111,7 @@ func PrepareGitRepositories(
 	gitopsDir string,
 	gitopsTemplateBranch string,
 	gitopsTemplateURL string,
-	DestinationMetaphorRepoHttpsURL string,
+	destinationMetaphorRepoHttpsURL string,
 	k1Dir string,
 	gitopsTokens *GitopsTokenValues,
 	metaphorDir string,
@@ -147,7 +147,7 @@ func PrepareGitRepositories(
 
 	//! metaphor
 	//* adjust the content for the gitops repo
-	err = AdjustMetaphorRepo(DestinationMetaphorRepoHttpsURL, gitopsDir, gitProvider, k1Dir)
+	err = AdjustMetaphorRepo(destinationMetaphorRepoHttpsURL, gitopsDir, gitProvider, k1Dir)
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func PrepareGitRepositories(
 	}
 
 	//* add new remote
-	err = gitClient.AddRemote(DestinationMetaphorRepoHttpsURL, gitProvider, metaphorRepo)
+	err = gitClient.AddRemote(destinationMetaphorRepoHttpsURL, gitProvider, metaphorRepo)
 	if err != nil {
 		return err
 	}

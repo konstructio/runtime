@@ -86,7 +86,7 @@ func AdjustGitopsRepo(
 
 // AdjustMetaphorRepo
 func AdjustMetaphorRepo(
-	destinationMetaphorRepoURL string,
+	destinationMetaphorRepoGitURL string,
 	gitopsRepoDir string,
 	gitProvider string,
 	k1Dir string,
@@ -186,7 +186,7 @@ func AdjustMetaphorRepo(
 	// create remote
 	_, err = metaphorRepo.CreateRemote(&config.RemoteConfig{
 		Name: "origin",
-		URLs: []string{destinationMetaphorRepoURL},
+		URLs: []string{destinationMetaphorRepoGitURL},
 	})
 	if err != nil {
 		return fmt.Errorf("error creating remote for metaphor repository: %s", err)
@@ -201,22 +201,21 @@ func PrepareGitRepositories(
 	gitProvider string,
 	clusterName string,
 	clusterType string,
-	destinationGitopsRepoURL string,
+	destinationGitopsRepoGitURL string,
 	gitopsDir string,
 	gitopsTemplateBranch string,
 	gitopsTemplateURL string,
-	destinationMetaphorRepoURL string,
+	destinationMetaphorRepoGitURL string,
 	k1Dir string,
 	gitopsTokens *GitOpsDirectoryValues,
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
 	apexContentExists bool,
-	gitProtocol string,
 ) error {
 	//* clone the gitops-template repo
 	gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
 	if err != nil {
-		log.Panic().Msgf("error opening repo at: %s, err: %v", gitopsDir, err)
+		log.Info().Msgf("error opening repo at: %s", gitopsDir)
 	}
 	log.Info().Msg("gitops repository clone complete")
 
@@ -224,20 +223,19 @@ func PrepareGitRepositories(
 	//* adjust the content for the gitops repo
 	err = AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, apexContentExists)
 	if err != nil {
-		log.Info().Msgf("err: %v", err)
 		return err
 	}
 
 	// DETOKENIZE
 	//* detokenize the gitops repo
-	DetokenizeGitGitops(gitopsDir, gitopsTokens, gitProtocol)
+	DetokenizeGitGitops(gitopsDir, gitopsTokens)
 	if err != nil {
 		return err
 	}
 
 	// ADJUST CONTENT
 	//* adjust the content for the metaphor repo
-	err = AdjustMetaphorRepo(destinationMetaphorRepoURL, gitopsDir, gitProvider, k1Dir)
+	err = AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsDir, gitProvider, k1Dir)
 	if err != nil {
 		return err
 	}
@@ -269,13 +267,13 @@ func PrepareGitRepositories(
 
 	// ADD REMOTE(S)
 	//* add new remote for gitops repo
-	err = gitClient.AddRemote(destinationGitopsRepoURL, gitProvider, gitopsRepo)
+	err = gitClient.AddRemote(destinationGitopsRepoGitURL, gitProvider, gitopsRepo)
 	if err != nil {
 		return err
 	}
 
 	//* add new remote for metaphor repo
-	err = gitClient.AddRemote(destinationGitopsRepoURL, gitProvider, metaphorRepo)
+	err = gitClient.AddRemote(destinationMetaphorRepoGitURL, gitProvider, metaphorRepo)
 	if err != nil {
 		return err
 	}
