@@ -20,7 +20,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func BootstrapVultrMgmtCluster(vultrApiKey string, kubeconfigPath string, gitProvider string, gitUser string, destinationGitopsRepoURL string) error {
+func BootstrapVultrMgmtCluster(
+	vultrApiKey string,
+	kubeconfigPath string,
+	gitProvider string,
+	gitUser string,
+	destinationGitopsRepoURL string,
+	cloudflareAPIKey string,
+) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		log.Info().Msg("error getting kubernetes clientset")
@@ -88,6 +95,7 @@ func BootstrapVultrMgmtCluster(vultrApiKey string, kubeconfigPath string, gitPro
 			ObjectMeta: metav1.ObjectMeta{Name: "vultr-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
 				"vultr-token": []byte(vultrApiKey),
+				"cf-api-key":  []byte(cloudflareAPIKey),
 			},
 		},
 	}

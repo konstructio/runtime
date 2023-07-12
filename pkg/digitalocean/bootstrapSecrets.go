@@ -20,7 +20,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func BootstrapDigitaloceanMgmtCluster(digitalOceanToken, kubeconfigPath string, gitProvider string, gitUser string, destinationGitopsRepoURL string) error {
+func BootstrapDigitaloceanMgmtCluster(
+	digitalOceanToken string,
+	kubeconfigPath string,
+	gitProvider string,
+	gitUser string,
+	destinationGitopsRepoURL string,
+	cloudflareAPIKey string,
+) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
 		log.Info().Msg("error getting kubernetes clientset")
@@ -88,6 +95,7 @@ func BootstrapDigitaloceanMgmtCluster(digitalOceanToken, kubeconfigPath string, 
 			ObjectMeta: metav1.ObjectMeta{Name: "digitalocean-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
 				"digitalocean-token": []byte(digitalOceanToken),
+				"cf-api-key":         []byte(cloudflareAPIKey),
 			},
 		},
 	}
