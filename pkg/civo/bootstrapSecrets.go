@@ -24,7 +24,6 @@ func BootstrapCivoMgmtCluster(
 	kubeconfigPath string,
 	gitProvider string,
 	gitUser string,
-	destinationGitopsRepoURL string,
 	cloudflareAPIKey string,
 ) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
