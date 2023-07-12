@@ -121,7 +121,6 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues) filepath.WalkF
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_TOKEN_ENV_NAME>", tokens.ExternalDNSProviderTokenEnvName, -1)
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_SECRET_NAME>", tokens.ExternalDNSProviderSecretName, -1)
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_SECRET_KEY>", tokens.ExternalDNSProviderSecretKey, -1)
-				newContents = strings.Replace(newContents, "<CLOUDFLARE_ACCOUNT_EMAIL>", tokens.CloudflareAccountEmail, -1)
 
 				newContents = strings.Replace(newContents, "<USE_TELEMETRY>", tokens.UseTelemetry, -1)
 

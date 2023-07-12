@@ -24,7 +24,7 @@ func BootstrapCivoMgmtCluster(
 	kubeconfigPath string,
 	gitProvider string,
 	gitUser string,
-	cloudflareAPIKey string,
+	cloudflareAPIToken string,
 ) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
@@ -76,8 +76,8 @@ func BootstrapCivoMgmtCluster(
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "civo-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
-				"civo-token": []byte(civoToken),
-				"cf-api-key": []byte(cloudflareAPIKey),
+				"civo-token":   []byte(civoToken),
+				"cf-api-token": []byte(cloudflareAPIToken),
 			},
 		},
 		{

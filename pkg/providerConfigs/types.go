@@ -72,7 +72,6 @@ type GitOpsDirectoryValues struct {
 	ExternalDNSProviderTokenEnvName string
 	ExternalDNSProviderSecretName   string
 	ExternalDNSProviderSecretKey    string
-	CloudflareAccountEmail          string
 
 	UseTelemetry string
 }
