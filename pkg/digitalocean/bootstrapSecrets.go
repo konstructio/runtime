@@ -24,7 +24,7 @@ func BootstrapDigitaloceanMgmtCluster(
 	kubeconfigPath string,
 	gitProvider string,
 	gitUser string,
-	cloudflareAPIKey string,
+	cloudflareAPIToken string,
 ) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
@@ -76,7 +76,7 @@ func BootstrapDigitaloceanMgmtCluster(
 			ObjectMeta: metav1.ObjectMeta{Name: "digitalocean-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
 				"digitalocean-token": []byte(digitalOceanToken),
-				"cf-api-key":         []byte(cloudflareAPIKey),
+				"cf-api-token":       []byte(cloudflareAPIToken),
 			},
 		},
 	}

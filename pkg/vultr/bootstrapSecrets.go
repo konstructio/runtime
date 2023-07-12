@@ -24,7 +24,7 @@ func BootstrapVultrMgmtCluster(
 	kubeconfigPath string,
 	gitProvider string,
 	gitUser string,
-	cloudflareAPIKey string,
+	cloudflareAPIToken string,
 ) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
@@ -75,8 +75,8 @@ func BootstrapVultrMgmtCluster(
 		{
 			ObjectMeta: metav1.ObjectMeta{Name: "vultr-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
-				"vultr-token": []byte(vultrApiKey),
-				"cf-api-key":  []byte(cloudflareAPIKey),
+				"vultr-token":  []byte(vultrApiKey),
+				"cf-api-token": []byte(cloudflareAPIToken),
 			},
 		},
 	}
