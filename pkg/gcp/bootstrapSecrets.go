@@ -9,6 +9,7 @@ package gcp
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -19,7 +20,12 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset, gitProvider string, gitUser string) error {
+func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset,
+	gitProvider string,
+	gitUser string,
+	destinationGitopsRepoURL string,
+	gitProtocol string,
+) error {
 	// Create namespace
 	// Skip if it already exists
 	newNamespaces := []string{
@@ -45,6 +51,27 @@ func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset, gitProvider string
 	}
 
 	// Create secrets
+	// swap secret data based on https flag
+	secretData := map[string][]byte{}
+
+	if strings.Contains(gitProtocol, "https") {
+		// http basic auth
+		secretData = map[string][]byte{
+			"type":     []byte("git"),
+			"name":     []byte(fmt.Sprintf("%s-gitops", gitUser)),
+			"url":      []byte(destinationGitopsRepoURL),
+			"username": []byte(gitUser),
+			"password": []byte([]byte(fmt.Sprintf(os.Getenv(fmt.Sprintf("%s_TOKEN", strings.ToUpper(gitProvider)))))),
+		}
+	} else {
+		// ssh
+		secretData = map[string][]byte{
+			"type":          []byte("git"),
+			"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
+			"url":           []byte(destinationGitopsRepoURL),
+			"sshPrivateKey": []byte(viper.GetString("kbot.private-key")),
+		}
+	}
 	createSecrets := []*v1.Secret{
 		// argocd
 		{
@@ -54,12 +81,7 @@ func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset, gitProvider string
 				Annotations: map[string]string{"managed-by": "argocd.argoproj.io"},
 				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
 			},
-			Data: map[string][]byte{
-				"type":          []byte("git"),
-				"name":          []byte(fmt.Sprintf("%s-gitops", viper.GetString(fmt.Sprintf("flags.%s-owner", gitProvider)))),
-				"url":           []byte(viper.GetString(fmt.Sprintf("%s.repos.gitops.git-url", gitProvider))),
-				"sshPrivateKey": []byte(viper.GetString("kbot.private-key")),
-			},
+			Data: secretData,
 		},
 	}
 	for _, secret := range createSecrets {

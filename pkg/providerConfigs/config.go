@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
 type ProviderConfig struct {
@@ -26,10 +27,13 @@ type ProviderConfig struct {
 	ArgoWorkflowsDir                string
 	DestinationGitopsRepoHttpsURL   string
 	DestinationGitopsRepoGitURL     string
+	DestinationGitopsRepoURL        string
 	DestinationMetaphorRepoHttpsURL string
 	DestinationMetaphorRepoGitURL   string
+	DestinationMetaphorRepoURL      string
 	GitopsDir                       string
 	GitProvider                     string
+	GitProtocol                     string
 	K1Dir                           string
 	Kubeconfig                      string
 	KubectlClient                   string
@@ -45,7 +49,7 @@ type ProviderConfig struct {
 }
 
 // GetConfig - load default values from kubefirst installer
-func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string) *ProviderConfig {
+func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string, gitProtocol string) *ProviderConfig {
 	config := ProviderConfig{}
 
 	homeDir, err := os.UserHomeDir()
@@ -67,9 +71,20 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
 
+	// Define constant url based on flag input, only expecting 2 protocols
+	switch viper.GetString("flags.git-protocol") {
+	case "https":
+		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoHttpsURL
+		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoHttpsURL
+	default: //"ssh"
+		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoGitURL
+		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoGitURL
+	}
+
 	config.ArgoWorkflowsDir = fmt.Sprintf("%s/.k1/%s/argo-workflows", homeDir, clusterName)
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
+	config.GitProtocol = gitProtocol
 	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)

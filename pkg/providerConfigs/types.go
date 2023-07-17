@@ -50,6 +50,10 @@ type GitOpsDirectoryValues struct {
 	GitDescription       string
 	GitNamespace         string
 	GitProvider          string
+	GitProtocol          string
+	GitopsRepoGitURL     string
+	GitopsRepoHttpsURL   string
+	GitopsRepoURL        string
 	GitRunner            string
 	GitRunnerDescription string
 	GitRunnerNS          string

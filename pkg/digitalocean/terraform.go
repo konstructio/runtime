@@ -51,7 +51,7 @@ func GetGithubTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[str
 	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
 	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
 	envs["TF_VAR_aws_secret_access_key"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
-
+	envs[fmt.Sprintf("TF_VAR_%s_user", config.GitProvider)] = viper.GetString("github.user")
 	return envs
 }
 
@@ -74,16 +74,20 @@ func GetGitlabTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[str
 
 func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	var tokenValue string
+	var gitUser string
 	switch config.GitProvider {
 	case "github":
 		tokenValue = config.GithubToken
+		gitUser = viper.GetString("github.user")
 	case "gitlab":
 		tokenValue = config.GitlabToken
+		gitUser = viper.GetString("gitlab.user")
 	}
 	envs["VAULT_TOKEN"] = readVaultTokenFromSecret(clientset, config)
 	envs["VAULT_ADDR"] = providerConfigs.VaultPortForwardURL
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
+	envs[fmt.Sprintf("TF_VAR_%s_user", config.GitProvider)] = gitUser
 	envs["DO_TOKEN"] = config.DigitaloceanToken
 	envs["AWS_ACCESS_KEY_ID"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
 	envs["AWS_SECRET_ACCESS_KEY"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
@@ -95,14 +99,19 @@ func GetUsersTerraformEnvs(clientset *kubernetes.Clientset, config *providerConf
 
 func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	var tokenValue string
+	var gitUser string
 	switch config.GitProvider {
 	case "github":
 		tokenValue = config.GithubToken
+		gitUser = viper.GetString("github.user")
 	case "gitlab":
 		tokenValue = config.GitlabToken
+		gitUser = viper.GetString("gitlab.user")
 	}
+
 	envs[fmt.Sprintf("%s_TOKEN", strings.ToUpper(config.GitProvider))] = tokenValue
 	envs[fmt.Sprintf("%s_OWNER", strings.ToUpper(config.GitProvider))] = viper.GetString(fmt.Sprintf("flags.%s-owner", config.GitProvider))
+	envs[fmt.Sprintf("TF_VAR_%s_user", config.GitProvider)] = gitUser
 	envs["TF_VAR_email_address"] = viper.GetString("flags.alerts-email")
 	envs["TF_VAR_vault_addr"] = providerConfigs.VaultPortForwardURL
 	envs["TF_VAR_vault_token"] = readVaultTokenFromSecret(clientset, config)
