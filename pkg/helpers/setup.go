@@ -28,6 +28,7 @@ func GetClusterStatusFlags() ClusterStatusFlags {
 		CloudProvider: viper.GetString("kubefirst.cloud-provider"),
 		GitProvider:   viper.GetString("kubefirst.git-provider"),
 		SetupComplete: viper.GetBool("kubefirst.setup-complete"),
+		GitProtocol:   viper.GetString("kubefirst.git-protocol"),
 	}
 }
 

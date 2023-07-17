@@ -70,7 +70,7 @@ type K3dConfig struct {
 }
 
 // GetConfig - load default values from kubefirst installer
-func GetConfig(clusterName string, gitProvider string, gitOwner string) *K3dConfig {
+func GetConfig(clusterName string, gitProvider string, gitOwner string, gitProtocol string) *K3dConfig {
 	config := K3dConfig{}
 
 	if err := env.Parse(&config); err != nil {
@@ -106,6 +106,7 @@ func GetConfig(clusterName string, gitProvider string, gitOwner string) *K3dConf
 
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
+	config.GitProtocol = gitProtocol
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.K3dClient = fmt.Sprintf("%s/.k1/%s/tools/k3d", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)

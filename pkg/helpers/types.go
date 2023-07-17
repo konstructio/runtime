@@ -10,4 +10,5 @@ type ClusterStatusFlags struct {
 	CloudProvider string
 	GitProvider   string
 	SetupComplete bool
+	GitProtocol   string
 }
