@@ -20,11 +20,14 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset,
+func BootstrapGCPMgmtCluster(
+	clientset *kubernetes.Clientset,
 	gitProvider string,
 	gitUser string,
 	destinationGitopsRepoURL string,
 	gitProtocol string,
+	cfApiToken string,
+	googleApplicationCredentials string,
 ) error {
 	// Create namespace
 	// Skip if it already exists
@@ -82,6 +85,13 @@ func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset,
 				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
 			},
 			Data: secretData,
+		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "civo-creds", Namespace: "external-dns"},
+			Data: map[string][]byte{
+				"google_application_credentials": []byte(googleApplicationCredentials),
+				"cf-api-token":                   []byte(cfApiToken),
+			},
 		},
 	}
 	for _, secret := range createSecrets {

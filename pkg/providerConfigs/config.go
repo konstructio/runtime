@@ -15,11 +15,12 @@ import (
 )
 
 type ProviderConfig struct {
-	CivoToken         string
-	DigitaloceanToken string
-	GCPAuth           string
-	GCPProject        string
-	VultrToken        string
+	CivoToken          string
+	DigitaloceanToken  string
+	GCPAuth            string
+	GCPProject         string
+	VultrToken         string
+	CloudflareAPIToken string
 
 	GithubToken string
 	GitlabToken string
@@ -49,7 +50,7 @@ type ProviderConfig struct {
 }
 
 // GetConfig - load default values from kubefirst installer
-func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string, gitProtocol string) *ProviderConfig {
+func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string, gitProtocol string, cloudflareApiToken string) *ProviderConfig {
 	config := ProviderConfig{}
 
 	homeDir, err := os.UserHomeDir()
@@ -85,6 +86,7 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
 	config.GitProtocol = gitProtocol
+	config.CloudflareAPIToken = cloudflareApiToken
 	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)
