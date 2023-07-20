@@ -62,7 +62,7 @@ func BootstrapVultrMgmtCluster(
 	// swap secret data based on https flag
 	secretData := map[string][]byte{}
 
-	if strings.Contains(gitProtocol, "https") {
+	if gitProtocol == "https" {
 		// http basic auth
 		secretData = map[string][]byte{
 			"type":     []byte("git"),
