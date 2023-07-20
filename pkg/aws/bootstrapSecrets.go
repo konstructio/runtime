@@ -61,26 +61,37 @@ func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
 		}
 	}
 
-	secret := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        "repo-credentials-template",
-			Namespace:   "argocd",
-			Annotations: map[string]string{"managed-by": "argocd.argoproj.io"},
-			Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
+	createSecrets := []*v1.Secret{
+		// argocd
+		{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:        "repo-credentials-template",
+				Namespace:   "argocd",
+				Annotations: map[string]string{"managed-by": "argocd.argoproj.io"},
+				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
+			},
+			Data: secretData,
 		},
-		Data: secretData,
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "aws-creds", Namespace: "external-dns"},
+			Data: map[string][]byte{
+				"cf-api-token": []byte(cloudflareAPIToken),
+			},
+		},
 	}
 
-	_, err = clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Get(context.TODO(), secret.ObjectMeta.Name, metav1.GetOptions{})
-	if err == nil {
-		log.Info().Msgf("kubernetes secret %s/%s already created - skipping", secret.Namespace, secret.Name)
-	} else if strings.Contains(err.Error(), "not found") {
-		err := k8s.CreateSecretV2(clientset, secret)
-		if err != nil {
-			log.Info().Msgf("error creating kubernetes secret %s/%s: %s", secret.Namespace, secret.Name, err)
-			return err
+	for _, secret := range createSecrets {
+		_, err := clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Get(context.TODO(), secret.ObjectMeta.Name, metav1.GetOptions{})
+		if err == nil {
+			log.Info().Msgf("kubernetes secret %s/%s already created - skipping", secret.Namespace, secret.Name)
+		} else if strings.Contains(err.Error(), "not found") {
+			err := k8s.CreateSecretV2(clientset, secret)
+			if err != nil {
+				log.Error().Msgf("error creating kubernetes secret %s/%s: %s", secret.Namespace, secret.Name, err)
+				return err
+			}
+			log.Info().Msgf("created kubernetes secret: %s/%s", secret.Namespace, secret.Name)
 		}
-		log.Info().Msgf("created kubernetes secret: %s/%s", secret.Namespace, secret.Name)
 	}
 
 	log.Info().Msg("secret create for argocd to connect to gitops repo")
