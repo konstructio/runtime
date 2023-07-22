@@ -26,7 +26,7 @@ func BootstrapGCPMgmtCluster(
 	gitUser string,
 	destinationGitopsRepoURL string,
 	gitProtocol string,
-	cfApiToken string,
+	cloudflareAPIToken string,
 	googleApplicationCredentials string,
 ) error {
 	// Create namespace
@@ -90,7 +90,13 @@ func BootstrapGCPMgmtCluster(
 			ObjectMeta: metav1.ObjectMeta{Name: "civo-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
 				"google_application_credentials": []byte(googleApplicationCredentials),
-				"cf-api-token":                   []byte(cfApiToken),
+				"cf-api-token":                   []byte(cloudflareAPIToken),
+			},
+		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "cloudflare-creds", Namespace: "cert-manager"},
+			Data: map[string][]byte{
+				"cf-api-token": []byte(cloudflareAPIToken),
 			},
 		},
 	}

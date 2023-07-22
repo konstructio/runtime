@@ -138,14 +138,6 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol st
 					newContents = strings.Replace(newContents, "<GIT_FQDN>", fmt.Sprintf("git@%v.com:", tokens.GitProvider), -1)
 				}
 
-				//Cloudflare for Certs
-				if tokens.ExternalDNSProviderName == "cloudflare" {
-					newContents = strings.Replace(newContents, "<CLUSTER_ISSUER>", tokens.ExternalDNSProviderName, -1)
-				} else {
-					newContents = strings.Replace(newContents, "<CLUSTER_ISSUER>", "letsencrypt-prod", -1)
-
-				}
-
 				err = ioutil.WriteFile(path, []byte(newContents), 0)
 				if err != nil {
 					return err

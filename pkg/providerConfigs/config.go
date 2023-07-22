@@ -47,10 +47,13 @@ type ProviderConfig struct {
 	SSLBackupDir                    string
 	TerraformClient                 string
 	ToolsDir                        string
+
+	GitOpsDirectoryValues *GitOpsDirectoryValues
+	MetaphorTokenValues   *MetaphorTokenValues
 }
 
 // GetConfig - load default values from kubefirst installer
-func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string, gitProtocol string, cloudflareApiToken string) *ProviderConfig {
+func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string, gitProtocol string, cloudflareAPIToken string) *ProviderConfig {
 	config := ProviderConfig{}
 
 	homeDir, err := os.UserHomeDir()
@@ -86,7 +89,7 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
 	config.GitProtocol = gitProtocol
-	config.CloudflareAPIToken = cloudflareApiToken
+	config.CloudflareAPIToken = cloudflareAPIToken
 	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)

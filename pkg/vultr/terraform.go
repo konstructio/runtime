@@ -128,6 +128,12 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *providerConf
 	envs["TF_VAR_aws_access_key_id"] = viper.GetString("kubefirst.state-store-creds.access-key-id")
 	envs["TF_VAR_aws_secret_access_key"] = viper.GetString("kubefirst.state-store-creds.secret-access-key-id")
 
+	if viper.GetString("flags.dns-provider") == "cloudflare" {
+		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitOpsDirectoryValues.ExternalDNSProviderName)] = config.CloudflareAPIToken
+	} else {
+		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitOpsDirectoryValues.ExternalDNSProviderName)] = config.VultrToken
+	}
+
 	switch config.GitProvider {
 	case "gitlab":
 		envs["TF_VAR_owner_group_id"] = viper.GetString("flags.gitlab-owner-group-id")
