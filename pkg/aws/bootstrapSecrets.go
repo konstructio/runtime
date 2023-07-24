@@ -129,6 +129,7 @@ func ServiceAccounts(clientset *kubernetes.Clientset, cloudflareAPIToken string)
 	// Skip if it already exists
 	newNamespaces := []string{
 		"argocd",
+		"argo",
 		"atlantis",
 		"cert-manager",
 		"external-dns",
