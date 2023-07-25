@@ -142,7 +142,7 @@ func ServiceAccounts(clientset *kubernetes.Clientset, cloudflareAPIToken string)
 			_, err = clientset.CoreV1().Namespaces().Create(context.TODO(), namespace, metav1.CreateOptions{})
 			if err != nil {
 				log.Error().Err(err).Msg("")
-				return fmt.Errorf("error creating namespace")
+				return fmt.Errorf("error creating namespace %s: %s", s, err)
 			}
 			log.Info().Msgf("%d, %s", i, s)
 			log.Info().Msgf("namespace created: %s", s)
