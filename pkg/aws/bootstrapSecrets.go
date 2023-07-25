@@ -9,6 +9,7 @@ package aws
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -21,7 +22,6 @@ import (
 )
 
 func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
-	token string,
 	kubeconfigPath string,
 	gitProvider string,
 	gitUser string,
@@ -49,7 +49,7 @@ func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
 			"name":     []byte(fmt.Sprintf("%s-gitops", gitUser)),
 			"url":      []byte(destinationGitopsRepoURL),
 			"username": []byte(gitUser),
-			"password": []byte(token),
+			"password": []byte([]byte(fmt.Sprintf(os.Getenv(fmt.Sprintf("%s_TOKEN", strings.ToUpper(gitProvider)))))),
 		}
 	} else {
 		// ssh
