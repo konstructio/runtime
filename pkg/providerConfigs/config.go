@@ -48,8 +48,8 @@ type ProviderConfig struct {
 	TerraformClient                 string
 	ToolsDir                        string
 
-	GitOpsDirectoryValues *GitOpsDirectoryValues
-	MetaphorTokenValues   *MetaphorTokenValues
+	GitOpsDirectoryValues   *GitOpsDirectoryValues
+	MetaphorDirectoryValues *MetaphorTokenValues
 }
 
 // GetConfig - load default values from kubefirst installer
