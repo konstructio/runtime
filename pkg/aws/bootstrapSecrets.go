@@ -144,7 +144,7 @@ func ServiceAccounts(clientset *kubernetes.Clientset, cloudflareAPIToken string)
 				log.Error().Err(err).Msg("")
 				return fmt.Errorf("error creating namespace %s: %s", s, err)
 			}
-			log.Info().Msgf("%d, %s", i, s)
+			log.Debug().Msgf("%d, %s", i, s)
 			log.Info().Msgf("namespace created: %s", s)
 		} else {
 			log.Warn().Msgf("namespace %s already exists - skipping", s)
