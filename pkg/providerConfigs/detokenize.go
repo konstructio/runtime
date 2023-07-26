@@ -27,11 +27,15 @@ func DetokenizeGitGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol
 
 func detokenizeGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol string) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
+
+		if fi.IsDir() && fi.Name() == ".git" {
+			return filepath.SkipDir
+		}
 		if err != nil {
 			return err
 		}
 
-		if !!fi.IsDir() {
+		if fi.IsDir() {
 			return nil
 		}
 
@@ -126,7 +130,7 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<USE_TELEMETRY>", tokens.UseTelemetry, -1)
 
 				// Switch the repo url based on https flag
-				if strings.Contains(gitProtocol, "https") {
+				if gitProtocol == "https" {
 					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoHttpsURL, -1)
 					newContents = strings.Replace(newContents, "<GIT_FQDN>", fmt.Sprintf("https://%v.com/", tokens.GitProvider), -1)
 				} else {

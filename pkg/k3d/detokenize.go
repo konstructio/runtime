@@ -81,7 +81,7 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues, gitProtocol string
 				newContents = strings.Replace(newContents, "<K3D_DOMAIN>", DomainName, -1)
 
 				// Switch the repo url based on https flag
-				if strings.Contains(gitProtocol, "https") {
+				if gitProtocol == "https" {
 					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoHttpsURL, -1)
 					newContents = strings.Replace(newContents, "<GIT_FQDN>", fmt.Sprintf("https://%v.com/", tokens.GitProvider), -1)
 				} else {

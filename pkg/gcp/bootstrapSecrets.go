@@ -20,11 +20,14 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset,
+func BootstrapGCPMgmtCluster(
+	clientset *kubernetes.Clientset,
 	gitProvider string,
 	gitUser string,
 	destinationGitopsRepoURL string,
 	gitProtocol string,
+	cloudflareAPIToken string,
+	googleApplicationCredentials string,
 ) error {
 	// Create namespace
 	// Skip if it already exists
@@ -54,7 +57,7 @@ func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset,
 	// swap secret data based on https flag
 	secretData := map[string][]byte{}
 
-	if strings.Contains(gitProtocol, "https") {
+	if gitProtocol == "https" {
 		// http basic auth
 		secretData = map[string][]byte{
 			"type":     []byte("git"),
@@ -82,6 +85,19 @@ func BootstrapGCPMgmtCluster(clientset *kubernetes.Clientset,
 				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
 			},
 			Data: secretData,
+		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "civo-creds", Namespace: "external-dns"},
+			Data: map[string][]byte{
+				"google_application_credentials": []byte(googleApplicationCredentials),
+				"cf-api-token":                   []byte(cloudflareAPIToken),
+			},
+		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "cloudflare-creds", Namespace: "cert-manager"},
+			Data: map[string][]byte{
+				"cf-api-token": []byte(cloudflareAPIToken),
+			},
 		},
 	}
 	for _, secret := range createSecrets {

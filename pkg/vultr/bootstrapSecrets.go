@@ -62,7 +62,7 @@ func BootstrapVultrMgmtCluster(
 	// swap secret data based on https flag
 	secretData := map[string][]byte{}
 
-	if strings.Contains(gitProtocol, "https") {
+	if gitProtocol == "https" {
 		// http basic auth
 		secretData = map[string][]byte{
 			"type":     []byte("git"),
@@ -96,6 +96,12 @@ func BootstrapVultrMgmtCluster(
 			ObjectMeta: metav1.ObjectMeta{Name: "vultr-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
 				"vultr-token":  []byte(vultrApiKey),
+				"cf-api-token": []byte(cloudflareAPIToken),
+			},
+		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "cloudflare-creds", Namespace: "cert-manager"},
+			Data: map[string][]byte{
 				"cf-api-token": []byte(cloudflareAPIToken),
 			},
 		},
