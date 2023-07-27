@@ -8,6 +8,7 @@ package civo
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/civo/civogo"
@@ -70,7 +71,11 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		for i := 0; i < 12; i++ {
+		for i := 0; i < 30; i++ {
+			creds, err = c.getAccessCredentials(creds.ID, region)
+			if err != nil {
+				return civogo.ObjectStoreCredential{}, err
+			}
 			if creds.AccessKeyID != "" && creds.ID != "" && creds.Name != "" && creds.SecretAccessKeyID != "" {
 				break
 			}
@@ -78,6 +83,10 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 			time.Sleep(time.Second * 10)
 		}
 
+		if creds.AccessKeyID == "" || creds.ID == "" || creds.Name == "" || creds.SecretAccessKeyID == "" {
+			log.Error().Msg("Civo credentials for state bucket in object storage could not be fetched, please try to run again")
+			os.Exit(1)
+		}
 		log.Info().Msgf("created object storage credential %s", credentialName)
 
 		return creds, nil
