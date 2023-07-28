@@ -34,6 +34,7 @@ func BootstrapGCPMgmtCluster(
 	newNamespaces := []string{
 		"argocd",
 		"atlantis",
+		"cert-manager",
 		"external-dns",
 		"external-secrets-operator",
 	}
