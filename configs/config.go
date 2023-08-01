@@ -37,7 +37,7 @@ type Config struct {
 	HomePath          string
 
 	ClusterName             string `env:"CLUSTER_NAME"`
-	GitOpsRepoPath          string
+	GitopsRepoPath          string
 	KubefirstLogPath        string `env:"KUBEFIRST_LOG_PATH" envDefault:"logs"`
 	KubefirstConfigFileName string
 	KubefirstConfigFilePath string
@@ -45,7 +45,7 @@ type Config struct {
 	K1ToolsPath             string
 	KubeConfigPath          string
 	KubeConfigFolder        string
-	GitOpsLocalRepoPath     string
+	GitopsLocalRepoPath     string
 
 	K3dPath            string
 	MkCertPath         string
@@ -139,10 +139,10 @@ func ReadConfig() *Config {
 	config.KubefirstConfigFileName = ".kubefirst"
 	config.KubefirstConfigFilePath = fmt.Sprintf("%s/%s", homePath, config.KubefirstConfigFileName)
 
-	config.GitOpsRepoPath = fmt.Sprintf("%s/gitops", config.K1FolderPath)
+	config.GitopsRepoPath = fmt.Sprintf("%s/gitops", config.K1FolderPath)
 	config.K1ToolsPath = fmt.Sprintf("%s/tools", config.K1FolderPath)
-	config.KubeConfigFolder = fmt.Sprintf("%s/terraform/civo", config.GitOpsRepoPath) // civo cant be hardcoded anywhere
-	config.KubeConfigPath = fmt.Sprintf("%s/terraform/civo/kubeconfig", config.GitOpsRepoPath)
+	config.KubeConfigFolder = fmt.Sprintf("%s/terraform/civo", config.GitopsRepoPath) // civo cant be hardcoded anywhere
+	config.KubeConfigPath = fmt.Sprintf("%s/terraform/civo/kubeconfig", config.GitopsRepoPath)
 
 	//! havent used anything below this
 	config.CertsPath = fmt.Sprintf("%s/ssl", config.K1FolderPath)
@@ -157,8 +157,8 @@ func ReadConfig() *Config {
 	config.KubectlClientPath = fmt.Sprintf("%s/kubectl", config.K1ToolsPath)
 	config.KubeConfigPath = fmt.Sprintf("%s/gitops/terraform/base/kubeconfig", config.K1FolderPath)
 	config.KubeConfigFolder = fmt.Sprintf("%s/gitops/terraform/base", config.K1FolderPath)
-	config.GitOpsLocalRepoPath = fmt.Sprintf("%s/gitops", config.K1FolderPath)
-	config.GitOpsRepoPath = fmt.Sprintf("%s/gitops", config.K1FolderPath)
+	config.GitopsLocalRepoPath = fmt.Sprintf("%s/gitops", config.K1FolderPath)
+	config.GitopsRepoPath = fmt.Sprintf("%s/gitops", config.K1FolderPath)
 	config.NgrokClientPath = fmt.Sprintf("%s/ngrok", config.K1ToolsPath)
 	config.TerraformClientPath = fmt.Sprintf("%s/terraform", config.K1ToolsPath)
 	config.HelmClientPath = fmt.Sprintf("%s/helm", config.K1ToolsPath)

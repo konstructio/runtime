@@ -103,9 +103,9 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *providerConf
 	envs["TF_VAR_kbot_ssh_public_key"] = viper.GetString("kbot.public-key")
 
 	if viper.GetString("flags.dns-provider") == "cloudflare" {
-		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitOpsDirectoryValues.ExternalDNSProviderName)] = config.CloudflareAPIToken
+		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitopsDirectoryValues.ExternalDNSProviderName)] = config.CloudflareApiToken
 	} else {
-		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitOpsDirectoryValues.ExternalDNSProviderName)] = config.GCPAuth
+		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitopsDirectoryValues.ExternalDNSProviderName)] = config.GCPAuth
 	}
 
 	switch config.GitProvider {

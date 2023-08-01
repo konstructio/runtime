@@ -16,7 +16,7 @@ import (
 )
 
 // DetokenizeGitGitops - Translate tokens by values on a given path
-func DetokenizeGitGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol string) error {
+func DetokenizeGitGitops(path string, tokens *GitopsDirectoryValues, gitProtocol string) error {
 	err := filepath.Walk(path, detokenizeGitops(path, tokens, gitProtocol))
 	if err != nil {
 		return err
@@ -25,7 +25,7 @@ func DetokenizeGitGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol
 	return nil
 }
 
-func detokenizeGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol string) filepath.WalkFunc {
+func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol string) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 
 		if fi.IsDir() && fi.Name() == ".git" {
@@ -113,9 +113,9 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<GITLAB_OWNER_GROUP_ID>", strconv.Itoa(tokens.GitlabOwnerGroupID), -1)
 				newContents = strings.Replace(newContents, "<GITLAB_USER>", tokens.GitlabUser, -1)
 
-				newContents = strings.Replace(newContents, "<GITOPS_REPO_ATLANTIS_WEBHOOK_URL>", tokens.GitOpsRepoAtlantisWebhookURL, -1)
-				newContents = strings.Replace(newContents, "<GITOPS_REPO_GIT_URL>", tokens.GitOpsRepoGitURL, -1)
-				newContents = strings.Replace(newContents, "<GITOPS_REPO_NO_HTTPS_URL>", tokens.GitOpsRepoNoHTTPSURL, -1)
+				newContents = strings.Replace(newContents, "<GITOPS_REPO_ATLANTIS_WEBHOOK_URL>", tokens.GitopsRepoAtlantisWebhookURL, -1)
+				newContents = strings.Replace(newContents, "<GITOPS_REPO_GIT_URL>", tokens.GitopsRepoGitURL, -1)
+				newContents = strings.Replace(newContents, "<GITOPS_REPO_NO_HTTPS_URL>", tokens.GitopsRepoNoHTTPSURL, -1)
 
 				newContents = strings.Replace(newContents, "<METAPHOR_DEVELOPMENT_INGRESS_URL>", metaphorDevelopmentIngressURL, -1)
 				newContents = strings.Replace(newContents, "<METAPHOR_PRODUCTION_INGRESS_URL>", metaphorProductionIngressURL, -1)
@@ -149,7 +149,7 @@ func detokenizeGitops(path string, tokens *GitOpsDirectoryValues, gitProtocol st
 }
 
 // DetokenizeAdditionalPath - Translate tokens by values on a given path
-func DetokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) error {
+func DetokenizeAdditionalPath(path string, tokens *GitopsDirectoryValues) error {
 	err := filepath.Walk(path, detokenizeAdditionalPath(path, tokens))
 	if err != nil {
 		return err
@@ -159,7 +159,7 @@ func DetokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) error 
 }
 
 // detokenizeAdditionalPath temporary addition to handle detokenizing additional files
-func detokenizeAdditionalPath(path string, tokens *GitOpsDirectoryValues) filepath.WalkFunc {
+func detokenizeAdditionalPath(path string, tokens *GitopsDirectoryValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
