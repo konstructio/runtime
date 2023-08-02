@@ -88,9 +88,9 @@ func BootstrapGCPMgmtCluster(
 			Data: secretData,
 		},
 		{
-			ObjectMeta: metav1.ObjectMeta{Name: "civo-creds", Namespace: "external-dns"},
+			ObjectMeta: metav1.ObjectMeta{Name: "gcp-creds", Namespace: "external-dns"},
 			Data: map[string][]byte{
-				"google_application_credentials": []byte(googleApplicationCredentials),
+				"google_application_credentials": []byte("placeholder"),
 				"cf-api-token":                   []byte(cloudflareAPIToken),
 			},
 		},
