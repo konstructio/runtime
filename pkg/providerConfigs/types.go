@@ -6,7 +6,7 @@ See the LICENSE file for more details.
 */
 package providerConfigs
 
-type GitOpsDirectoryValues struct {
+type GitopsDirectoryValues struct {
 	AlertsEmail               string
 	AtlantisAllowList         string
 	CloudProvider             string
@@ -68,9 +68,8 @@ type GitOpsDirectoryValues struct {
 	GitlabOwnerGroupID int
 	GitlabUser         string
 
-	GitOpsRepoAtlantisWebhookURL string
-	GitOpsRepoGitURL             string
-	GitOpsRepoNoHTTPSURL         string
+	GitopsRepoAtlantisWebhookURL string
+	GitopsRepoNoHTTPSURL         string
 
 	ExternalDNSProviderName         string
 	ExternalDNSProviderTokenEnvName string

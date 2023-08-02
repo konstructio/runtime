@@ -11,7 +11,6 @@ import (
 	"os"
 
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 type ProviderConfig struct {
@@ -20,7 +19,7 @@ type ProviderConfig struct {
 	GCPAuth            string
 	GCPProject         string
 	VultrToken         string
-	CloudflareAPIToken string
+	CloudflareApiToken string
 
 	GithubToken string
 	GitlabToken string
@@ -48,12 +47,19 @@ type ProviderConfig struct {
 	TerraformClient                 string
 	ToolsDir                        string
 
-	GitOpsDirectoryValues   *GitOpsDirectoryValues
+	GitopsDirectoryValues   *GitopsDirectoryValues
 	MetaphorDirectoryValues *MetaphorTokenValues
 }
 
 // GetConfig - load default values from kubefirst installer
-func GetConfig(clusterName string, domainName string, gitProvider string, gitOwner string, gitProtocol string, cloudflareAPIToken string) *ProviderConfig {
+func GetConfig(
+	clusterName string,
+	domainName string,
+	gitProvider string,
+	gitOwner string,
+	gitProtocol string,
+	cloudflareAPIToken string,
+) *ProviderConfig {
 	config := ProviderConfig{}
 
 	homeDir, err := os.UserHomeDir()
@@ -76,7 +82,7 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
 
 	// Define constant url based on flag input, only expecting 2 protocols
-	switch viper.GetString("flags.git-protocol") {
+	switch gitProtocol {
 	case "https":
 		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoHttpsURL
 		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoHttpsURL
@@ -89,7 +95,7 @@ func GetConfig(clusterName string, domainName string, gitProvider string, gitOwn
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
 	config.GitProtocol = gitProtocol
-	config.CloudflareAPIToken = cloudflareAPIToken
+	config.CloudflareApiToken = cloudflareAPIToken
 	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)

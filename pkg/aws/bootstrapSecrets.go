@@ -33,8 +33,14 @@ func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
 	containerRegistryURL string,
 ) error {
 
-	log.Info().Msg("creating service accounts and namespaces")
-	err := ServiceAccounts(clientset, cloudflareAPIToken)
+	log.Info().Msg("creating namespaces")
+	err := K8sNamespaces(clientset)
+	if err != nil {
+		return err
+	}
+
+	log.Info().Msg("creating service accounts")
+	err = ServiceAccounts(clientset, cloudflareAPIToken)
 	if err != nil {
 		return err
 	}
@@ -122,9 +128,7 @@ func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
 	return nil
 }
 
-func ServiceAccounts(clientset *kubernetes.Clientset, cloudflareAPIToken string) error {
-	var automountServiceAccountToken bool = true
-
+func K8sNamespaces(clientset *kubernetes.Clientset) error {
 	// Create namespace
 	// Skip if it already exists
 	newNamespaces := []string{
@@ -150,9 +154,13 @@ func ServiceAccounts(clientset *kubernetes.Clientset, cloudflareAPIToken string)
 			log.Warn().Msgf("namespace %s already exists - skipping", s)
 		}
 	}
+	return nil
+}
+
+func ServiceAccounts(clientset *kubernetes.Clientset, cloudflareAPIToken string) error {
+	var automountServiceAccountToken bool = true
 
 	// Create service accounts
-
 	createServiceAccounts := []*v1.ServiceAccount{
 		// atlantis
 		{

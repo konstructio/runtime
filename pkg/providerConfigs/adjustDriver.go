@@ -207,7 +207,7 @@ func PrepareGitRepositories(
 	gitopsTemplateURL string,
 	destinationMetaphorRepoURL string,
 	k1Dir string,
-	gitopsTokens *GitOpsDirectoryValues,
+	gitopsTokens *GitopsDirectoryValues,
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
 	apexContentExists bool,

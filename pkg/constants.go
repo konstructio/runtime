@@ -26,8 +26,8 @@ const (
 	GitHubHost                   = "github.com"
 	LocalClusterName             = "kubefirst"
 	MinimumAvailableDiskSize     = 10 // 10 GB
-	KubefirstGitOpsRepository    = "gitops"
-	KubefirstGitOpsRepositoryURL = "https://github.com/kubefirst/gitops-template"
+	KubefirstGitopsRepository    = "gitops"
+	KubefirstGitopsRepositoryURL = "https://github.com/kubefirst/gitops-template"
 	LocalDomainName              = "kubefirst.dev"
 	LocalhostARCH                = runtime.GOARCH
 	LocalhostOS                  = runtime.GOOS
