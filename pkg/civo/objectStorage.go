@@ -71,7 +71,7 @@ func (c *CivoConfiguration) GetAccessCredentials(credentialName string, region s
 			return civogo.ObjectStoreCredential{}, err
 		}
 
-		for i := 0; i < 30; i++ {
+		for i := 0; i < 12; i++ {
 			creds, err = c.getAccessCredentials(creds.ID, region)
 			if err != nil {
 				return civogo.ObjectStoreCredential{}, err
