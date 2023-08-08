@@ -9,7 +9,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	"github.com/kubefirst/runtime/pkg/types"
 	"github.com/minio/minio-go/v7"
@@ -75,6 +77,13 @@ func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster) error {
 		8085,
 		kubefirstApiStopChannel,
 	)
+
+	time.Sleep(time.Second * 10)
+
+	err := pkg.IsAppAvailable("http://localhost:8085/api/v1/health", "kubefirst api")
+	if err != nil {
+		log.Error().Err(err).Msg("unable to start kubefirst api")
+	}
 
 	importUrl := "http://localhost:8085/api/v1/cluster/import"
 
