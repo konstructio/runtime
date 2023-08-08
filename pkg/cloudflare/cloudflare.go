@@ -50,7 +50,7 @@ func (c *CloudflareConfiguration) GetDNSRecord() ([]string, error) {
 }
 
 func (c *CloudflareConfiguration) TestDomainLiveness(domainName string) bool {
-	RecordName := "kubefirst-liveness"
+	RecordName := "kubefirst-liveness." + domainName
 	RecordValue := "domain record propagated"
 
 	// Get zone id for domain name
@@ -81,15 +81,14 @@ func (c *CloudflareConfiguration) TestDomainLiveness(domainName string) bool {
 		return false
 	}
 	for _, existingRecord := range existingRecords {
-		if existingRecord.Type == "TXT" && existingRecord.Name == RecordName && existingRecord.Data == RecordValue {
+		if existingRecord.Type == "TXT" && existingRecord.Name == RecordName && existingRecord.Content == RecordValue {
 			return true
 		}
 	}
 
 	// create record if it does not exist
 	createParams := cloudflare.CreateDNSRecordParams{
-		Proxied: cloudflare.BoolPtr(false),
-		TTL:     5,
+		TTL:     60,
 		Type:    "TXT",
 		Name:    RecordName,
 		Content: RecordValue,
