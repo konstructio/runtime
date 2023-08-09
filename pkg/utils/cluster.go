@@ -9,7 +9,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/k8s"
 	"github.com/kubefirst/runtime/pkg/types"
 	"github.com/minio/minio-go/v7"
@@ -23,7 +25,7 @@ func PutClusterObject(cr *types.StateStoreCredentials, d *types.StateStoreDetail
 
 	// Initialize minio client
 	minioClient, err := minio.New(d.Hostname, &minio.Options{
-		Creds:  credentials.NewStaticV4(cr.AccessKeyID, cr.SecretAccessKey, ""),
+		Creds:  credentials.NewStaticV4(cr.AccessKeyID, cr.SecretAccessKey, cr.SessionToken),
 		Secure: true,
 	})
 	if err != nil {
@@ -60,7 +62,7 @@ func PutClusterObject(cr *types.StateStoreCredentials, d *types.StateStoreDetail
 }
 
 // ExportCluster port forward to the kubefirst-api and calls /cluster/import to restore the database
-func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster) error {
+func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster, port int) error {
 	//* kubefirst api port-forward
 	kubefirstApiStopChannel := make(chan struct{}, 1)
 	defer func() {
@@ -71,10 +73,17 @@ func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster) error {
 		kcfg.RestConfig,
 		"kubefirst-console-kubefirst-api",
 		"kubefirst",
-		8081,
+		port,
 		8085,
 		kubefirstApiStopChannel,
 	)
+
+	time.Sleep(time.Second * 10)
+
+	err := pkg.IsAppAvailable("http://localhost:8085/api/v1/health", "kubefirst api")
+	if err != nil {
+		log.Error().Err(err).Msg("unable to start kubefirst api")
+	}
 
 	importUrl := "http://localhost:8085/api/v1/cluster/import"
 

@@ -423,6 +423,36 @@ func IsConsoleUIAvailable(url string) error {
 	return nil
 }
 
+func IsAppAvailable(url string, appname string) error {
+	attempts := 10
+	httpClient := http.DefaultClient
+	for i := 0; i < attempts; i++ {
+
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			log.Printf("unable to reach %q (%d/%d)", url, i+1, attempts)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			log.Printf("unable to reach %q (%d/%d)", url, i+1, attempts)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			log.Info().Msgf("%s is up and running", appname)
+			return nil
+		}
+
+		log.Info().Msgf("waiting %s to be ready", appname)
+		time.Sleep(5 * time.Second)
+	}
+
+	return nil
+}
+
 func OpenLogFile(path string) (*os.File, error) {
 	logFile, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
