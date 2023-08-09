@@ -275,7 +275,7 @@ func PrepareGitRepositories(
 	}
 
 	//* add new remote for metaphor repo
-	err = gitClient.AddRemote(destinationGitopsRepoURL, gitProvider, metaphorRepo)
+	err = gitClient.AddRemote(destinationMetaphorRepoURL, gitProvider, metaphorRepo)
 	if err != nil {
 		return err
 	}
