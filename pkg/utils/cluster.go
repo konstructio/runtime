@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/kubefirst/runtime/pkg"
-	"github.com/kubefirst/runtime/pkg/k8s"
 	"github.com/kubefirst/runtime/pkg/types"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -61,31 +60,14 @@ func PutClusterObject(cr *types.StateStoreCredentials, d *types.StateStoreDetail
 	return nil
 }
 
-// ExportCluster port forward to the kubefirst-api and calls /cluster/import to restore the database
-func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster, port int) error {
-	//* kubefirst api port-forward
-	kubefirstApiStopChannel := make(chan struct{}, 1)
-	defer func() {
-		close(kubefirstApiStopChannel)
-	}()
-	k8s.OpenPortForwardPodWrapper(
-		kcfg.Clientset,
-		kcfg.RestConfig,
-		"kubefirst-console-kubefirst-api",
-		"kubefirst",
-		port,
-		8085,
-		kubefirstApiStopChannel,
-	)
-
+// ExportCluster proxy to kubefirst api /cluster/import to restore the database
+func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster) error {
 	time.Sleep(time.Second * 10)
 
-	err := pkg.IsAppAvailable("http://localhost:8085/api/v1/health", "kubefirst api")
+	err := pkg.IsAppAvailable(fmt.Sprintf("%s/api/proxyHealth", pkg.KubefirstConsoleLocalURLCloud), "kubefirst api")
 	if err != nil {
 		log.Error().Err(err).Msg("unable to start kubefirst api")
 	}
-
-	importUrl := "http://localhost:8085/api/v1/cluster/import"
 
 	importObject := types.ImportClusterRequest{
 		ClusterName:           cl.ClusterName,
@@ -95,17 +77,23 @@ func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster, port int) erro
 		StateStoreDetails:     cl.StateStoreDetails,
 	}
 
+	requestObject := types.ProxyImportRequest{
+		Body: importObject,
+		Url:  "/cluster/import",
+	}
+
 	customTransport := http.DefaultTransport.(*http.Transport).Clone()
 	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := http.Client{Transport: customTransport}
 
-	payload, err := json.Marshal(importObject)
+	payload, err := json.Marshal(requestObject)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, importUrl, bytes.NewReader(payload))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/api/proxy", pkg.KubefirstConsoleLocalURLCloud), bytes.NewReader(payload))
 	if err != nil {
+		log.Info().Msgf("error %s", err)
 		return err
 	}
 	req.Header.Add("Content-Type", "application/json")
@@ -113,6 +101,7 @@ func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster, port int) erro
 
 	res, err := httpClient.Do(req)
 	if err != nil {
+		log.Info().Msgf("error %s", err)
 		return err
 	}
 
