@@ -121,7 +121,7 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<METAPHOR_PRODUCTION_INGRESS_URL>", metaphorProductionIngressURL, -1)
 				newContents = strings.Replace(newContents, "<METAPHOR_STAGING_INGRESS_URL>", metaphorStagingIngressURL, -1)
 
-				// external-dns
+				// external-dns optionality to provide cloudflare support regardless of cloud provider
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_NAME>", tokens.ExternalDNSProviderName, -1)
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_TOKEN_ENV_NAME>", tokens.ExternalDNSProviderTokenEnvName, -1)
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_SECRET_NAME>", tokens.ExternalDNSProviderSecretName, -1)
@@ -132,6 +132,7 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 				// Switch the repo url based on https flag
 				newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoURL, -1)
 
+				//The fqdn is used by metaphor/argo to choose the appropriate url for cicd operations.
 				if gitProtocol == "https" {
 					newContents = strings.Replace(newContents, "<GIT_FQDN>", fmt.Sprintf("https://%v.com/", tokens.GitProvider), -1)
 				} else {

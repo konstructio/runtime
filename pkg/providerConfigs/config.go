@@ -76,21 +76,10 @@ func GetConfig(
 		cGitHost = GitlabHost
 	}
 
-	config.DestinationGitopsRepoHttpsURL = fmt.Sprintf("https://%s/%s/gitops.git", cGitHost, gitOwner)
+	config.DestinationGitopsRepoURL = fmt.Sprintf("https://%s/%s/gitops.git", cGitHost, gitOwner)
 	config.DestinationGitopsRepoGitURL = fmt.Sprintf("git@%s:%s/gitops.git", cGitHost, gitOwner)
-	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
+	config.DestinationMetaphorRepoURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
-
-	// Define constant url based on flag input, only expecting 2 protocols
-	switch gitProtocol {
-	case "https":
-		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoHttpsURL
-		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoHttpsURL
-	default: //"ssh"
-		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoGitURL
-		config.DestinationMetaphorRepoURL = config.DestinationMetaphorRepoGitURL
-	}
-
 	config.ArgoWorkflowsDir = fmt.Sprintf("%s/.k1/%s/argo-workflows", homeDir, clusterName)
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
