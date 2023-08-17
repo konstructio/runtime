@@ -18,7 +18,7 @@ import (
 )
 
 // detokenizeGitGitops - Translate tokens by values on a given path
-func detokenizeGitGitops(path string, tokens *GitopsTokenValues, gitProtocol string) error {
+func detokenizeGitGitops(path string, tokens *GitopsDirectoryValues, gitProtocol string) error {
 
 	err := filepath.Walk(path, detokenizeGitops(path, tokens, gitProtocol))
 	if err != nil {
@@ -28,7 +28,7 @@ func detokenizeGitGitops(path string, tokens *GitopsTokenValues, gitProtocol str
 	return nil
 }
 
-func detokenizeGitops(path string, tokens *GitopsTokenValues, gitProtocol string) filepath.WalkFunc {
+func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol string) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -100,7 +100,7 @@ func detokenizeGitops(path string, tokens *GitopsTokenValues, gitProtocol string
 }
 
 // postRunDetokenizeGitGitops - Translate tokens by values on a given path
-func postRunDetokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
+func postRunDetokenizeGitGitops(path string, tokens *GitopsDirectoryValues) error {
 
 	err := filepath.Walk(path, postRunDetokenizeGitops(path, tokens))
 	if err != nil {
@@ -110,7 +110,7 @@ func postRunDetokenizeGitGitops(path string, tokens *GitopsTokenValues) error {
 	return nil
 }
 
-func postRunDetokenizeGitops(path string, tokens *GitopsTokenValues) filepath.WalkFunc {
+func postRunDetokenizeGitops(path string, tokens *GitopsDirectoryValues) filepath.WalkFunc {
 	return filepath.WalkFunc(func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
