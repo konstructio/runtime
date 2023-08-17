@@ -80,12 +80,12 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<USE_TELEMETRY>", tokens.UseTelemetry, -1)
 				newContents = strings.Replace(newContents, "<K3D_DOMAIN>", DomainName, -1)
 
+				newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoURL, -1)
+
 				// Switch the repo url based on https flag
 				if gitProtocol == "https" {
-					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoHttpsURL, -1)
 					newContents = strings.Replace(newContents, "<GIT_FQDN>", fmt.Sprintf("https://%v.com/", tokens.GitProvider), -1)
 				} else {
-					newContents = strings.Replace(newContents, "<GITOPS_REPO_URL>", tokens.GitopsRepoGitURL, -1)
 					newContents = strings.Replace(newContents, "<GIT_FQDN>", fmt.Sprintf("git@%v.com:", tokens.GitProvider), -1)
 				}
 
