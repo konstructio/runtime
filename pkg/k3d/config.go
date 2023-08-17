@@ -10,11 +10,9 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strings"
 
 	"github.com/caarlos0/env/v6"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -48,25 +46,24 @@ type K3dConfig struct {
 	GithubToken string
 	GitlabToken string
 
-	DestinationGitopsRepoHttpsURL   string
-	DestinationGitopsRepoGitURL     string
-	DestinationGitopsRepoURL        string
-	DestinationMetaphorRepoHttpsURL string
-	DestinationMetaphorRepoGitURL   string
-	GitopsDir                       string
-	GitProvider                     string
-	GitProtocol                     string
-	K1Dir                           string
-	K3dClient                       string
-	Kubeconfig                      string
-	KubectlClient                   string
-	KubefirstConfig                 string
-	MetaphorDir                     string
-	MkCertClient                    string
-	MkCertPemDir                    string
-	MkCertSSLSecretDir              string
-	TerraformClient                 string
-	ToolsDir                        string
+	DestinationGitopsRepoGitURL   string
+	DestinationGitopsRepoURL      string
+	DestinationMetaphorRepoURL    string
+	DestinationMetaphorRepoGitURL string
+	GitopsDir                     string
+	GitProvider                   string
+	GitProtocol                   string
+	K1Dir                         string
+	K3dClient                     string
+	Kubeconfig                    string
+	KubectlClient                 string
+	KubefirstConfig               string
+	MetaphorDir                   string
+	MkCertClient                  string
+	MkCertPemDir                  string
+	MkCertSSLSecretDir            string
+	TerraformClient               string
+	ToolsDir                      string
 }
 
 // GetConfig - load default values from kubefirst installer
@@ -91,18 +88,10 @@ func GetConfig(clusterName string, gitProvider string, gitOwner string, gitProto
 		cGitHost = GitlabHost
 	}
 
-	config.DestinationGitopsRepoHttpsURL = fmt.Sprintf("https://%s/%s/gitops.git", cGitHost, gitOwner)
+	config.DestinationGitopsRepoURL = fmt.Sprintf("https://%s/%s/gitops.git", cGitHost, gitOwner)
 	config.DestinationGitopsRepoGitURL = fmt.Sprintf("git@%s:%s/gitops.git", cGitHost, gitOwner)
-	config.DestinationMetaphorRepoHttpsURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
+	config.DestinationMetaphorRepoURL = fmt.Sprintf("https://%s/%s/metaphor.git", cGitHost, gitOwner)
 	config.DestinationMetaphorRepoGitURL = fmt.Sprintf("git@%s:%s/metaphor.git", cGitHost, gitOwner)
-
-	// Define constant url based on flag input, only expecting 2 protocols
-	if strings.Contains(viper.GetString("flags.git-protocol"), "https") {
-		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoHttpsURL
-
-	} else {
-		config.DestinationGitopsRepoURL = config.DestinationGitopsRepoGitURL
-	}
 
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
@@ -122,7 +111,7 @@ func GetConfig(clusterName string, gitProvider string, gitOwner string, gitProto
 	return &config
 }
 
-type GitopsTokenValues struct {
+type GitopsDirectoryValues struct {
 	GithubOwner                   string
 	GithubUser                    string
 	GitlabOwner                   string

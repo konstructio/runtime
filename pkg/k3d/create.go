@@ -102,7 +102,7 @@ func ClusterCreateConsoleAPI(clusterName string, k1Dir string, k3dClient string,
 	return nil
 }
 
-// should tokens be a *GitopsTokenValues? does it matter
+// should tokens be a *GitopsDirectoryValues? does it matter
 func PrepareGitRepositories(
 	gitProvider string,
 	clusterName string,
@@ -113,7 +113,7 @@ func PrepareGitRepositories(
 	gitopsTemplateURL string,
 	DestinationMetaphorRepoHttpsURL string,
 	k1Dir string,
-	gitopsTokens *GitopsTokenValues,
+	gitopsTokens *GitopsDirectoryValues,
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
 	gitProtocol string,
@@ -185,7 +185,7 @@ func PostRunPrepareGitopsRepository(clusterName string,
 	//destinationGitopsRepoGitURL string,
 	gitopsDir string,
 	//gitopsRepo *git.Repository,
-	tokens *GitopsTokenValues,
+	tokens *GitopsDirectoryValues,
 ) error {
 
 	err := postRunDetokenizeGitGitops(gitopsDir, tokens)
