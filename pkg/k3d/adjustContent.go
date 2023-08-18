@@ -16,7 +16,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/gitClient"
-
 	cp "github.com/otiai10/copy"
 	"github.com/rs/zerolog/log"
 )
@@ -62,6 +61,15 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 	}
 	os.RemoveAll(fmt.Sprintf("%s/cluster-types", gitopsRepoDir))
 	os.RemoveAll(fmt.Sprintf("%s/services", gitopsRepoDir))
+
+	registryLocation := fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName)
+	if pkg.LocalhostARCH == "arm64" && cloudProvider == CloudProvider {
+		amdConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console.yaml", registryLocation)
+		os.Remove(amdConsoleFileLocation)
+	} else {
+		armConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console-arm.yaml", registryLocation)
+		os.Remove(armConsoleFileLocation)
+	}
 
 	return nil
 }
