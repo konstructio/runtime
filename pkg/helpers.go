@@ -424,7 +424,7 @@ func IsConsoleUIAvailable(url string) error {
 }
 
 func IsAppAvailable(url string, appname string) error {
-	attempts := 10
+	attempts := 60
 	httpClient := http.DefaultClient
 	for i := 0; i < attempts; i++ {
 

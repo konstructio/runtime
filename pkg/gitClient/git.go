@@ -17,6 +17,7 @@ import (
 	gitConfig "github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	githttps "github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 func Clone(gitRef, repoLocalPath, repoURL string) (*git.Repository, error) {
@@ -36,6 +37,35 @@ func Clone(gitRef, repoLocalPath, repoURL string) (*git.Repository, error) {
 		URL:           repoURL,
 		ReferenceName: refName,
 		SingleBranch:  true,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return repo, nil
+}
+
+func ClonePrivateRepo(gitRef string, repoLocalPath string, repoURL string, userName string, token string) (*git.Repository, error) {
+
+	// kubefirst tags do not contain a `v` prefix, to use the library requires the v to be valid
+	isSemVer := semver.IsValid(gitRef)
+
+	var refName plumbing.ReferenceName
+
+	if isSemVer {
+		refName = plumbing.NewTagReferenceName(gitRef)
+	} else {
+		refName = plumbing.NewBranchReferenceName(gitRef)
+	}
+
+	repo, err := git.PlainClone(repoLocalPath, false, &git.CloneOptions{
+		URL:           repoURL,
+		ReferenceName: refName,
+		SingleBranch:  true,
+		Auth: &githttps.BasicAuth{
+			Username: userName,
+			Password: token,
+		},
 	})
 	if err != nil {
 		return nil, err

@@ -57,6 +57,11 @@ func PutClusterObject(cr *types.StateStoreCredentials, d *types.StateStoreDetail
 	}
 	log.Info().Msgf("uploaded cluster object %s to state store bucket %s successfully", obj.LocalFilePath, d.Name)
 
+	err = os.Remove(obj.LocalFilePath)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
