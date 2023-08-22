@@ -80,6 +80,7 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 
 				// GCP
 				newContents = strings.Replace(newContents, "<GCP_PROJECT>", tokens.GCPProject, -1)
+				newContents = strings.Replace(newContents, "<GOOGLE_UNIQUENESS>", tokens.GoogleUniqueness, -1)
 
 				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_URL>", tokens.ArgoCDIngressURL, -1)
 				newContents = strings.Replace(newContents, "<ARGOCD_INGRESS_NO_HTTP_URL>", tokens.ArgoCDIngressNoHTTPSURL, -1)

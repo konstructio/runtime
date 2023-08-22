@@ -44,8 +44,9 @@ type GitopsDirectoryValues struct {
 	AwsNodeCapacityType  string
 	AwsAccountID         string
 
-	GCPAuth    string
-	GCPProject string
+	GCPAuth          string
+	GCPProject       string
+	GoogleUniqueness string
 
 	GitDescription       string
 	GitNamespace         string
