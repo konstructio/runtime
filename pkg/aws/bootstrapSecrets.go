@@ -31,6 +31,7 @@ func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
 	ecrFlag bool,
 	containerRegistryURL string,
 	dnsProvider string,
+	cloudProvider string,
 ) error {
 
 	err := providerConfig.BootstrapMgmtCluster(
@@ -42,6 +43,7 @@ func (conf *AWSConfiguration) BootstrapAwsMgmtCluster(
 		cloudflareAPIToken,
 		"", //AWS has no authentication method because we use roles
 		dnsProvider,
+		CloudProvider,
 	)
 
 	//Create cloud specific secrets

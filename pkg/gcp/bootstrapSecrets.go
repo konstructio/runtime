@@ -27,6 +27,7 @@ func BootstrapGCPMgmtCluster(
 	cloudflareAPIToken string,
 	googleApplicationCredentials string,
 	dnsProvider string,
+	cloudProvider string,
 ) error {
 
 	err := providerConfig.BootstrapMgmtCluster(
@@ -38,6 +39,7 @@ func BootstrapGCPMgmtCluster(
 		cloudflareAPIToken,
 		googleApplicationCredentials, //AWS has no authentication method because we use roles
 		dnsProvider,
+		cloudProvider,
 	)
 
 	//Create cloud specific secrets

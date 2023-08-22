@@ -29,6 +29,7 @@ func BootstrapMgmtCluster(
 	cloudflareAPIToken string,
 	cloudAuth string,
 	dnsProvider string,
+	cloudProvider string,
 ) error {
 	// Create namespace
 	// Skip if it already exists
@@ -88,7 +89,8 @@ func BootstrapMgmtCluster(
 			Data: map[string][]byte{
 				"api-key": []byte(cloudAuth),
 			},
-		}
+		},
+	}
 	for _, secret := range createSecrets {
 		_, err := clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Get(context.TODO(), secret.ObjectMeta.Name, metav1.GetOptions{})
 		if err == nil {

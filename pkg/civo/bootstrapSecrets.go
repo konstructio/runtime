@@ -27,6 +27,7 @@ func BootstrapCivoMgmtCluster(
 	destinationGitopsRepoURL string,
 	gitProtocol string,
 	dnsProvider string,
+	cloudProvider string,
 ) error {
 	clientset, err := k8s.GetClientSet(kubeconfigPath)
 	if err != nil {
@@ -42,6 +43,7 @@ func BootstrapCivoMgmtCluster(
 		cloudflareAPIToken,
 		civoToken, //AWS has no authentication method because we use roles
 		dnsProvider,
+		cloudProvider,
 	)
 
 	//Create cloud specific secrets
