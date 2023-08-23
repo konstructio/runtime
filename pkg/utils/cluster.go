@@ -112,7 +112,7 @@ func ExportCluster(kcfg types.KubernetesClient, cl types.Cluster) error {
 
 	if res.StatusCode != http.StatusOK {
 		log.Info().Msgf("unable to import cluster %s", res.Status)
-		return nil
+		return err
 	}
 
 	body, err := io.ReadAll(res.Body)
