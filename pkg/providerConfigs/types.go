@@ -47,6 +47,7 @@ type GitopsDirectoryValues struct {
 	GCPAuth          string
 	GCPProject       string
 	GoogleUniqueness string
+	ForceDestroy     string
 
 	GitDescription       string
 	GitNamespace         string
