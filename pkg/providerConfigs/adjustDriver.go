@@ -63,6 +63,7 @@ func AdjustGitopsRepo(
 
 	//* copy $HOME/.k1/gitops/cluster-types/${clusterType}/* $HOME/.k1/gitops/registry/${clusterName}
 	clusterContent := fmt.Sprintf("%s/cluster-types/%s", gitopsRepoDir, clusterType)
+	workloadClusterTemplate := fmt.Sprintf("%s/cluster-types/workload-cluster", gitopsRepoDir)
 
 	// Remove apex content if apex content already exists
 	if apexContentExists {
@@ -78,8 +79,17 @@ func AdjustGitopsRepo(
 		log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
 		return err
 	}
+
+	err = cp.Copy(workloadClusterTemplate, fmt.Sprintf("%s/templates/workload-cluster", gitopsRepoDir), opt)
+	if err != nil {
+		log.Info().Msgf("Error populating template cluster content with %s. error: %s", clusterContent, err.Error())
+		return err
+	}
 	os.RemoveAll(fmt.Sprintf("%s/cluster-types", gitopsRepoDir))
 	os.RemoveAll(fmt.Sprintf("%s/services", gitopsRepoDir))
+
+	fmt.Println("look at repo structure and see if the workload cluster template is there")
+	os.Exit(1)
 
 	return nil
 }

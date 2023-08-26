@@ -153,13 +153,12 @@ type ProxyImportRequest struct {
 type WorkloadCluster struct {
 	ClusterID           string `json:"cluster_id"`
 	CloudRegion         string `json:"cloud_region,omitempty"`
+	ClusterRegion       string `json:"cluster_region,omitempty"`
+	DomainName          string `json:"domain_name,omitempty"`
 	Environment         string `json:"environment,omitempty"`
 	InstanceSize        string `json:"instance_size,omitempty"`
+	MachineType         string `json:"machine_type,omitempty"`
 	NodeCount           string `json:"node_count,omitempty"`
-	WorkloadClusterName string `json:"workload_cluster_name,omitempty"`
 	Status              string `json:"status,omitempty"`
-	DomainName          string `json:"instance_size,omitempty"`
-	MachineType         string `json:"node_count,omitempty"`
-	NumNodes            string `json:"workload_cluster_name,omitempty"`
-	ClusterRegion       string `json:"status,omitempty"`
+	WorkloadClusterName string `json:"workload_cluster_name,omitempty"`
 }
