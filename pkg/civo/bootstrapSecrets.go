@@ -26,6 +26,7 @@ func BootstrapCivoMgmtCluster(
 	gitProvider string,
 	gitUser string,
 	cloudflareAPIToken string,
+	cloudflareOriginAPIToken string,
 	destinationGitopsRepoURL string,
 	gitProtocol string,
 ) error {
@@ -42,6 +43,7 @@ func BootstrapCivoMgmtCluster(
 		"cert-manager",
 		"external-dns",
 		"external-secrets-operator",
+		"vault",
 	}
 	for i, s := range newNamespaces {
 		namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: s}}
@@ -97,6 +99,12 @@ func BootstrapCivoMgmtCluster(
 			Data: map[string][]byte{
 				"civo-token":   []byte(civoToken),
 				"cf-api-token": []byte(cloudflareAPIToken),
+			},
+		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: "cloudflare-creds", Namespace: "vault"},
+			Data: map[string][]byte{
+				"origin-ca-api-key": []byte(cloudflareOriginAPIToken),
 			},
 		},
 		{
