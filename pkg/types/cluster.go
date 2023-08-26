@@ -98,25 +98,26 @@ type Cluster struct {
 	UseTelemetry bool `bson:"use_telemetry"`
 
 	// Checks
-	InstallToolsCheck              bool `bson:"install_tools_check" json:"install_tools_check"`
-	DomainLivenessCheck            bool `bson:"domain_liveness_check" json:"domain_liveness_check"`
-	StateStoreCredsCheck           bool `bson:"state_store_creds_check" json:"state_store_creds_check"`
-	StateStoreCreateCheck          bool `bson:"state_store_create_check" json:"state_store_create_check"`
-	GitInitCheck                   bool `bson:"git_init_check" json:"git_init_check"`
-	KbotSetupCheck                 bool `bson:"kbot_setup_check" json:"kbot_setup_check"`
-	GitopsReadyCheck               bool `bson:"gitops_ready_check" json:"gitops_ready_check"`
-	GitTerraformApplyCheck         bool `bson:"git_terraform_apply_check" json:"git_terraform_apply_check"`
-	GitopsPushedCheck              bool `bson:"gitops_pushed_check" json:"gitops_pushed_check"`
-	CloudTerraformApplyCheck       bool `bson:"cloud_terraform_apply_check" json:"cloud_terraform_apply_check"`
-	CloudTerraformApplyFailedCheck bool `bson:"cloud_terraform_apply_failed_check" json:"cloud_terraform_apply_failed_check"`
-	ClusterSecretsCreatedCheck     bool `bson:"cluster_secrets_created_check" json:"cluster_secrets_created_check"`
-	ArgoCDInstallCheck             bool `bson:"argocd_install_check" json:"argocd_install_check"`
-	ArgoCDInitializeCheck          bool `bson:"argocd_initialize_check" json:"argocd_initialize_check"`
-	ArgoCDCreateRegistryCheck      bool `bson:"argocd_create_registry_check" json:"argocd_create_registry_check"`
-	ArgoCDDeleteRegistryCheck      bool `bson:"argocd_delete_registry_check" json:"argocd_delete_registry_check"`
-	VaultInitializedCheck          bool `bson:"vault_initialized_check" json:"vault_initialized_check"`
-	VaultTerraformApplyCheck       bool `bson:"vault_terraform_apply_check" json:"vault_terraform_apply_check"`
-	UsersTerraformApplyCheck       bool `bson:"users_terraform_apply_check" json:"users_terraform_apply_check"`
+	InstallToolsCheck              bool              `bson:"install_tools_check" json:"install_tools_check"`
+	DomainLivenessCheck            bool              `bson:"domain_liveness_check" json:"domain_liveness_check"`
+	StateStoreCredsCheck           bool              `bson:"state_store_creds_check" json:"state_store_creds_check"`
+	StateStoreCreateCheck          bool              `bson:"state_store_create_check" json:"state_store_create_check"`
+	GitInitCheck                   bool              `bson:"git_init_check" json:"git_init_check"`
+	KbotSetupCheck                 bool              `bson:"kbot_setup_check" json:"kbot_setup_check"`
+	GitopsReadyCheck               bool              `bson:"gitops_ready_check" json:"gitops_ready_check"`
+	GitTerraformApplyCheck         bool              `bson:"git_terraform_apply_check" json:"git_terraform_apply_check"`
+	GitopsPushedCheck              bool              `bson:"gitops_pushed_check" json:"gitops_pushed_check"`
+	CloudTerraformApplyCheck       bool              `bson:"cloud_terraform_apply_check" json:"cloud_terraform_apply_check"`
+	CloudTerraformApplyFailedCheck bool              `bson:"cloud_terraform_apply_failed_check" json:"cloud_terraform_apply_failed_check"`
+	ClusterSecretsCreatedCheck     bool              `bson:"cluster_secrets_created_check" json:"cluster_secrets_created_check"`
+	ArgoCDInstallCheck             bool              `bson:"argocd_install_check" json:"argocd_install_check"`
+	ArgoCDInitializeCheck          bool              `bson:"argocd_initialize_check" json:"argocd_initialize_check"`
+	ArgoCDCreateRegistryCheck      bool              `bson:"argocd_create_registry_check" json:"argocd_create_registry_check"`
+	ArgoCDDeleteRegistryCheck      bool              `bson:"argocd_delete_registry_check" json:"argocd_delete_registry_check"`
+	VaultInitializedCheck          bool              `bson:"vault_initialized_check" json:"vault_initialized_check"`
+	VaultTerraformApplyCheck       bool              `bson:"vault_terraform_apply_check" json:"vault_terraform_apply_check"`
+	UsersTerraformApplyCheck       bool              `bson:"users_terraform_apply_check" json:"users_terraform_apply_check"`
+	WorkloadClusters               []WorkloadCluster `bson:"workload_cluster,omitempty" json:"workload_clusters,omitempty"`
 }
 
 // StateStoreDetails
@@ -147,4 +148,13 @@ type ImportClusterRequest struct {
 type ProxyImportRequest struct {
 	Body ImportClusterRequest `bson:"body" json:"body"`
 	Url  string               `bson:"url" json:"url"`
+}
+
+type WorkloadCluster struct {
+	CloudRegion         string `json:"cloud_region,omitempty"`
+	Environment         string `json:"environment,omitempty"`
+	InstanceSize        string `json:"instance_size,omitempty"`
+	NodeCount           string `json:"node_count,omitempty"`
+	WorkloadClusterName string `json:"workload_cluster_name,omitempty"`
+	Status              string `json:"status,omitempty"`
 }

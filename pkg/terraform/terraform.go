@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/rs/zerolog/log"
@@ -30,7 +31,7 @@ func initActionAutoApprove(terraformClientPath string, tfAction, tfEntrypoint st
 		return err
 	}
 
-	err = pkg.ExecShellWithVars(tfEnvs, terraformClientPath, tfAction, "-auto-approve")
+	err = pkg.ExecShellWithVars(tfEnvs, terraformClientPath, tfAction, "-auto-approve", fmt.Sprintf("-parallelism=%d", runtime.NumCPU()*2))
 	if err != nil {
 		log.Printf("error: terraform %s -auto-approve for %s failed %s", tfAction, tfEntrypoint, err)
 		return err
