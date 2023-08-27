@@ -151,14 +151,15 @@ type ProxyImportRequest struct {
 }
 
 type WorkloadCluster struct {
-	ClusterID           string `json:"cluster_id"`
-	CloudRegion         string `json:"cloud_region,omitempty"`
-	ClusterRegion       string `json:"cluster_region,omitempty"`
-	DomainName          string `json:"domain_name,omitempty"`
-	Environment         string `json:"environment,omitempty"`
-	InstanceSize        string `json:"instance_size,omitempty"`
-	MachineType         string `json:"machine_type,omitempty"`
-	NodeCount           string `json:"node_count,omitempty"`
-	Status              string `json:"status,omitempty"`
-	WorkloadClusterName string `json:"workload_cluster_name,omitempty"`
+	ClusterID           string `bson:"cluster_id,omitempty" json:"cluster_id,omitempty"`
+	ClusterType         string `bson:"cluster_type" json:"cluster_type"`
+	CloudRegion         string `bson:"cloud_region,omitempty" json:"cloud_region,omitempty"`
+	ClusterRegion       string `bson:"cluster_region,omitempty" json:"cluster_region,omitempty"`
+	DomainName          string `bson:"domain_name,omitempty" json:"domain_name,omitempty"`
+	Environment         string `bson:"environment,omitempty" json:"environment,omitempty"`
+	InstanceSize        string `bson:"instance_size,omitempty" json:"instance_size,omitempty"`
+	MachineType         string `bson:"machine_type,omitempty" json:"machine_type,omitempty"`
+	NodeCount           string `bson:"node_count,omitempty" json:"node_count,omitempty"`
+	Status              string `bson:"status,omitempty" json:"status,omitempty"`
+	WorkloadClusterName string `bson:"workload_cluster_name,omitempty" json:"workload_cluster_name,omitempty"`
 }
