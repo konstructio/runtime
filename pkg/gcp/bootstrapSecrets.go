@@ -8,13 +8,11 @@ package gcp
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/spf13/viper"
+	providerConfig "github.com/kubefirst/runtime/pkg/providerConfigs"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -28,73 +26,24 @@ func BootstrapGCPMgmtCluster(
 	gitProtocol string,
 	cloudflareAPIToken string,
 	googleApplicationCredentials string,
+	dnsProvider string,
+	cloudProvider string,
 ) error {
-	// Create namespace
-	// Skip if it already exists
-	newNamespaces := []string{
-		"argocd",
-		"atlantis",
-		"cert-manager",
-		"external-dns",
-		"external-secrets-operator",
-	}
-	for i, s := range newNamespaces {
-		namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: s}}
-		_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), s, metav1.GetOptions{})
-		if err != nil {
-			_, err = clientset.CoreV1().Namespaces().Create(context.TODO(), namespace, metav1.CreateOptions{})
-			if err != nil {
-				log.Error().Err(err).Msg("")
-				return fmt.Errorf("error creating namespace")
-			}
-			log.Info().Msgf("%d, %s", i, s)
-			log.Info().Msgf("namespace created: %s", s)
-		} else {
-			log.Warn().Msgf("namespace %s already exists - skipping", s)
-		}
-	}
 
-	// Create secrets
-	// swap secret data based on https flag
-	secretData := map[string][]byte{}
+	err := providerConfig.BootstrapMgmtCluster(
+		clientset,
+		gitProvider,
+		gitUser,
+		destinationGitopsRepoURL,
+		gitProtocol,
+		cloudflareAPIToken,
+		googleApplicationCredentials, //AWS has no authentication method because we use roles
+		dnsProvider,
+		cloudProvider,
+	)
 
-	if gitProtocol == "https" {
-		// http basic auth
-		secretData = map[string][]byte{
-			"type":     []byte("git"),
-			"name":     []byte(fmt.Sprintf("%s-gitops", gitUser)),
-			"url":      []byte(destinationGitopsRepoURL),
-			"username": []byte(gitUser),
-			"password": []byte([]byte(fmt.Sprintf(os.Getenv(fmt.Sprintf("%s_TOKEN", strings.ToUpper(gitProvider)))))),
-		}
-	} else {
-		// ssh
-		secretData = map[string][]byte{
-			"type":          []byte("git"),
-			"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
-			"url":           []byte(destinationGitopsRepoURL),
-			"sshPrivateKey": []byte(viper.GetString("kbot.private-key")),
-		}
-	}
-	createSecrets := []*v1.Secret{
-		// argocd
-		{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:        "repo-credentials-template",
-				Namespace:   "argocd",
-				Annotations: map[string]string{"managed-by": "argocd.argoproj.io"},
-				Labels:      map[string]string{"argocd.argoproj.io/secret-type": "repository"},
-			},
-			Data: secretData,
-		},
-		{
-			ObjectMeta: metav1.ObjectMeta{Name: "gcp-creds", Namespace: "external-dns"},
-			Data: map[string][]byte{
-				"google_application_credentials": []byte("placeholder"),
-				"cf-api-token":                   []byte(cloudflareAPIToken),
-			},
-		},
-	}
+	//Create cloud specific secrets
+	createSecrets := []*v1.Secret{}
 	for _, secret := range createSecrets {
 		_, err := clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Get(context.TODO(), secret.ObjectMeta.Name, metav1.GetOptions{})
 		if err == nil {
@@ -138,5 +87,5 @@ func BootstrapGCPMgmtCluster(
 		}
 	}
 
-	return nil
+	return err
 }

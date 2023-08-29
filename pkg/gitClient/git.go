@@ -143,19 +143,8 @@ func Commit(repo *git.Repository, commitMsg string) error {
 	}
 
 	log.Info().Msg(commitMsg)
-	status, err := w.Status()
-	if err != nil {
-		log.Info().Msgf("error getting worktree status: %s", err)
-		return err
-	}
+	w.AddGlob(".")
 
-	for file, _ := range status {
-		_, err = w.Add(file)
-		if err != nil {
-			log.Info().Msgf("error getting worktree status: %s", err)
-			return err
-		}
-	}
 	w.Commit(commitMsg, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "kbot",
