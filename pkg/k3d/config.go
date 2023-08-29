@@ -46,24 +46,26 @@ type K3dConfig struct {
 	GithubToken string
 	GitlabToken string
 
-	DestinationGitopsRepoGitURL   string
-	DestinationGitopsRepoURL      string
-	DestinationMetaphorRepoURL    string
-	DestinationMetaphorRepoGitURL string
-	GitopsDir                     string
-	GitProvider                   string
-	GitProtocol                   string
-	K1Dir                         string
-	K3dClient                     string
-	Kubeconfig                    string
-	KubectlClient                 string
-	KubefirstConfig               string
-	MetaphorDir                   string
-	MkCertClient                  string
-	MkCertPemDir                  string
-	MkCertSSLSecretDir            string
-	TerraformClient               string
-	ToolsDir                      string
+	DestinationGitopsRepoGitURL     string
+	DestinationGitopsRepoURL        string
+	DestinationMetaphorRepoURL      string
+	DestinationMetaphorRepoGitURL   string
+	DestinationGitopsRepoHttpsURL   string
+	DestinationMetaphorRepoHttpsURL string
+	GitopsDir                       string
+	GitProvider                     string
+	GitProtocol                     string
+	K1Dir                           string
+	K3dClient                       string
+	Kubeconfig                      string
+	KubectlClient                   string
+	KubefirstConfig                 string
+	MetaphorDir                     string
+	MkCertClient                    string
+	MkCertPemDir                    string
+	MkCertSSLSecretDir              string
+	TerraformClient                 string
+	ToolsDir                        string
 }
 
 // GetConfig - load default values from kubefirst installer
