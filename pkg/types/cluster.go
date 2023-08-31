@@ -164,6 +164,6 @@ type WorkloadCluster struct {
 	GitAuth           GitAuth `bson:"git_auth,omitempty" json:"git_auth,omitempty"`
 	InstanceSize      string  `bson:"instance_size,omitempty" json:"instance_size,omitempty"`
 	MachineType       string  `bson:"machine_type,omitempty" json:"machine_type,omitempty"`
-	NodeCount         string  `bson:"node_count,omitempty" json:"node_count,omitempty"`
+	NodeCount         int     `bson:"node_count,omitempty" json:"node_count,omitempty"`
 	Status            string  `bson:"status,omitempty" json:"status,omitempty"`
 }
