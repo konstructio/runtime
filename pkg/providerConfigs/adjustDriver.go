@@ -149,6 +149,11 @@ func AdjustMetaphorRepo(
 
 	CIVO_GITHUB := "civo-github"
 
+	if fmt.Sprintf("civo-%s", gitProvider) != CIVO_GITHUB {
+		os.RemoveAll(metaphorDir + "/.argo")
+		os.RemoveAll(metaphorDir + "/.github")
+	}
+
 	//todo implement repo, err :- createMetaphor() which returns the metaphor repoository object, removes content from
 	// gitops and then allows gitops to commit during its sequence of ops
 	if fmt.Sprintf("civo-%s", gitProvider) == CIVO_GITHUB {
