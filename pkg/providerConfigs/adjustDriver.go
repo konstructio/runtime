@@ -51,6 +51,38 @@ func AdjustGitopsRepo(
 
 		},
 	}
+	CIVO_GITHUB := "civo-github"
+
+	if fmt.Sprintf("%s-%s", cloudProvider, gitProvider) == CIVO_GITHUB {
+		driverContent := fmt.Sprintf("%s/%s-%s/", gitopsRepoDir, cloudProvider, gitProvider)
+		err := cp.Copy(driverContent, gitopsRepoDir, opt)
+		if err != nil {
+			log.Info().Msgf("Error populating gitops repository with driver content: %s. error: %s", fmt.Sprintf("%s-%s", cloudProvider, gitProvider), err.Error())
+			return err
+		}
+		os.RemoveAll(driverContent)
+
+		//* copy $HOME/.k1/gitops/templates/${clusterType}/* $HOME/.k1/gitops/registry/${clusterName}
+		clusterContent := fmt.Sprintf("%s/templates/%s", gitopsRepoDir, clusterType)
+
+		// Remove apex content if apex content already exists
+		if apexContentExists {
+			log.Warn().Msgf("removing nginx-apex since apexContentExists was %v", apexContentExists)
+			os.Remove(fmt.Sprintf("%s/nginx-apex.yaml", clusterContent))
+			os.RemoveAll(fmt.Sprintf("%s/nginx-apex", clusterContent))
+		} else {
+			log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
+		}
+
+		err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/clusters/%s", gitopsRepoDir, clusterName), opt)
+		if err != nil {
+			log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
+			return err
+		}
+		os.RemoveAll(fmt.Sprintf("%s/templates/mgmt", gitopsRepoDir))
+
+		return nil
+	}
 
 	//* copy $cloudProvider-$gitProvider/* $HOME/.k1/gitops/
 	driverContent := fmt.Sprintf("%s/%s-%s/", gitopsRepoDir, cloudProvider, gitProvider)
@@ -73,7 +105,7 @@ func AdjustGitopsRepo(
 		log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
 	}
 
-	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
+	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/clusters/%s", gitopsRepoDir, clusterName), opt)
 	if err != nil {
 		log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
 		return err
@@ -113,6 +145,56 @@ func AdjustMetaphorRepo(
 			return false, nil
 
 		},
+	}
+
+	CIVO_GITHUB := "civo-github"
+
+	if fmt.Sprintf("civo-%s", gitProvider) != CIVO_GITHUB {
+		os.RemoveAll(metaphorDir + "/.argo")
+		os.RemoveAll(metaphorDir + "/.github")
+	}
+
+	//todo implement repo, err :- createMetaphor() which returns the metaphor repoository object, removes content from
+	// gitops and then allows gitops to commit during its sequence of ops
+	if fmt.Sprintf("civo-%s", gitProvider) == CIVO_GITHUB {
+		//* metaphor app source
+		metaphorContent := fmt.Sprintf("%s/metaphor", gitopsRepoDir)
+		err = cp.Copy(metaphorContent, metaphorDir, opt)
+		if err != nil {
+			log.Info().Msgf("Error populating metaphor content with %s. error: %s", metaphorContent, err.Error())
+			return err
+		}
+
+		// Remove metaphor content from gitops repository directory
+		os.RemoveAll(fmt.Sprintf("%s/metaphor", gitopsRepoDir))
+
+		err = gitClient.Commit(metaphorRepo, "init commit pre ref change")
+		if err != nil {
+			return err
+		}
+
+		metaphorRepo, err = gitClient.SetRefToMainBranch(metaphorRepo)
+		if err != nil {
+			return err
+		}
+
+		// remove old git ref
+		err = metaphorRepo.Storer.RemoveReference(plumbing.NewBranchReferenceName("master"))
+		if err != nil {
+			return fmt.Errorf("error removing previous git ref: %s", err)
+		}
+
+		// create remote
+		_, err = metaphorRepo.CreateRemote(&config.RemoteConfig{
+			Name: "origin",
+			URLs: []string{destinationMetaphorRepoURL},
+		})
+		if err != nil {
+			return fmt.Errorf("error creating remote for metaphor repository: %s", err)
+		}
+
+		return nil
+
 	}
 
 	//* copy ci content

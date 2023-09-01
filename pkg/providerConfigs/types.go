@@ -54,7 +54,6 @@ type GitopsDirectoryValues struct {
 	GitProvider          string
 	GitProtocol          string
 	GitopsRepoGitURL     string
-	GitopsRepoHttpsURL   string
 	GitopsRepoURL        string
 	GitRunner            string
 	GitRunnerDescription string

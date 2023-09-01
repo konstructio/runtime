@@ -24,6 +24,7 @@ func BootstrapCivoMgmtCluster(
 	gitProvider string,
 	gitUser string,
 	cloudflareAPIToken string,
+	cloudflareOriginAPIToken string,
 	destinationGitopsRepoURL string,
 	gitProtocol string,
 	dnsProvider string,

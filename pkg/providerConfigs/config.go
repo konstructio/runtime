@@ -14,12 +14,13 @@ import (
 )
 
 type ProviderConfig struct {
-	CivoToken          string
-	DigitaloceanToken  string
-	GCPAuth            string
-	GCPProject         string
-	VultrToken         string
-	CloudflareApiToken string
+	CivoToken                        string
+	DigitaloceanToken                string
+	GCPAuth                          string
+	GCPProject                       string
+	VultrToken                       string
+	CloudflareAPIToken               string
+	CloudflareOriginCaIssuerAPIToken string
 
 	GithubToken string
 	GitlabToken string
@@ -59,6 +60,7 @@ func GetConfig(
 	gitOwner string,
 	gitProtocol string,
 	cloudflareAPIToken string,
+	cloudflareOriginCaIssuerAPIToken string,
 ) *ProviderConfig {
 	config := ProviderConfig{}
 
@@ -84,7 +86,8 @@ func GetConfig(
 	config.GitopsDir = fmt.Sprintf("%s/.k1/%s/gitops", homeDir, clusterName)
 	config.GitProvider = gitProvider
 	config.GitProtocol = gitProtocol
-	config.CloudflareApiToken = cloudflareAPIToken
+	config.CloudflareAPIToken = cloudflareAPIToken
+	config.CloudflareOriginCaIssuerAPIToken = cloudflareOriginCaIssuerAPIToken
 	config.Kubeconfig = fmt.Sprintf("%s/.k1/%s/kubeconfig", homeDir, clusterName)
 	config.K1Dir = fmt.Sprintf("%s/.k1/%s", homeDir, clusterName)
 	config.KubectlClient = fmt.Sprintf("%s/.k1/%s/tools/kubectl", homeDir, clusterName)
