@@ -119,6 +119,31 @@ func RefreshRegistryApplication(host string, token string) error {
 	return nil
 }
 
+// RefreshApplication forces the registry application to fetch upstream manifests
+func RefreshApplication(host string, token string, appName string) error {
+	// Build request to ArgoCD API
+	request, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/api/v1/applications/%s?refresh=true", host, appName),
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+
+	// Submit request to ArgoCD API
+	client := &http.Client{Timeout: 10 * time.Second}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	return nil
+}
+
 // returnArgoCDApplicationStatus returns the status details of a given ArgoCD application
 func returnArgoCDApplicationStatus(clientset kubernetes.Interface, applicationName string) (health.HealthStatusCode, error) {
 	// Call the API to return an ArgoCD application object
