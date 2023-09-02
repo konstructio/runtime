@@ -132,6 +132,7 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *providerConf
 	if viper.GetString("flags.dns-provider") == "cloudflare" {
 		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitopsDirectoryValues.ExternalDNSProviderName)] = config.CloudflareAPIToken
 		envs["TF_VAR_cloudflare_origin_ca_api_key"] = config.CloudflareOriginCaIssuerAPIToken
+		envs["TF_VAR_cloudflare_api_key"] = config.CloudflareAPIToken
 	} else {
 		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitopsDirectoryValues.ExternalDNSProviderName)] = config.DigitaloceanToken
 	}
