@@ -53,7 +53,7 @@ func AdjustGitopsRepo(
 	}
 	CIVO_GITHUB := "civo-github"
 
-	if fmt.Sprintf("%s-%s", cloudProvider, gitProvider) == CIVO_GITHUB {
+	if strings.ToLower(fmt.Sprintf("%s-%s", cloudProvider, gitProvider)) == CIVO_GITHUB {
 		driverContent := fmt.Sprintf("%s/%s-%s/", gitopsRepoDir, cloudProvider, gitProvider)
 		err := cp.Copy(driverContent, gitopsRepoDir, opt)
 		if err != nil {
@@ -149,14 +149,14 @@ func AdjustMetaphorRepo(
 
 	CIVO_GITHUB := "civo-github"
 
-	if fmt.Sprintf("civo-%s", gitProvider) != CIVO_GITHUB {
+	if strings.ToLower(fmt.Sprintf("civo-%s", gitProvider)) != CIVO_GITHUB {
 		os.RemoveAll(metaphorDir + "/.argo")
 		os.RemoveAll(metaphorDir + "/.github")
 	}
 
 	//todo implement repo, err :- createMetaphor() which returns the metaphor repoository object, removes content from
 	// gitops and then allows gitops to commit during its sequence of ops
-	if fmt.Sprintf("civo-%s", gitProvider) == CIVO_GITHUB {
+	if strings.ToLower(fmt.Sprintf("civo-%s", gitProvider)) == CIVO_GITHUB {
 		//* metaphor app source
 		metaphorContent := fmt.Sprintf("%s/metaphor", gitopsRepoDir)
 		err = cp.Copy(metaphorContent, metaphorDir, opt)
