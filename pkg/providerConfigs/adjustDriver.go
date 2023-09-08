@@ -74,7 +74,11 @@ func AdjustGitopsRepo(
 			log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
 		}
 
-		err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/clusters/%s", gitopsRepoDir, clusterName), opt)
+		if strings.ToLower(fmt.Sprintf("%s-%s", cloudProvider, gitProvider)) == CIVO_GITHUB {
+			err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/clusters/%s", gitopsRepoDir, clusterName), opt)
+		} else {
+			err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
+		}
 		if err != nil {
 			log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
 			return err
@@ -105,7 +109,11 @@ func AdjustGitopsRepo(
 		log.Warn().Msgf("will create nginx-apex since apexContentExists was %v", apexContentExists)
 	}
 
-	err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/clusters/%s", gitopsRepoDir, clusterName), opt)
+	if strings.ToLower(fmt.Sprintf("%s-%s", cloudProvider, gitProvider)) == CIVO_GITHUB {
+		err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/clusters/%s", gitopsRepoDir, clusterName), opt)
+	} else {
+		err = cp.Copy(clusterContent, fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName), opt)
+	}
 	if err != nil {
 		log.Info().Msgf("Error populating cluster content with %s. error: %s", clusterContent, err.Error())
 		return err
