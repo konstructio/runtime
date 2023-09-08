@@ -90,6 +90,13 @@ func BootstrapMgmtCluster(
 				"api-key": []byte(cloudAuth),
 			},
 		},
+		{
+			ObjectMeta: metav1.ObjectMeta{Name: fmt.Sprintf("%s-auth", dnsProvider), Namespace: "cert-manager"},
+			Data: map[string][]byte{
+				fmt.Sprintf("%s-auth", dnsProvider): []byte(cloudAuth),
+				"cf-api-token":                      []byte(cloudflareAPIToken),
+			},
+		},
 	}
 	for _, secret := range createSecrets {
 		_, err := clientset.CoreV1().Secrets(secret.ObjectMeta.Namespace).Get(context.TODO(), secret.ObjectMeta.Name, metav1.GetOptions{})
