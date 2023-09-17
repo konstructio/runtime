@@ -51,7 +51,7 @@ func AdjustGitopsRepo(
 
 		},
 	}
-	CIVO_GITHUB := "civo-github"
+	CIVO_GITHUB := "civo-gitlab" //! i know i know i know.
 
 	if strings.ToLower(fmt.Sprintf("%s-%s", cloudProvider, gitProvider)) == CIVO_GITHUB {
 		driverContent := fmt.Sprintf("%s/%s-%s/", gitopsRepoDir, cloudProvider, gitProvider)
@@ -155,7 +155,7 @@ func AdjustMetaphorRepo(
 		},
 	}
 
-	CIVO_GITHUB := "civo-github"
+	CIVO_GITHUB := "civo-gitlab"
 
 	if strings.ToLower(fmt.Sprintf("civo-%s", gitProvider)) != CIVO_GITHUB {
 		os.RemoveAll(metaphorDir + "/.argo")
