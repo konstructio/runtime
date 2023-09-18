@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package google
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ func readVaultTokenFromSecret(clientset *kubernetes.Clientset, config *providerC
 	return existingKubernetesSecret["root-token"]
 }
 
-func GetGCPTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
+func GetGoogleTerraformEnvs(config *providerConfigs.ProviderConfig, envs map[string]string) map[string]string {
 	//envs["TF_LOG"] = "debug"
 
 	return envs
@@ -107,7 +107,7 @@ func GetVaultTerraformEnvs(clientset *kubernetes.Clientset, config *providerConf
 		envs["TF_VAR_cloudflare_origin_ca_api_key"] = config.CloudflareOriginCaIssuerAPIToken
 		envs["TF_VAR_cloudflare_api_key"] = config.CloudflareAPIToken
 	} else {
-		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitopsDirectoryValues.ExternalDNSProviderName)] = config.GCPAuth
+		envs[fmt.Sprintf("TF_VAR_%s_secret", config.GitopsDirectoryValues.ExternalDNSProviderName)] = config.googleAuth
 	}
 
 	switch config.GitProvider {

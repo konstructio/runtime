@@ -47,6 +47,7 @@ replace (
 require (
 	cloud.google.com/go/compute v1.23.0
 	cloud.google.com/go/container v1.24.0
+	cloud.google.com/go/secretmanager v1.10.0
 	cloud.google.com/go/storage v1.29.0
 	github.com/argoproj/argo-cd/v2 v2.3.17
 	github.com/argoproj/gitops-engine v0.7.3

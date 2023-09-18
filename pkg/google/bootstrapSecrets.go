@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package google
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func BootstrapGCPMgmtCluster(
+func BootstrapGoogleMgmtCluster(
 	clientset *kubernetes.Clientset,
 	gitProvider string,
 	gitUser string,

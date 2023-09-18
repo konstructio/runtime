@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package google
 
 import (
 	"encoding/base64"
@@ -20,7 +20,7 @@ import (
 )
 
 // ListContainerClusters
-func (conf *GCPConfiguration) ListContainerClusters() (*containerpb.ListClustersResponse, error) {
+func (conf *googleConfiguration) ListContainerClusters() (*containerpb.ListClustersResponse, error) {
 	client, err := container.NewClusterManagerClient(conf.Context)
 	if err != nil {
 		return nil, fmt.Errorf("could not create google container client: %s", err)
@@ -37,7 +37,7 @@ func (conf *GCPConfiguration) ListContainerClusters() (*containerpb.ListClusters
 }
 
 // GetContainerCluster
-func (conf *GCPConfiguration) GetContainerCluster(clusterName string) (*containerpb.Cluster, error) {
+func (conf *googleConfiguration) GetContainerCluster(clusterName string) (*containerpb.Cluster, error) {
 	client, err := container.NewClusterManagerClient(conf.Context)
 	if err != nil {
 		return nil, fmt.Errorf("could not create google container client: %s", err)
@@ -54,7 +54,7 @@ func (conf *GCPConfiguration) GetContainerCluster(clusterName string) (*containe
 }
 
 // GetContainerClusterAuth
-func (conf *GCPConfiguration) GetContainerClusterAuth(clusterName string) (*k8s.KubernetesClient, error) {
+func (conf *googleConfiguration) GetContainerClusterAuth(clusterName string) (*k8s.KubernetesClient, error) {
 	client, err := container.NewClusterManagerClient(conf.Context)
 	if err != nil {
 		return nil, fmt.Errorf("could not create google container client: %s", err)
@@ -90,7 +90,7 @@ func (conf *GCPConfiguration) GetContainerClusterAuth(clusterName string) (*k8s.
 	}
 	config.AuthInfos[name] = &api.AuthInfo{
 		AuthProvider: &api.AuthProviderConfig{
-			Name: "gcp",
+			Name: "google",
 			Config: map[string]string{
 				"scopes": "https://www.googleapis.com/auth/cloud-platform",
 			},
