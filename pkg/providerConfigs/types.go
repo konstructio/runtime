@@ -16,6 +16,7 @@ type GitopsDirectoryValues struct {
 	ClusterType               string
 	ContainerRegistryURL      string
 	DomainName                string
+	SubdomainName             string
 	DNSProvider               string
 	Kubeconfig                string
 	KubeconfigPath            string
