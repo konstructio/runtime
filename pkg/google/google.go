@@ -18,7 +18,7 @@ import (
 )
 
 // GetRegions lists all available regions
-func (conf *googleConfiguration) GetRegions() ([]string, error) {
+func (conf *GoogleConfiguration) GetRegions() ([]string, error) {
 	var regionList []string
 
 	client, err := compute.NewRegionsRESTClient(conf.Context)

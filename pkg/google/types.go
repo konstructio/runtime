@@ -8,9 +8,10 @@ package google
 
 import "context"
 
-// googleConfiguration stores session data to organize all google functions into a single struct
+// GoogleConfiguration stores session data to organize all google functions into a single struct
 type GoogleConfiguration struct {
 	Context context.Context
 	Project string
 	Region  string
+	KeyFile string
 }

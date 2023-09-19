@@ -18,7 +18,7 @@ import (
 )
 
 // CreateBucket creates a GCS bucket
-func (conf *googleConfiguration) CreateBucket(bucketName string, keyFile string) (*storage.BucketAttrs, error) {
+func (conf *GoogleConfiguration) CreateBucket(bucketName string, keyFile []byte) (*storage.BucketAttrs, error) {
 	creds, err := google.CredentialsFromJSON(conf.Context, keyFile, secretmanager.DefaultAuthScopes()...)
 	if err != nil {
 		return nil, fmt.Errorf("could not create google storage client credentials: %s", err)
@@ -52,8 +52,12 @@ func (conf *googleConfiguration) CreateBucket(bucketName string, keyFile string)
 }
 
 // DeleteBucket deletes a GCS bucket
-func (conf *googleConfiguration) DeleteBucket(bucketName string) error {
-	client, err := storage.NewClient(conf.Context)
+func (conf *GoogleConfiguration) DeleteBucket(bucketName string, keyFile []byte) error {
+	creds, err := google.CredentialsFromJSON(conf.Context, keyFile, secretmanager.DefaultAuthScopes()...)
+	if err != nil {
+		return fmt.Errorf("could not create google storage client credentials: %s", err)
+	}
+	client, err := storage.NewClient(conf.Context, option.WithCredentials(creds))
 	if err != nil {
 		return fmt.Errorf("could not create google storage client: %s", err)
 	}
@@ -72,8 +76,15 @@ func (conf *googleConfiguration) DeleteBucket(bucketName string) error {
 }
 
 // ListBuckets lists all GCS buckets for a project
-func (conf *googleConfiguration) ListBuckets() ([]*storage.BucketAttrs, error) {
-	client, err := storage.NewClient(conf.Context)
+func (conf *GoogleConfiguration) ListBuckets(keyFile []byte) ([]*storage.BucketAttrs, error) {
+	creds, err := google.CredentialsFromJSON(conf.Context, keyFile, secretmanager.DefaultAuthScopes()...)
+	if err != nil {
+		return nil, fmt.Errorf("could not create google storage client credentials: %s", err)
+	}
+	client, err := storage.NewClient(conf.Context, option.WithCredentials(creds))
+	if err != nil {
+		return nil, fmt.Errorf("could not create google storage client: %s", err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("could not create google storage client: %s", err)
 	}
