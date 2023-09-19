@@ -55,6 +55,14 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 					return err
 				}
 
+				var fullDomainName string
+
+				if tokens.SubdomainName != "" {
+					fullDomainName = fmt.Sprintf("%s.%s", tokens.SubdomainName, tokens.DomainName)
+				} else {
+					fullDomainName = tokens.DomainName
+				}
+
 				newContents := string(read)
 				newContents = strings.Replace(newContents, "<ALERTS_EMAIL>", tokens.AlertsEmail, -1)
 				newContents = strings.Replace(newContents, "<ATLANTIS_ALLOW_LIST>", tokens.AtlantisAllowList, -1)
@@ -65,7 +73,7 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<CLUSTER_ID>", tokens.ClusterId, -1)
 				newContents = strings.Replace(newContents, "<CLUSTER_TYPE>", tokens.ClusterType, -1)
 				newContents = strings.Replace(newContents, "<CONTAINER_REGISTRY_URL>", tokens.ContainerRegistryURL, -1)
-				newContents = strings.Replace(newContents, "<DOMAIN_NAME>", tokens.DomainName, -1)
+				newContents = strings.Replace(newContents, "<DOMAIN_NAME>", fullDomainName, -1)
 				newContents = strings.Replace(newContents, "<KUBE_CONFIG_PATH>", tokens.KubeconfigPath, -1)
 				newContents = strings.Replace(newContents, "<KUBEFIRST_ARTIFACTS_BUCKET>", tokens.KubefirstArtifactsBucket, -1)
 				newContents = strings.Replace(newContents, "<KUBEFIRST_STATE_STORE_BUCKET>", tokens.KubefirstStateStoreBucket, -1)
@@ -128,6 +136,7 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_TOKEN_ENV_NAME>", tokens.ExternalDNSProviderTokenEnvName, -1)
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_SECRET_NAME>", tokens.ExternalDNSProviderSecretName, -1)
 				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_PROVIDER_SECRET_KEY>", tokens.ExternalDNSProviderSecretKey, -1)
+				newContents = strings.Replace(newContents, "<EXTERNAL_DNS_DOMAIN_NAME>", tokens.DomainName, -1)
 
 				newContents = strings.Replace(newContents, "<USE_TELEMETRY>", tokens.UseTelemetry, -1)
 
