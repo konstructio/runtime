@@ -101,11 +101,14 @@ func PortForwardPod(clientset *kubernetes.Clientset, req PortForwardAPodRequest)
 	log.Println("Name for PF", runningPod.Name)
 
 	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", runningPod.Namespace, runningPod.Name)
-	// hostURL, err := url.Parse(req.RestConfig.Host)
-	// if err != nil {
-	// 	return fmt.Errorf("could not parse kubernetes host url: %s", err)
-	// }
+	hostURL, err := url.Parse(req.RestConfig.Host)
+	if err != nil {
+		return fmt.Errorf("could not parse kubernetes host url: %s", err)
+	}
 
+	if hostURL.Host == "" {
+		hostURL.Host = req.RestConfig.Host
+	}
 	transport, upgrader, err := spdy.RoundTripperFor(req.RestConfig)
 	if err != nil {
 		return err
@@ -118,7 +121,7 @@ func PortForwardPod(clientset *kubernetes.Clientset, req PortForwardAPodRequest)
 		&url.URL{
 			Scheme: "https",
 			Path:   path,
-			Host:   req.RestConfig.Host,
+			Host:   hostURL.Host,
 		},
 	)
 
