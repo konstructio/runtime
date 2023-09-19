@@ -4,23 +4,29 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package google
 
 import (
 	"fmt"
 
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	storage "cloud.google.com/go/storage"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // CreateBucket creates a GCS bucket
-func (conf *GCPConfiguration) CreateBucket(bucketName string) (*storage.BucketAttrs, error) {
-	client, err := storage.NewClient(conf.Context)
+func (conf *GoogleConfiguration) CreateBucket(bucketName string, keyFile []byte) (*storage.BucketAttrs, error) {
+	creds, err := google.CredentialsFromJSON(conf.Context, keyFile, secretmanager.DefaultAuthScopes()...)
+	if err != nil {
+		return nil, fmt.Errorf("could not create google storage client credentials: %s", err)
+	}
+	client, err := storage.NewClient(conf.Context, option.WithCredentials(creds))
 	if err != nil {
 		return nil, fmt.Errorf("could not create google storage client: %s", err)
 	}
-	defer client.Close()
 
 	// Create bucket
 	log.Info().Msgf("creating gcs bucket %s", bucketName)
@@ -46,8 +52,12 @@ func (conf *GCPConfiguration) CreateBucket(bucketName string) (*storage.BucketAt
 }
 
 // DeleteBucket deletes a GCS bucket
-func (conf *GCPConfiguration) DeleteBucket(bucketName string) error {
-	client, err := storage.NewClient(conf.Context)
+func (conf *GoogleConfiguration) DeleteBucket(bucketName string, keyFile []byte) error {
+	creds, err := google.CredentialsFromJSON(conf.Context, keyFile, secretmanager.DefaultAuthScopes()...)
+	if err != nil {
+		return fmt.Errorf("could not create google storage client credentials: %s", err)
+	}
+	client, err := storage.NewClient(conf.Context, option.WithCredentials(creds))
 	if err != nil {
 		return fmt.Errorf("could not create google storage client: %s", err)
 	}
@@ -66,8 +76,15 @@ func (conf *GCPConfiguration) DeleteBucket(bucketName string) error {
 }
 
 // ListBuckets lists all GCS buckets for a project
-func (conf *GCPConfiguration) ListBuckets() ([]*storage.BucketAttrs, error) {
-	client, err := storage.NewClient(conf.Context)
+func (conf *GoogleConfiguration) ListBuckets(keyFile []byte) ([]*storage.BucketAttrs, error) {
+	creds, err := google.CredentialsFromJSON(conf.Context, keyFile, secretmanager.DefaultAuthScopes()...)
+	if err != nil {
+		return nil, fmt.Errorf("could not create google storage client credentials: %s", err)
+	}
+	client, err := storage.NewClient(conf.Context, option.WithCredentials(creds))
+	if err != nil {
+		return nil, fmt.Errorf("could not create google storage client: %s", err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("could not create google storage client: %s", err)
 	}

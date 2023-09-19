@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package google
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ import (
 )
 
 // GetRegions lists all available regions
-func (conf *GCPConfiguration) GetRegions() ([]string, error) {
+func (conf *GoogleConfiguration) GetRegions() ([]string, error) {
 	var regionList []string
 
 	client, err := compute.NewRegionsRESTClient(conf.Context)

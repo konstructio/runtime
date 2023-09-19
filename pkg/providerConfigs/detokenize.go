@@ -86,8 +86,8 @@ func detokenizeGitops(path string, tokens *GitopsDirectoryValues, gitProtocol st
 				newContents = strings.Replace(newContents, "<AWS_IAM_ARN_ACCOUNT_ROOT>", tokens.AwsIamArnAccountRoot, -1)
 				newContents = strings.Replace(newContents, "<AWS_NODE_CAPACITY_TYPE>", tokens.AwsNodeCapacityType, -1)
 
-				// GCP
-				newContents = strings.Replace(newContents, "<GCP_PROJECT>", tokens.GCPProject, -1)
+				// google
+				newContents = strings.Replace(newContents, "<GOOGLE_PROJECT>", tokens.GoogleProject, -1)
 				newContents = strings.Replace(newContents, "<TERRAFORM_FORCE_DESTROY>", tokens.ForceDestroy, -1)
 				newContents = strings.Replace(newContents, "<GOOGLE_UNIQUENESS>", tokens.GoogleUniqueness, -1)
 

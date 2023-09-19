@@ -16,8 +16,8 @@ import (
 type ProviderConfig struct {
 	CivoToken                        string
 	DigitaloceanToken                string
-	GCPAuth                          string
-	GCPProject                       string
+	GoogleAuth                       string
+	GoogleProject                    string
 	VultrToken                       string
 	CloudflareAPIToken               string
 	CloudflareOriginCaIssuerAPIToken string

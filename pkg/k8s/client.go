@@ -7,6 +7,7 @@ See the LICENSE file for more details.
 package k8s
 
 import (
+	// b64 "encoding/base64"
 	"os"
 	"path/filepath"
 
@@ -101,3 +102,18 @@ func returnKubeConfigPath(kubeConfigPath string) string {
 
 	return kubeconfig
 }
+
+// writeKubeConfig generates the kubeconfig at the path specified in the filesystem for auth later on
+// func WriteKubeConfig(kubeconfig string, kubeConfigPath string) error {
+// 	// We expect kubeconfig to be passed us base64 encoded
+
+// 	data, err := b64.StdEncoding.DecodeString(kubeconfig)
+// 	if err := os.WriteFile(kubeConfigPath, []byte(data), 0666); err != nil {
+// 		log.Info("Kubeconfig could not be written to file: \n %s", data)
+// 		log.Fatal(err)
+// 	}
+
+// 	log.Info("Kubeconfig Written to file: \n %s", data)
+
+// 	return err
+// }

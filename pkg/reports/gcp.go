@@ -12,12 +12,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/kubefirst/runtime/pkg/gcp"
+	"github.com/kubefirst/runtime/pkg/google"
 	"github.com/kubefirst/runtime/pkg/providerConfigs"
 )
 
-// GCPHandoffScreen prints the handoff screen
-func GCPHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *providerConfigs.ProviderConfig, silentMode bool) {
+// googleHandoffScreen prints the handoff screen
+func GoogleHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOwner string, config *providerConfigs.ProviderConfig, silentMode bool) {
 	// prepare data for the handoff report
 	if silentMode {
 		log.Printf("[#99] Silent mode enabled, LocalHandoffScreen skipped, please check ~/.kubefirst file for your cluster and service credentials.")
@@ -57,7 +57,7 @@ func GCPHandoffScreen(argocdAdminPassword, clusterName, domainName string, gitOw
 	handOffData.WriteString("\n\nNote:")
 	handOffData.WriteString("\n  To retrieve root credentials for your kubefirst platform, including")
 	handOffData.WriteString("\n  ArgoCD, the kbot user password, and Vault, run the following command:")
-	handOffData.WriteString(fmt.Sprintf("\n"+"\n    kubefirst %s root-credentials"+"\n", gcp.CloudProvider))
+	handOffData.WriteString(fmt.Sprintf("\n"+"\n    kubefirst %s root-credentials"+"\n", google.CloudProvider))
 	handOffData.WriteString("\n  Note that this command allows you to copy these passwords diretly")
 	handOffData.WriteString("\n  to your clipboard. Provide the -h flag for additional details.")
 

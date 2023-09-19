@@ -4,7 +4,7 @@ Copyright (C) 2021-2023, Kubefirst
 This program is licensed under MIT.
 See the LICENSE file for more details.
 */
-package gcp
+package google
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 )
 
 // TestHostedZoneLiveness checks DNS for the liveness test record
-func (conf *GCPConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool {
+func (conf *GoogleConfiguration) TestHostedZoneLiveness(hostedZoneName string) bool {
 	recordName := fmt.Sprintf("kubefirst-liveness.%s.", hostedZoneName)
 	recordValue := "domain record propagated"
 

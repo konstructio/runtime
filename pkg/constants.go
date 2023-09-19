@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	BetaProviders []string = []string{"digitalocean", "gcp", "vultr"}
+	BetaProviders []string = []string{"digitalocean", "google", "vultr"}
 )
 
 const (
