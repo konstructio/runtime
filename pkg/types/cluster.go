@@ -19,6 +19,7 @@ type ClusterDefinition struct {
 	CloudRegion   string `json:"cloud_region" binding:"required"`
 	ClusterName   string `json:"cluster_name,omitempty"`
 	DomainName    string `json:"domain_name" binding:"required"`
+	SubdomainName string `json:"subdomain_name,omitempty"`
 	DnsProvider   string `json:"dns_provider,omitempty" binding:"required"`
 	Type          string `json:"type" binding:"required,oneof=mgmt workload"`
 

@@ -98,7 +98,7 @@ func (c *CloudflareConfiguration) TestDomainLiveness(domainName string) bool {
 	record, err := c.Client.CreateDNSRecord(c.Context, rc, createParams)
 	if err != nil {
 		log.Error().Msgf(
-			"could not create kubeirst liveness TXT record on cloudflare zoneid %s for domain %s: %s",
+			"could not create kubefirst liveness TXT record on cloudflare zoneid %s for domain %s: %s",
 			domainName,
 			zoneId,
 			err,

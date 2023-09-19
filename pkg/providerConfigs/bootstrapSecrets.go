@@ -151,9 +151,12 @@ func K8sNamespaces(clientset *kubernetes.Clientset) error {
 		"argocd",
 		"argo",
 		"atlantis",
+		"chartmuseum",
 		"cert-manager",
+		"kubefirst",
 		"external-dns",
 		"external-secrets-operator",
+		"vault",
 	}
 	for i, s := range newNamespaces {
 		namespace := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: s}}
