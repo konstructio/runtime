@@ -151,6 +151,15 @@ type ProxyImportRequest struct {
 	Url  string               `bson:"url" json:"url"`
 }
 
+type ProxyCreateClusterRequest struct {
+	Body ClusterDefinition `bson:"body" json:"body"`
+	Url  string            `bson:"url" json:"url"`
+}
+
+type ProxyResetClusterRequest struct {
+	Url string `bson:"url" json:"url"`
+}
+
 type WorkloadCluster struct {
 	AdminEmail        string  `bson:"admin_email,omitempty" json:"admin_email,omitempty"`
 	CloudProvider     string  `bson:"cloud_provider,omitempty" json:"cloud_provider,omitempty"`
