@@ -8,9 +8,12 @@ package digitalocean
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 
 	"github.com/kubefirst/runtime/pkg/k8s"
 	providerConfig "github.com/kubefirst/runtime/pkg/providerConfigs"
@@ -44,6 +47,8 @@ func BootstrapDigitaloceanMgmtCluster(
 		digitalOceanToken, //AWS has no authentication method because we use roles
 		dnsProvider,
 		CloudProvider,
+		(fmt.Sprintf(os.Getenv(fmt.Sprintf("%s_TOKEN", strings.ToUpper(gitProvider))))),
+		viper.GetString("kbot.private-key"),
 	)
 
 	//Create cloud specific secrets

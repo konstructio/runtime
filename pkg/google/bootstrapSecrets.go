@@ -8,9 +8,12 @@ package google
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 
 	providerConfig "github.com/kubefirst/runtime/pkg/providerConfigs"
 	v1 "k8s.io/api/core/v1"
@@ -40,6 +43,8 @@ func BootstrapGoogleMgmtCluster(
 		googleApplicationCredentials, //AWS has no authentication method because we use roles
 		dnsProvider,
 		cloudProvider,
+		(fmt.Sprintf(os.Getenv(fmt.Sprintf("%s_TOKEN", strings.ToUpper(gitProvider))))),
+		viper.GetString("kbot.private-key"),
 	)
 
 	//Create cloud specific secrets
