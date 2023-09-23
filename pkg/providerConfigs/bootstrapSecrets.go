@@ -9,12 +9,10 @@ package providerConfigs
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/spf13/viper"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -30,6 +28,8 @@ func BootstrapMgmtCluster(
 	cloudAuth string,
 	dnsProvider string,
 	cloudProvider string,
+	httpsPassword string,
+	sshToken string,
 ) error {
 	// Create namespace
 	// Skip if it already exists
@@ -55,7 +55,7 @@ func BootstrapMgmtCluster(
 			"name":     []byte(fmt.Sprintf("%s-gitops", gitUser)),
 			"url":      []byte(destinationGitopsRepoURL),
 			"username": []byte(gitUser),
-			"password": []byte([]byte(fmt.Sprintf(os.Getenv(fmt.Sprintf("%s_TOKEN", strings.ToUpper(gitProvider)))))),
+			"password": []byte([]byte(httpsPassword)),
 		}
 	} else {
 		// ssh
@@ -63,7 +63,7 @@ func BootstrapMgmtCluster(
 			"type":          []byte("git"),
 			"name":          []byte(fmt.Sprintf("%s-gitops", gitUser)),
 			"url":           []byte(destinationGitopsRepoURL),
-			"sshPrivateKey": []byte(viper.GetString("kbot.private-key")),
+			"sshPrivateKey": []byte(sshToken),
 		}
 	}
 	createSecrets := []*v1.Secret{
