@@ -76,6 +76,7 @@ require (
 	github.com/google/go-github/v45 v45.2.0
 	github.com/hashicorp/vault/api v1.9.0
 	github.com/jedib0t/go-pretty/v6 v6.4.6
+	github.com/kubefirst/kubefirst-api v0.0.0-00010101000000-000000000000
 	github.com/lixiangzhong/dnsutil v1.4.0
 	github.com/minio/minio-go/v7 v7.0.49
 	github.com/otiai10/copy v1.7.0
@@ -93,6 +94,7 @@ require (
 	golang.org/x/mod v0.12.0
 	golang.org/x/oauth2 v0.8.0
 	golang.org/x/term v0.11.0
+	golang.org/x/text v0.12.0
 	google.golang.org/api v0.126.0
 	k8s.io/api v0.26.0
 	k8s.io/apimachinery v0.26.0
@@ -217,6 +219,10 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/monochromegane/go-gitignore v0.0.0-20200626010858-205db1a8cc00 // indirect
 	github.com/montanaflynn/stats v0.6.6 // indirect
+	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
+	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/muesli/reflow v0.3.0 // indirect
+	github.com/muesli/termenv v0.15.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 // indirect
@@ -256,7 +262,6 @@ require (
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
@@ -294,3 +299,5 @@ replace (
 	sigs.k8s.io/kustomize/kustomize/v4 => sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
 	sigs.k8s.io/kustomize/kyaml => sigs.k8s.io/kustomize/kyaml v0.13.9
 )
+
+replace github.com/kubefirst/kubefirst-api => /root/kubefirst/kubefirst-api
