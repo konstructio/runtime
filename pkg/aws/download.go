@@ -11,9 +11,9 @@ import (
 	"os"
 	"sync"
 
+	"github.com/kubefirst/kubefirst-api/pkg/providerConfigs"
 	"github.com/kubefirst/runtime/pkg"
 	"github.com/kubefirst/runtime/pkg/downloadManager"
-	"github.com/kubefirst/runtime/pkg/providerConfigs"
 	"github.com/rs/zerolog/log"
 )
 

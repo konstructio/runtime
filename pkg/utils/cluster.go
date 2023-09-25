@@ -11,8 +11,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/kubefirst/kubefirst-api/pkg/types"
 	"github.com/kubefirst/runtime/pkg"
-	"github.com/kubefirst/runtime/pkg/types"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/rs/zerolog/log"

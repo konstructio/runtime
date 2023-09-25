@@ -12,7 +12,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/kubefirst/runtime/pkg/providerConfigs"
+	"github.com/kubefirst/kubefirst-api/pkg/providerConfigs"
 	"github.com/kubefirst/runtime/pkg/vultr"
 )
 
