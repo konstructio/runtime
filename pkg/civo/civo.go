@@ -7,7 +7,9 @@ See the LICENSE file for more details.
 package civo
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -153,4 +155,18 @@ func (c *CivoConfiguration) GetRegions(region string) ([]string, error) {
 	}
 
 	return regionList, nil
+}
+
+func (c *CivoConfiguration) ListInstanceSizes() ([]civogo.InstanceSize, error) {
+	resp, err := c.Client.SendGetRequest("/v2/sizes")
+	if err != nil {
+		return nil, err
+	}
+
+	sizes := make([]civogo.InstanceSize, 0)
+	if err := json.NewDecoder(bytes.NewReader(resp)).Decode(&sizes); err != nil {
+		return nil, err
+	}
+
+	return sizes, nil
 }
