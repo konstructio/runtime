@@ -280,5 +280,3 @@ replace (
 	sigs.k8s.io/kustomize/kustomize/v4 => sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
 	sigs.k8s.io/kustomize/kyaml => sigs.k8s.io/kustomize/kyaml v0.13.9
 )
-
-replace github.com/kubefirst/kubefirst-api => /root/kubefirst/kubefirst-api

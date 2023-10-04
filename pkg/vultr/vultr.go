@@ -164,3 +164,13 @@ func (c *VultrConfiguration) GetRegions() ([]string, error) {
 
 	return regionList, nil
 }
+
+func (c *VultrConfiguration) ListInstances() ([]govultr.Instance, error) {
+
+	instances, _, _, err := c.Client.Instance.List(c.Context, &govultr.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return instances, nil
+}

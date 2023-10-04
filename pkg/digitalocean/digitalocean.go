@@ -7,6 +7,8 @@ See the LICENSE file for more details.
 package digitalocean
 
 import (
+	"context"
+
 	"github.com/digitalocean/godo"
 )
 
@@ -24,4 +26,14 @@ func (c *DigitaloceanConfiguration) GetRegions() ([]string, error) {
 	}
 
 	return regionList, nil
+}
+
+func (c *DigitaloceanConfiguration) ListInstances() ([]*godo.AppInstanceSize, error) {
+
+	instances, _, err := c.Client.Apps.ListInstanceSizes(context.Background())
+	if err !=  nil {
+		return nil, err
+	}
+
+	return instances, nil
 }
