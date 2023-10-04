@@ -87,3 +87,16 @@ func (conf *AWSConfiguration) GetRegions(region string) ([]string, error) {
 
 	return regionList, nil
 }
+
+func (conf *AWSConfiguration) ListInstanceSizesForRegion() (*ec2.DescribeInstanceTypeOfferingsOutput, error) {
+
+	ec2Client := ec2.NewFromConfig(conf.Config)
+
+	sizes, err := ec2Client.DescribeInstanceTypeOfferings(context.Background(), &ec2.DescribeInstanceTypeOfferingsInput{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return sizes, nil
+}
