@@ -88,7 +88,7 @@ func (conf *AWSConfiguration) GetRegions(region string) ([]string, error) {
 	return regionList, nil
 }
 
-func (conf *AWSConfiguration) ListInstanceSizesForRegion() (*ec2.DescribeInstanceTypeOfferingsOutput, error) {
+func (conf *AWSConfiguration) ListInstanceSizesForRegion() ([]string, error) {
 
 	ec2Client := ec2.NewFromConfig(conf.Config)
 
@@ -98,5 +98,10 @@ func (conf *AWSConfiguration) ListInstanceSizesForRegion() (*ec2.DescribeInstanc
 		return nil, err
 	}
 
-	return sizes, nil
+	var instanceNames []string
+	for _, size := range sizes.InstanceTypeOfferings {
+		instanceNames = append(instanceNames, string(size.InstanceType))
+	}
+
+	return instanceNames, nil
 }

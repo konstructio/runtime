@@ -157,7 +157,7 @@ func (c *CivoConfiguration) GetRegions(region string) ([]string, error) {
 	return regionList, nil
 }
 
-func (c *CivoConfiguration) ListInstanceSizes() ([]civogo.InstanceSize, error) {
+func (c *CivoConfiguration) ListInstanceSizes() ([]string, error) {
 	resp, err := c.Client.SendGetRequest("/v2/sizes")
 	if err != nil {
 		return nil, err
@@ -168,5 +168,10 @@ func (c *CivoConfiguration) ListInstanceSizes() ([]civogo.InstanceSize, error) {
 		return nil, err
 	}
 
-	return sizes, nil
+	var instanceNames []string
+	for _, size := range sizes {
+		instanceNames = append(instanceNames, size.NiceName)
+	}
+
+	return instanceNames, nil
 }
