@@ -165,12 +165,21 @@ func (c *VultrConfiguration) GetRegions() ([]string, error) {
 	return regionList, nil
 }
 
-func (c *VultrConfiguration) ListInstances() ([]govultr.Instance, error) {
+func (c *VultrConfiguration) ListInstances() ([]string, error) {
 
-	instances, _, _, err := c.Client.Instance.List(c.Context, &govultr.ListOptions{})
+	// can pass empty string to list all plans for second arg to List
+	plans, _, _, err := c.Client.Plan.List(c.Context, "" ,&govultr.ListOptions  {
+		Region: c.Region,
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	return instances, nil
+	var planNames []string
+	for _, plan := range plans {
+		planNames = append(planNames, plan.ID)
+	}
+
+	return planNames, nil
 }
