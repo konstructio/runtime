@@ -100,6 +100,14 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 		},
 	}
 
+	//* metaphor app source
+	metaphorContent := fmt.Sprintf("%s/metaphor", gitopsRepoDir)
+	err = cp.Copy(metaphorContent, metaphorDir, opt)
+	if err != nil {
+		log.Info().Msgf("Error populating metaphor content with %s. error: %s", metaphorContent, err.Error())
+		return err
+	}
+
 	//* copy ci content
 	switch gitProvider {
 	case "github":
@@ -120,14 +128,6 @@ func AdjustMetaphorRepo(destinationMetaphorRepoGitURL, gitopsRepoDir, gitProvide
 			log.Info().Msgf("error populating metaphor repository with %s: %s", gitlabCIContent, err)
 			return err
 		}
-	}
-
-	//* metaphor app source
-	metaphorContent := fmt.Sprintf("%s/metaphor", gitopsRepoDir)
-	err = cp.Copy(metaphorContent, metaphorDir, opt)
-	if err != nil {
-		log.Info().Msgf("Error populating metaphor content with %s. error: %s", metaphorContent, err.Error())
-		return err
 	}
 
 	//* copy $HOME/.k1/gitops/ci/.argo/* $HOME/.k1/metaphor/.argo
