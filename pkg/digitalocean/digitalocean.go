@@ -37,7 +37,7 @@ func (c *DigitaloceanConfiguration) ListInstances() ([]string, error) {
 	}
 	var instanceNames []string
 	for _, instance := range instances {
-		instanceNames = append(instanceNames, instance.Name)
+		instanceNames = append(instanceNames, instance.Slug)
 	}
 
 	return instanceNames, nil

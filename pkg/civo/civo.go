@@ -170,7 +170,7 @@ func (c *CivoConfiguration) ListInstanceSizes() ([]string, error) {
 
 	var instanceNames []string
 	for _, size := range sizes {
-		instanceNames = append(instanceNames, size.NiceName)
+		instanceNames = append(instanceNames, size.Name)
 	}
 
 	return instanceNames, nil
