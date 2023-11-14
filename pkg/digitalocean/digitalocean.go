@@ -30,11 +30,12 @@ func (c *DigitaloceanConfiguration) GetRegions() ([]string, error) {
 
 func (c *DigitaloceanConfiguration) ListInstances() ([]string, error) {
 
-	instances, _, err := c.Client.Apps.ListInstanceSizes(context.Background())
+	instances, _, err := c.Client.Sizes.List(context.Background(),&godo.ListOptions{})
 	
 	if err !=  nil {
 		return nil, err
 	}
+
 	var instanceNames []string
 	for _, instance := range instances {
 		instanceNames = append(instanceNames, instance.Slug)
