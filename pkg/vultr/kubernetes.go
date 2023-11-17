@@ -89,3 +89,31 @@ func (c *VultrConfiguration) DeleteBlockStorage(blockStorage []govultr.BlockStor
 
 	return nil
 }
+
+func (c *VultrConfiguration) GetKubeconfig(clusterName string)(string, error) {
+	clusters, _, _, err := c.Client.Kubernetes.ListClusters(c.Context, &govultr.ListOptions{})
+
+	if err != nil {
+		return "", err
+	}
+
+	var clusterId string
+	for  _, cluster := range clusters {
+		if cluster.Label == clusterName {
+			clusterId = cluster.ID
+			continue
+		}
+	}
+
+	if clusterId == "" {
+		return "", fmt.Errorf("could not find cluster ID for cluster name %s", clusterName)
+	}
+
+	kubeConfig, _, err := c.Client.Kubernetes.GetKubeConfig(c.Context, clusterId)
+
+	if err != nil {
+		return "", err 
+	}
+
+	return kubeConfig.KubeConfig, nil
+}
