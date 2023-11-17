@@ -175,3 +175,12 @@ func (c *CivoConfiguration) ListInstanceSizes() ([]string, error) {
 
 	return instanceNames, nil
 }
+
+func (c *CivoConfiguration) GetKubeconfig(clusterName string) (string, error) {
+	cluster, err := c.Client.FindKubernetesCluster(clusterName)
+	if err != nil {
+		return "", err
+	}
+
+	return cluster.KubeConfig, nil
+}

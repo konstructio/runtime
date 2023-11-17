@@ -8,6 +8,7 @@ package digitalocean
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/digitalocean/godo"
 )
@@ -42,4 +43,32 @@ func (c *DigitaloceanConfiguration) ListInstances() ([]string, error) {
 	}
 
 	return instanceNames, nil
+}
+
+func (c *DigitaloceanConfiguration) GetKubeconfig(clusterName string)([]byte, error) {
+	clusters, _, err  := c.Client.Kubernetes.List(context.Background(),&godo.ListOptions{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var clusterId string
+	for  _, cluster := range clusters {
+		if cluster.Name == clusterName {
+			clusterId = cluster.ID
+			continue
+		}
+	}
+
+	if clusterId == "" {
+		return nil, fmt.Errorf("could not find cluster ID for cluster name %s", clusterName)
+	}
+
+	config, _, err  := c.Client.Kubernetes.GetKubeConfig(context.Background(),clusterId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return config.KubeconfigYAML, nil
 }
