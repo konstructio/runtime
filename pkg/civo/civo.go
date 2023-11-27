@@ -170,7 +170,9 @@ func (c *CivoConfiguration) ListInstanceSizes() ([]string, error) {
 
 	var instanceNames []string
 	for _, size := range sizes {
-		instanceNames = append(instanceNames, size.Name)
+		if size.Type == "Kubernetes" {
+			instanceNames = append(instanceNames, size.Name)
+		}
 	}
 
 	return instanceNames, nil
