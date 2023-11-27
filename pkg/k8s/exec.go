@@ -162,6 +162,7 @@ func podExec(kubeConfigPath string, ps *PodSessionOptions, pe v1.PodExecOptions,
 
 // ReturnDeploymentObject returns a matching appsv1.Deployment object based on the filters
 func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*appsv1.Deployment, error) {
+	time.Sleep(time.Second * 10)
 	// Filter
 	deploymentListOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", matchLabel, matchLabelValue),
@@ -206,6 +207,7 @@ func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, 
 
 // ReturnPodObject returns a matching v1.Pod object based on the filters
 func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*v1.Pod, error) {
+	time.Sleep(time.Second * 10)
 	clientset, err := GetClientSet(kubeConfigPath)
 	if err != nil {
 		return nil, err
@@ -264,6 +266,7 @@ func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue s
 
 // ReturnStatefulSetObject returns a matching appsv1.StatefulSet object based on the filters
 func ReturnStatefulSetObject(clientset *kubernetes.Clientset, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*appsv1.StatefulSet, error) {
+	time.Sleep(time.Second * 10)
 	// Filter
 	statefulSetListOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", matchLabel, matchLabelValue),
