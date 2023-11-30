@@ -31,9 +31,10 @@ func (c *DigitaloceanConfiguration) GetRegions() ([]string, error) {
 
 func (c *DigitaloceanConfiguration) ListInstances() ([]string, error) {
 
-	instances, _, err := c.Client.Sizes.List(context.Background(),&godo.ListOptions{})
-	
-	if err !=  nil {
+	DO_MAX_PER_PAGE := 200
+	instances, _, err := c.Client.Sizes.List(context.Background(), &godo.ListOptions{PerPage: DO_MAX_PER_PAGE})
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -45,15 +46,15 @@ func (c *DigitaloceanConfiguration) ListInstances() ([]string, error) {
 	return instanceNames, nil
 }
 
-func (c *DigitaloceanConfiguration) GetKubeconfig(clusterName string)([]byte, error) {
-	clusters, _, err  := c.Client.Kubernetes.List(context.Background(),&godo.ListOptions{})
+func (c *DigitaloceanConfiguration) GetKubeconfig(clusterName string) ([]byte, error) {
+	clusters, _, err := c.Client.Kubernetes.List(context.Background(), &godo.ListOptions{})
 
 	if err != nil {
 		return nil, err
 	}
 
 	var clusterId string
-	for  _, cluster := range clusters {
+	for _, cluster := range clusters {
 		if cluster.Name == clusterName {
 			clusterId = cluster.ID
 			continue
@@ -64,7 +65,7 @@ func (c *DigitaloceanConfiguration) GetKubeconfig(clusterName string)([]byte, er
 		return nil, fmt.Errorf("could not find cluster ID for cluster name %s", clusterName)
 	}
 
-	config, _, err  := c.Client.Kubernetes.GetKubeConfig(context.Background(),clusterId)
+	config, _, err := c.Client.Kubernetes.GetKubeConfig(context.Background(), clusterId)
 
 	if err != nil {
 		return nil, err
