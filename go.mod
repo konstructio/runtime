@@ -62,9 +62,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.7
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/caarlos0/sshmarshal v0.1.0
-	github.com/civo/civogo v0.3.28
+	github.com/civo/civogo v0.3.53
 	github.com/cloudflare/cloudflare-go v0.73.0
-	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/digitalocean/godo v1.98.0
 	github.com/docker/docker v23.0.2+incompatible
 	github.com/go-git/go-git/v5 v5.6.1
@@ -89,8 +88,8 @@ require (
 	golang.org/x/mod v0.12.0
 	golang.org/x/oauth2 v0.8.0
 	golang.org/x/term v0.11.0
-	k8s.io/api v0.26.0
-	k8s.io/apimachinery v0.26.0
+	k8s.io/api v0.27.1
+	k8s.io/apimachinery v0.27.1
 	k8s.io/client-go v11.0.1-0.20190816222228-6d55c1b1f1ca+incompatible
 	sigs.k8s.io/aws-iam-authenticator v0.6.7
 	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
