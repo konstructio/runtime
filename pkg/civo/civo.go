@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/civo/civogo"
@@ -170,7 +171,7 @@ func (c *CivoConfiguration) ListInstanceSizes() ([]string, error) {
 
 	var instanceNames []string
 	for _, size := range sizes {
-		if size.Type == "Kubernetes" {
+		if size.Type == "Kubernetes" && strings.Contains(size.Name, "kube") {
 			instanceNames = append(instanceNames, size.Name)
 		}
 	}
