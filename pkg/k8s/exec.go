@@ -162,11 +162,13 @@ func podExec(kubeConfigPath string, ps *PodSessionOptions, pe v1.PodExecOptions,
 
 // ReturnDeploymentObject returns a matching appsv1.Deployment object based on the filters
 func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*appsv1.Deployment, error) {
-	time.Sleep(time.Second * 10)
+
 	// Filter
 	deploymentListOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", matchLabel, matchLabelValue),
 	}
+
+	log.Info().Msgf("waiting for %s Deployment to be created", matchLabelValue)
 
 	// Create watch operation
 	objWatch, err := clientset.
@@ -177,13 +179,12 @@ func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, 
 		log.Error().Msgf("error when attempting to search for Deployment: %s", err)
 		return nil, err
 	}
-	log.Info().Msgf("waiting for %s Deployment to be created", matchLabelValue)
 
 	objChan := objWatch.ResultChan()
 	for {
 		select {
 		case event, ok := <-objChan:
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 15)
 			if !ok {
 				// Error if the channel closes
 				log.Error().Msgf("error waiting for %s Deployment to be created: %s", matchLabelValue, err)
@@ -207,7 +208,7 @@ func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, 
 
 // ReturnPodObject returns a matching v1.Pod object based on the filters
 func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*v1.Pod, error) {
-	time.Sleep(time.Second * 10)
+
 	clientset, err := GetClientSet(kubeConfigPath)
 	if err != nil {
 		return nil, err
@@ -217,6 +218,7 @@ func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue s
 	podListOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", matchLabel, matchLabelValue),
 	}
+	log.Info().Msgf("waiting for %s Pod to be created", matchLabelValue)
 
 	// Create watch operation
 	objWatch, err := clientset.
@@ -227,13 +229,12 @@ func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue s
 		log.Error().Msgf("error when attempting to search for Pod: %s", err)
 		return nil, err
 	}
-	log.Info().Msgf("waiting for %s Pod to be created", matchLabelValue)
 
 	objChan := objWatch.ResultChan()
 	for {
 		select {
 		case event, ok := <-objChan:
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 15)
 			if !ok {
 				// Error if the channel closes
 				log.Error().Msgf("error waiting for %s Pod to be created: %s", matchLabelValue, err)
@@ -266,11 +267,13 @@ func ReturnPodObject(kubeConfigPath string, matchLabel string, matchLabelValue s
 
 // ReturnStatefulSetObject returns a matching appsv1.StatefulSet object based on the filters
 func ReturnStatefulSetObject(clientset *kubernetes.Clientset, matchLabel string, matchLabelValue string, namespace string, timeoutSeconds int) (*appsv1.StatefulSet, error) {
-	time.Sleep(time.Second * 10)
+
 	// Filter
 	statefulSetListOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", matchLabel, matchLabelValue),
 	}
+
+	log.Info().Msgf("waiting for %s StatefulSet to be created using label %s=%s", matchLabelValue, matchLabel, matchLabelValue)
 
 	// Create watch operation
 	objWatch, err := clientset.
@@ -278,23 +281,20 @@ func ReturnStatefulSetObject(clientset *kubernetes.Clientset, matchLabel string,
 		StatefulSets(namespace).
 		Watch(context.Background(), statefulSetListOptions)
 	if err != nil {
-		log.Error().Msgf("error when attempting to search for StatefulSet: %s", err)
-		return nil, err
+		log.Error().Msgf("error when attempting to search for StatefulSet with label %s=%s: %s", matchLabel, matchLabelValue, err)
 	}
-	log.Info().Msgf("waiting for %s StatefulSet to be created using label %s=%s", matchLabelValue, matchLabel, matchLabelValue)
 
 	objChan := objWatch.ResultChan()
 	for {
 		select {
 		case event, ok := <-objChan:
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 15)
 			if !ok {
 				// Error if the channel closes
-				log.Error().Msgf("error waiting for %s StatefulSet to be created: %s", matchLabelValue, err)
+				log.Error().Msgf("error not ok waiting %s StatefulSet to be created: %s", matchLabelValue, err)
 				return nil, err
 			}
-			if event.
-				Object.(*appsv1.StatefulSet).Status.Replicas > 0 {
+			if event.Object.(*appsv1.StatefulSet).Status.Replicas > 0 {
 				spec, err := clientset.AppsV1().StatefulSets(namespace).List(context.Background(), statefulSetListOptions)
 				if err != nil {
 					log.Error().Msgf("error when searching for StatefulSet: %s", err)
@@ -333,7 +333,7 @@ func WaitForDeploymentReady(clientset *kubernetes.Clientset, deployment *appsv1.
 	for {
 		select {
 		case event, ok := <-objChan:
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 15)
 			if !ok {
 				// Error if the channel closes
 				log.Error().Msgf("error waiting for Deployment: %s", err)
@@ -418,7 +418,7 @@ func WaitForStatefulSetReady(clientset *kubernetes.Clientset, statefulset *appsv
 	for {
 		select {
 		case event, ok := <-objChan:
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 15)
 			if !ok {
 				// Error if the channel closes
 				log.Error().Msgf("error waiting for StatefulSet: %s", err)
@@ -483,7 +483,7 @@ func watchForStatefulSetPodReady(clientset *kubernetes.Clientset, namespace stri
 	for {
 		select {
 		case podEvent, ok := <-podObjChan:
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 15)
 			if !ok {
 				// Error if the channel closes
 				log.Error().Msgf("error waiting for Pod: %s", err)
