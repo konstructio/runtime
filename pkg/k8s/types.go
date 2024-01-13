@@ -16,3 +16,7 @@ type PodSessionOptions struct {
 	Stderr     bool
 	TtyEnabled bool
 }
+
+type UpdateSecretArgs struct {
+	ConsoleTour string `json:"console-tour"`
+}
