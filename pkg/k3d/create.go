@@ -80,6 +80,7 @@ func ClusterCreateConsoleAPI(clusterName string, k1Dir string, k3dClient string,
 		"--k3s-arg", `--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@agent:*`,
 		"--k3s-arg", `--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@agent:*`,
 		"--port", "443:443@loadbalancer",
+		"--volume", k1Dir+":/.k1",
 	)
 	if err != nil {
 		log.Info().Msg("error creating k3d cluster")
