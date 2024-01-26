@@ -53,7 +53,7 @@ func RemoveSubdomainV2(domainName string) (string, error) {
 }
 
 // SetupViper handles Viper config file. If config file doesn't exist, create, in case the file is available, use it.
-func SetupViper(config *configs.Config) error {
+func SetupViper(config *configs.Config, silent bool) error {
 
 	viperConfigFile := config.KubefirstConfigFilePath
 
@@ -75,7 +75,9 @@ func SetupViper(config *configs.Config) error {
 		return fmt.Errorf("unable to read config file, error is: %s", err)
 	}
 
-	log.Info().Msgf("Using config file: %s", viper.ConfigFileUsed())
+	if !silent {
+		log.Info().Msgf("Using config file: %s", viper.ConfigFileUsed())
+	}
 
 	return nil
 }
