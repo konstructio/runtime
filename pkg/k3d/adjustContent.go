@@ -20,7 +20,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string) error {
+func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string, removeAtlantis bool) error {
 
 	//* clean up all other platforms
 	for _, platform := range pkg.SupportedPlatforms {
@@ -69,6 +69,11 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 	} else {
 		armConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console-arm.yaml", registryLocation)
 		os.Remove(armConsoleFileLocation)
+	}
+
+	if (removeAtlantis) {
+		atlantisRegistryFileLocation := fmt.Sprintf("%s/atlantis.yaml", registryLocation)
+		os.Remove(atlantisRegistryFileLocation)
 	}
 
 	return nil
