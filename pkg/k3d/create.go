@@ -118,6 +118,7 @@ func PrepareGitRepositories(
 	metaphorDir string,
 	metaphorTokens *MetaphorTokenValues,
 	gitProtocol string,
+	removeAtlantis bool,
 ) error {
 
 	//* clone the gitops-template repo
@@ -128,7 +129,7 @@ func PrepareGitRepositories(
 	log.Info().Msg("gitops repository clone complete")
 
 	// * adjust the content for the gitops repo
-	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir)
+	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, removeAtlantis)
 	if err != nil {
 		log.Info().Msgf("err: %v", err)
 		return err
