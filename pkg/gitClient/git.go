@@ -145,13 +145,19 @@ func Commit(repo *git.Repository, commitMsg string) error {
 	log.Info().Msg(commitMsg)
 	w.AddGlob(".")
 
-	w.Commit(commitMsg, &git.CommitOptions{
+	_, err = w.Commit(commitMsg, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "kbot",
 			Email: "kbot@kubefirst.com",
 			When:  time.Now(),
 		},
 	})
+
+	if err != nil {
+		log.Info().Msgf("error committing in repo: %s", err)
+		return err
+	}
+
 	return nil
 }
 
