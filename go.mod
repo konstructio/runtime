@@ -61,7 +61,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/servicequotas v1.14.7
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.7
 	github.com/caarlos0/env/v6 v6.10.1
-	github.com/caarlos0/sshmarshal v0.1.0
 	github.com/civo/civogo v0.3.53
 	github.com/cloudflare/cloudflare-go v0.73.0
 	github.com/digitalocean/godo v1.98.0
@@ -84,10 +83,10 @@ require (
 	github.com/vultr/govultr/v3 v3.0.2
 	github.com/xanzy/go-gitlab v0.81.0
 	go.mongodb.org/mongo-driver v1.10.3
-	golang.org/x/crypto v0.12.0
+	golang.org/x/crypto v0.20.0
 	golang.org/x/mod v0.12.0
 	golang.org/x/oauth2 v0.8.0
-	golang.org/x/term v0.11.0
+	golang.org/x/term v0.17.0
 	k8s.io/api v0.27.1
 	k8s.io/apimachinery v0.27.1
 	k8s.io/client-go v11.0.1-0.20190816222228-6d55c1b1f1ca+incompatible
@@ -241,10 +240,10 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
