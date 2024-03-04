@@ -9,6 +9,7 @@ package aws
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/rs/zerolog/log"
@@ -61,6 +62,41 @@ func NewAwsV3(region string, accessKeyID string, secretAccessKey string, session
 			accessKeyID,
 			secretAccessKey,
 			sessionToken,
+		)),
+	)
+	if err != nil {
+		log.Error().Msg("unable to create aws client")
+	}
+
+	return awsClient
+}
+
+func NewAwsClientServiceAccountTokenV1(region string, accessKeyID string, secretAccessKey string, sessionToken string) aws.Config {
+
+	region = os.Getenv("AWS_REGION")
+	fmt.Println("Region: ", region)
+
+	roleArn := os.Getenv("AWS_ROLE_ARN")
+	fmt.Println("Role ARN: ", roleArn)
+
+	tokenFilePath := os.Getenv("AWS_WEB_IDENTITY_TOKEN_FILE")
+	fmt.Println("Token File Path: ", tokenFilePath)
+
+	// Get the service account token from the pod's projected volume
+	token, err := ioutil.ReadFile(tokenFilePath)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	stsEndpoints := os.Getenv("AWS_STS_REGIONAL_ENDPOINTS")
+	fmt.Println("STS Endpoints: ", stsEndpoints)
+	awsClient, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			string(token),
+			"",
+			string(token),
 		)),
 	)
 	if err != nil {
