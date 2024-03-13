@@ -15,6 +15,7 @@ type HTTPDoer interface {
 }
 
 var SupportedPlatforms = []string{
+	"akamai-github",
 	"aws-github",
 	"aws-gitlab",
 	"civo-github",
@@ -25,6 +26,7 @@ var SupportedPlatforms = []string{
 	"google-gitlab",
 	"k3d-github",
 	"k3d-gitlab",
+	"k3s-gitlab",
 	"vultr-github",
 	"vultr-gitlab",
 }
