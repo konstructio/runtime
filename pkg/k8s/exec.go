@@ -188,7 +188,7 @@ func ReturnDeploymentObject(clientset *kubernetes.Clientset, matchLabel string, 
 			if !ok {
 				// Error if the channel closes
 				log.Error().Msgf("error waiting for %s Deployment to be created: %s", matchLabelValue, err)
-				return nil, err
+				return nil, fmt.Errorf("error waiting for %s Deployment to be created: %s", matchLabelValue, err)
 			}
 			if event.
 				Object.(*appsv1.Deployment).Status.Replicas > 0 {
