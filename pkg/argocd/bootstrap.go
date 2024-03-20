@@ -135,7 +135,7 @@ func ApplyArgoCDKustomize(clientset *kubernetes.Clientset, argoCDInstallPath str
 					Containers: []v1.Container{
 						{
 							Name:  "main",
-							Image: "bitnami/kubectl",
+							Image: "bitnami/kubectl:1.28",
 							Command: []string{
 								"/bin/sh",
 								"-c",
