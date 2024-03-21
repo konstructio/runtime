@@ -37,7 +37,7 @@ const (
 	MinioDefaultPassword         = "feedkraystars"
 
 	// github.com/kubefirst/manifests ref ver
-	KubefirstManifestRepoRef = "v1.0.0"
+	KubefirstManifestRepoRef = "0.1.0"
 )
 
 // Vault
