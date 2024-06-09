@@ -18,7 +18,8 @@ func DisplayLogHints() {
 	logFile := viper.GetString("k1-paths.log-file")
 
 	fmt.Println(strings.Repeat("-", 48))
-	fmt.Printf("Follow your logs in a new terminal with: \n   kubefirst logs \n")
+	fmt.Printf("Your logs are available at: \n   %s \n", logFile)
+	fmt.Printf("Follow your logs in a new terminal with command: \n   kubefirst logs \n")
 	fmt.Println(strings.Repeat("-", 48))
 }
 
