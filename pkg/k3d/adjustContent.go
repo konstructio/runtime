@@ -78,8 +78,8 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 
 		// delete arm application file
 		if gitProvider == "gitlab" {
-			amdGitlabRunnerFileLocation := fmt.Sprintf("%s/components/gitlab-runner/application-arm.yaml", registryLocation)
-			os.Remove(amdGitlabRunnerFileLocation)
+			armGitlabRunnerFileLocation := fmt.Sprintf("%s/components/gitlab-runner/application-arm.yaml", registryLocation)
+			os.Remove(armGitlabRunnerFileLocation)
 		}
 	}
 
