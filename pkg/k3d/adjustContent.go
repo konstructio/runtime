@@ -66,12 +66,24 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 	if pkg.LocalhostARCH == "arm64" && cloudProvider == CloudProvider {
 		amdConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console.yaml", registryLocation)
 		os.Remove(amdConsoleFileLocation)
+
+		// delete amd application file
+		if gitProvider == "gitlab" {
+			amdGitlabRunnerFileLocation := fmt.Sprintf("%s/components/gitlab-runner/application.yaml", registryLocation)
+			os.Remove(amdGitlabRunnerFileLocation)
+		}
 	} else {
 		armConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console-arm.yaml", registryLocation)
 		os.Remove(armConsoleFileLocation)
+
+		// delete arm application file
+		if gitProvider == "gitlab" {
+			amdGitlabRunnerFileLocation := fmt.Sprintf("%s/components/gitlab-runner/application-arm.yaml", registryLocation)
+			os.Remove(amdGitlabRunnerFileLocation)
+		}
 	}
 
-	if (removeAtlantis) {
+	if removeAtlantis {
 		atlantisRegistryFileLocation := fmt.Sprintf("%s/atlantis.yaml", registryLocation)
 		os.Remove(atlantisRegistryFileLocation)
 	}
