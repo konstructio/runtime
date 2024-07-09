@@ -122,6 +122,7 @@ func PrepareGitRepositories(
 ) error {
 
 	//* clone the gitops-template repo
+	fmt.Println("hello in fork")
 	gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
 	if err != nil {
 		log.Panic().Msgf("error opening repo at: %s, err: %v", gitopsDir, err)
