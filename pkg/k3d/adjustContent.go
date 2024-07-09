@@ -20,7 +20,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string, removeAtlantis bool) error {
+func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gitProvider, k1Dir string, removeAtlantis bool, installKubefirstPro bool) error {
 
 	//* clean up all other platforms
 	for _, platform := range pkg.SupportedPlatforms {
@@ -63,15 +63,15 @@ func AdjustGitopsRepo(cloudProvider, clusterName, clusterType, gitopsRepoDir, gi
 	os.RemoveAll(fmt.Sprintf("%s/services", gitopsRepoDir))
 
 	registryLocation := fmt.Sprintf("%s/registry/%s", gitopsRepoDir, clusterName)
-	if pkg.LocalhostARCH == "arm64" && cloudProvider == CloudProvider {
-		amdConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console.yaml", registryLocation)
-		os.Remove(amdConsoleFileLocation)
-	} else {
-		armConsoleFileLocation := fmt.Sprintf("%s/components/kubefirst/console-arm.yaml", registryLocation)
-		os.Remove(armConsoleFileLocation)
+	if !installKubefirstPro {
+		kubefirstComponentsLocation := fmt.Sprintf("%s/components/kubefirst", registryLocation)
+		kubefirstRegistryLocation := fmt.Sprintf("%s/kubefirst.yaml", registryLocation)
+
+		os.RemoveAll(kubefirstComponentsLocation)
+		os.Remove(kubefirstRegistryLocation)
 	}
 
-	if (removeAtlantis) {
+	if removeAtlantis {
 		atlantisRegistryFileLocation := fmt.Sprintf("%s/atlantis.yaml", registryLocation)
 		os.Remove(atlantisRegistryFileLocation)
 	}
