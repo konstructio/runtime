@@ -121,65 +121,65 @@ func PrepareGitRepositories(
 	removeAtlantis bool,
 ) error {
 
-	// //* clone the gitops-template repo
-	// fmt.Println("hello in fork")
-	// gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
-	// if err != nil {
-	// 	log.Panic().Msgf("error opening repo at: %s, err: %v", gitopsDir, err)
-	// }
-	// log.Info().Msg("gitops repository clone complete")
+	//* clone the gitops-template repo
+	fmt.Println("hello in fork")
+	gitopsRepo, err := gitClient.CloneRefSetMain(gitopsTemplateBranch, gitopsDir, gitopsTemplateURL)
+	if err != nil {
+		log.Panic().Msgf("error opening repo at: %s, err: %v", gitopsDir, err)
+	}
+	log.Info().Msg("gitops repository clone complete")
 
-	// // * adjust the content for the gitops repo
-	// err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, removeAtlantis)
-	// if err != nil {
-	// 	log.Info().Msgf("err: %v", err)
-	// 	return err
-	// }
+	// * adjust the content for the gitops repo
+	err = AdjustGitopsRepo(CloudProvider, clusterName, clusterType, gitopsDir, gitProvider, k1Dir, removeAtlantis)
+	if err != nil {
+		log.Info().Msgf("err: %v", err)
+		return err
+	}
 
-	// // * detokenize the gitops repo
-	// detokenizeGitGitops(gitopsDir, gitopsTokens, gitProtocol)
-	// if err != nil {
-	// 	return err
-	// }
+	// * detokenize the gitops repo
+	detokenizeGitGitops(gitopsDir, gitopsTokens, gitProtocol)
+	if err != nil {
+		return err
+	}
 
-	// // * add new remote
-	// err = gitClient.AddRemote(DestinationGitopsRepoURL, gitProvider, gitopsRepo)
-	// if err != nil {
-	// 	return err
-	// }
+	// * add new remote
+	err = gitClient.AddRemote(DestinationGitopsRepoURL, gitProvider, gitopsRepo)
+	if err != nil {
+		return err
+	}
 
-	// // ! metaphor
-	// // * adjust the content for the gitops repo
-	// err = AdjustMetaphorRepo(DestinationMetaphorRepoURL, gitopsDir, gitProvider, k1Dir)
-	// if err != nil {
-	// 	return err
-	// }
+	// ! metaphor
+	// * adjust the content for the gitops repo
+	err = AdjustMetaphorRepo(DestinationMetaphorRepoURL, gitopsDir, gitProvider, k1Dir)
+	if err != nil {
+		return err
+	}
 
-	// // * detokenize the gitops repo
-	// detokenizeGitMetaphor(metaphorDir, metaphorTokens)
-	// if err != nil {
-	// 	return err
-	// }
+	// * detokenize the gitops repo
+	detokenizeGitMetaphor(metaphorDir, metaphorTokens)
+	if err != nil {
+		return err
+	}
 
-	// metaphorRepo, _ := git.PlainOpen(metaphorDir)
-	// //* commit initial gitops-template content
-	// err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
-	// if err != nil {
-	// 	return err
-	// }
+	metaphorRepo, _ := git.PlainOpen(metaphorDir)
+	//* commit initial gitops-template content
+	err = gitClient.Commit(metaphorRepo, "committing initial detokenized metaphor repo content")
+	if err != nil {
+		return err
+	}
 
-	// // * add new remote
-	// err = gitClient.AddRemote(DestinationMetaphorRepoURL, gitProvider, metaphorRepo)
-	// if err != nil {
-	// 	return err
-	// }
+	// * add new remote
+	err = gitClient.AddRemote(DestinationMetaphorRepoURL, gitProvider, metaphorRepo)
+	if err != nil {
+		return err
+	}
 
-	// // * commit initial gitops-template content
-	// // commit after metaphor content has been removed from gitops
-	// err = gitClient.Commit(gitopsRepo, "committing initial detokenized gitops-template repo content")
-	// if err != nil {
-	// 	return err
-	// }
+	// * commit initial gitops-template content
+	// commit after metaphor content has been removed from gitops
+	err = gitClient.Commit(gitopsRepo, "committing initial detokenized gitops-template repo content")
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
